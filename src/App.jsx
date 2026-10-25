@@ -620,4 +620,122 @@ Explore opportunities <ArrowRight size={14} />
       </div>
     </section>
 
-    <section className="journey-
+   <div className="journey-section section-padding" id="about">
+      <div className="container">
+        <div className="journey-intro">
+          <span className="eyebrow">THE NEXTORA APPROACH</span>
+          <h2>
+            Your ambition deserves
+            <br />
+            <span>a clear path.</span>
+          </h2>
+          <p>
+            Finding an opportunity is one thing. Knowing what to do next
+            is another. We're building a platform that brings discovery
+            and preparation closer together.
+          </p>
+        </div>
+
+        <div className="journey-grid">
+          {features.map((feature) => (
+            <article className="journey-card" key={feature.number}>
+              <span className="journey-number">{feature.number}</span>
+              <h3>{feature.title}</h3>
+              <p>{feature.text}</p>
+              <span className="journey-card-arrow">
+                <ArrowUpRight size={19} />
+              </span>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section className="cta-section">
+      <div className="container">
+        <div className="cta-card">
+          <div className="cta-decoration cta-decoration-one" />
+          <div className="cta-decoration cta-decoration-two" />
+
+          <div className="cta-content">
+            <span className="cta-eyebrow">
+              <Sparkles size={15} /> YOUR FUTURE IS WORTH EXPLORING
+            </span>
+            <h2>
+              Ready to discover
+              <br />
+              what's next?
+            </h2>
+            <p>
+              Take the first step. Find an opportunity, learn a skill, and
+              give your next chapter room to begin.
+            </p>
+            <button
+              className="cta-button"
+              onClick={() => goTo("opportunities")}
+            >
+              Start exploring <ArrowRight size={17} />
+            </button>
+          </div>
+          <div className="cta-symbol">
+            <ArrowUpRight size={78} strokeWidth={1.2} />
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer className="site-footer">
+    <div className="container footer-main">
+      <div className="footer-brand-column">
+        <Brand onClick={() => goTo("home")} />
+        <p>
+          Where opportunities begin. Discover possibilities, develop
+          skills, and take your next step with confidence.
+        </p>
+      </div>
+
+      <div className="footer-column">
+        <h4>Explore</h4>
+        <button onClick={() => goTo("opportunities")}>Opportunities</button>
+        <button onClick={() => goTo("categories")}>Categories</button>
+        <button onClick={() => goTo("academy")}>Nextora Academy</button>
+      </div>
+
+      <div className="footer-column">
+        <h4>About</h4>
+        <button onClick={() => goTo("about")}>Our mission</button>
+        <button onClick={() => showNotice("Contact information will be added before launch.")}>
+          Contact us
+        </button>
+        <button onClick={() => showNotice("Our opportunity review policy will be published before launch.")}>
+          How we review listings
+        </button>
+      </div>
+
+      <div className="footer-column footer-help">
+        <h4>Our promise</h4>
+        <div><CheckCircle2 size={16} /> Official source links</div>
+        <div><CheckCircle2 size={16} /> Clear information</div>
+        <div><CheckCircle2 size={16} /> No application fees charged by Nextora</div>
+      </div>
+    </div>
+
+    <div className="container footer-bottom">
+      <span>© {new Date().getFullYear()} NEXTORA. All rights reserved.</span>
+      <span>Where Opportunities Begin.</span>
+    </div>
+  </footer>
+
+  {notice && (
+    <div className="toast-message" role="status">
+      <CheckCircle2 size={19} />
+      <span>{notice}</span>
+      <button onClick={() => setNotice("")} aria-label="Dismiss notification">
+        <X size={17} />
+      </button>
+    </div>
+  )}
+</div>
+); }
+export default App;
