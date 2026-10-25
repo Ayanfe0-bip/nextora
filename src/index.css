@@ -1341,5 +1341,35 @@ grid-template-columns: repeat(3, minmax(0, 1fr));
 gap: 19px;
 }
 
-.journey-card {
-position: re
+journey-card { position: relative; min-height: 205px; padding: 25px; border: 1px solid #e6ebf4; border-radius: 16px; background: #fff; }
+.journey-number { color: #a7b4ee; font-family: "Manrope", sans-serif; font-size: 12px; font-weight: 800; letter-spacing: 1px; }
+.journey-card h3 { margin: 20px 0 10px; color: #263650; font-family: "Manrope", sans-serif; font-size: 16px; font-weight: 800; letter-spacing: -0.3px; }
+.journey-card p { max-width: 290px; margin: 0; color: #7d899c; font-size: 11px; line-height: 1.85; }
+.journey-card-arrow { position: absolute; top: 22px; right: 23px; color: #a1add0; }
+.cta-section { padding: 20px 0 100px; background: #f7f9fd; }
+.cta-card { position: relative; min-height: 330px; display: flex; align-items: center; justify-content: space-between; gap: 35px; padding: 48px 65px; border-radius: 24px; background: linear-gradient(115deg, #15294d, #203d79 68%, #3659ad); overflow: hidden; }
+.cta-content { position: relative; z-index: 2; max-width: 570px; }
+.cta-eyebrow { display: inline-flex; align-items: center; gap: 8px; color: #bdcbff; font-size: 9px; font-weight: 800; letter-spacing: 1.4px; }
+.cta-content h2 { margin: 18px 0 14px; color: #fff; font-family: "Manrope", sans-serif; font-size: clamp(32px, 4.2vw, 46px); font-weight: 800; line-height: 1.18; letter-spacing: -1.7px; }
+.cta-content p { max-width: 450px; margin: 0; color: #c4d0e9; font-size: 12px; line-height: 1.9; }
+.cta-button { min-height: 47px; display: inline-flex; align-items: center; gap: 10px; margin-top: 24px; padding: 0 18px; border: 0; border-radius: 10px; background: #fff; color: #24448d; font-size: 11px; font-weight: 800; transition: transform 0.2s ease; }
+.cta-button:hover { transform: translateY(-2px); }
+.cta-symbol { position: relative; z-index: 2; width: 170px; height: 170px; display: grid; place-items: center; flex-shrink: 0; border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 43px; background: rgba(255, 255, 255, 0.08); color: #e0e8ff; transform: rotate(-8deg); }
+.cta-decoration { position: absolute; border: 1px solid rgba(255, 255, 255, 0.09); border-radius: 50%; pointer-events: none; }
+.cta-decoration-one { top: -190px; right: 70px; width: 480px; height: 480px; }
+.cta-decoration-two { top: -100px; right: 140px; width: 310px; height: 310px; }
+.site-footer { background: #fff; }
+.footer-main { display: grid; grid-template-columns: 1.5fr 0.8fr 0.8fr 1fr; gap: 45px; padding-top: 62px; padding-bottom: 45px; }
+.footer-brand-column > p { max-width: 270px; margin: 17px 0 0; color: #8290a5; font-size: 11px; line-height: 1.9; }
+.footer-column { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+.footer-column h4 { margin: 4px 0 7px; color: #263650; font-size: 12px; font-weight: 800; }
+.footer-column > button { padding: 0; border: 0; background: transparent; color: #7f8ba0; font-size: 10px; text-align: left; }
+.footer-column > button:hover { color: var(--blue); }
+.footer-help > div { display: flex; align-items: flex-start; gap: 7px; color: #7f8ba0; font-size: 10px; line-height: 1.6; }
+.footer-help svg { flex-shrink: 0; color: #3b9c76; }
+.footer-bottom { min-height: 66px; display: flex; align-items: center; justify-content: space-between; gap: 15px; border-top: 1px solid #edf0f5; color: #9aa4b3; font-size: 10px; }
+.toast-message { position: fixed; right: 22px; bottom: 22px; z-index: 100; max-width: min(420px, calc(100% - 32px)); display: flex; align-items: center; gap: 11px; padding: 14px 16px; border: 1px solid #e1e8f3; border-radius: 13px; background: #fff; box-shadow: 0 15px 40px rgba(23, 40, 74, 0.16); color: #3c9c76; animation: toast-enter 0.2s ease-out; }
+.toast-message > span { flex: 1; color: #45546c; font-size: 11px; line-height: 1.6; }
+.toast-message > button { display: grid; place-items: center; padding: 3px; border: 0; background: transparent; color: #8b96a7; }
+@keyframes toast-enter { from { opacity: 0; transform: translateY(8px); }
+to { opacity: 1; transform: translateY(0); } }
