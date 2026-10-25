@@ -1373,3 +1373,875 @@ journey-card { position: relative; min-height: 205px; padding: 25px; border: 1px
 .toast-message > button { display: grid; place-items: center; padding: 3px; border: 0; background: transparent; color: #8b96a7; }
 @keyframes toast-enter { from { opacity: 0; transform: translateY(8px); }
 to { opacity: 1; transform: translateY(0); } }
+/* =========================================
+RESPONSIVE LAYOUTS
+========================================= */
+
+@media (min-width: 1400px) {
+.hero {
+padding-top: 105px;
+}
+
+.hero-grid {
+gap: 75px;
+}
+}
+
+@media (max-width: 1100px) {
+.container {
+width: min(100% - 40px, 1000px);
+}
+
+.nav-links {
+gap: 18px;
+}
+
+.nav-container {
+gap: 18px;
+}
+
+.hero-grid {
+gap: 30px;
+}
+
+.hero-copy h1 {
+font-size: clamp(40px, 5.2vw, 57px);
+letter-spacing: -2.5px;
+}
+
+.hero-visual {
+min-height: 430px;
+}
+
+.floating-note-top {
+right: -8px;
+}
+
+.academy-grid {
+gap: 55px;
+}
+
+.footer-main {
+gap: 28px;
+}
+
+.cta-card {
+padding: 45px;
+}
+}
+
+@media (max-width: 850px) {
+.section-padding {
+padding: 78px 0;
+}
+
+.nav-container {
+min-height: 72px;
+}
+
+.nav-links {
+gap: 14px;
+}
+
+.nav-links > button {
+font-size: 11px;
+}
+
+.nav-actions {
+gap: 12px;
+}
+
+.get-started-button {
+padding: 11px 12px;
+font-size: 11px;
+}
+
+.brand-name {
+font-size: 23px;
+}
+
+.brand-symbol {
+width: 33px;
+height: 33px;
+}
+
+.hero {
+padding-top: 65px;
+}
+
+.hero-grid {
+grid-template-columns: 1fr 0.9fr;
+gap: 15px;
+}
+
+.hero-copy h1 {
+font-size: clamp(37px, 5vw, 47px);
+letter-spacing: -2px;
+}
+
+.hero-description {
+font-size: 13px;
+}
+
+.hero-actions {
+gap: 9px;
+}
+
+.primary-button,
+.secondary-button {
+min-height: 45px;
+padding-inline: 12px;
+font-size: 11px;
+}
+
+.hero-visual {
+min-height: 390px;
+padding-inline: 0;
+}
+
+.visual-card-main {
+padding: 18px;
+}
+
+.visual-card-heading h3 {
+font-size: 17px;
+}
+
+.floating-note {
+padding: 10px;
+}
+
+.floating-note-top {
+right: -10px;
+}
+
+.floating-note-bottom {
+left: -10px;
+}
+
+.category-grid {
+grid-template-columns: repeat(3, minmax(0, 1fr));
+gap: 12px;
+}
+
+.category-card {
+min-height: 165px;
+padding: 17px;
+}
+
+.category-arrow {
+top: 18px;
+right: 15px;
+}
+
+.category-detail {
+max-width: 145px;
+line-height: 1.6;
+}
+
+.opportunity-grid {
+grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.listing-card h3 {
+min-height: auto;
+}
+
+.listing-description {
+min-height: 65px;
+}
+
+.academy-grid {
+grid-template-columns: 1fr 1fr;
+gap: 35px;
+}
+
+.academy-art {
+min-height: 390px;
+padding: 15px;
+}
+
+.academy-window-content {
+padding: 16px;
+}
+
+.academy-floating {
+right: -10px;
+bottom: 20px;
+}
+
+.academy-copy h2 {
+font-size: 34px;
+letter-spacing: -1.4px;
+}
+
+.journey-grid {
+gap: 12px;
+}
+
+.journey-card {
+padding: 19px;
+}
+
+.journey-card h3 {
+font-size: 14px;
+}
+
+.cta-symbol {
+width: 120px;
+height: 120px;
+}
+
+.cta-symbol svg {
+width: 60px;
+height: 60px;
+}
+
+.footer-main {
+grid-template-columns: 1.3fr 1fr 1fr;
+gap: 35px;
+}
+
+.footer-help {
+grid-column: 2 / 4;
+}
+}
+
+/* =========================================
+MOBILE NAVIGATION AND TABLET
+========================================= */
+
+@media (max-width: 650px) {
+.container {
+width: calc(100% - 36px);
+}
+
+.section-padding {
+padding: 65px 0;
+}
+
+.announcement {
+flex-wrap: wrap;
+gap: 6px;
+padding: 9px 12px;
+font-size: 10px;
+line-height: 1.6;
+}
+
+.announcement button {
+font-size: 10px;
+}
+
+.nav-container {
+min-height: 68px;
+gap: 10px;
+}
+
+.brand {
+gap: 8px;
+}
+
+.brand-name {
+font-size: 24px;
+}
+
+.brand-symbol {
+width: 34px;
+height: 34px;
+}
+
+.nav-actions {
+margin-left: auto;
+}
+
+.nav-actions .signin-button {
+display: none;
+}
+
+.get-started-button {
+min-height: 38px;
+gap: 5px;
+padding: 0 10px;
+font-size: 10px;
+}
+
+.menu-toggle {
+width: 38px;
+height: 38px;
+display: grid;
+place-items: center;
+flex-shrink: 0;
+border: 1px solid #e6ebf4;
+border-radius: 10px;
+background: #fff;
+color: #263650;
+}
+
+.nav-links {
+position: absolute;
+top: calc(100% + 1px);
+left: 0;
+right: 0;
+display: none;
+align-items: stretch;
+gap: 0;
+padding: 12px 18px 18px;
+border-bottom: 1px solid #e8ecf4;
+background: #fff;
+box-shadow: 0 18px 30px rgba(23, 40, 74, 0.08);
+}
+
+.nav-links.nav-open {
+display: flex;
+flex-direction: column;
+}
+
+.nav-links > button {
+width: 100%;
+padding: 14px 8px;
+border-bottom: 1px solid #f0f2f7;
+color: #45546c;
+font-size: 13px;
+text-align: left;
+}
+
+.nav-links > button:last-child {
+border-bottom: 0;
+}
+
+.nav-links > .mobile-signin {
+display: block;
+color: #4263eb;
+}
+
+.hero {
+padding: 48px 0 25px;
+}
+
+.hero-grid {
+grid-template-columns: 1fr;
+gap: 15px;
+}
+
+.hero-copy {
+padding: 0;
+}
+
+.hero-badge {
+gap: 7px;
+padding: 8px 10px;
+font-size: 10px;
+}
+
+.hero-copy h1 {
+margin: 23px 0 16px;
+font-size: clamp(39px, 10vw, 53px);
+line-height: 1.13;
+letter-spacing: -2.4px;
+}
+
+.hero-description {
+max-width: 480px;
+font-size: 13px;
+line-height: 1.85;
+}
+
+.hero-actions {
+display: grid;
+grid-template-columns: 1fr;
+gap: 10px;
+margin-top: 23px;
+}
+
+.hero-actions button {
+width: 100%;
+min-height: 48px;
+font-size: 12px;
+}
+
+.hero-trust {
+margin-top: 25px;
+}
+
+.hero-visual {
+min-height: 395px;
+margin-top: 4px;
+padding: 37px 5px 32px;
+}
+
+.visual-topline {
+top: 9px;
+left: 8%;
+font-size: 8px;
+}
+
+.visual-card-main {
+width: min(100%, 370px);
+padding: 20px;
+}
+
+.visual-card-heading h3 {
+font-size: 19px;
+}
+
+.visual-progress {
+margin-top: 20px;
+padding: 14px;
+}
+
+.floating-note-top {
+top: 36px;
+right: -4px;
+}
+
+.floating-note-bottom {
+bottom: 10px;
+left: -3px;
+}
+
+.floating-note {
+gap: 8px;
+padding: 9px 10px;
+}
+
+.floating-note-icon,
+.floating-check {
+width: 30px;
+height: 30px;
+}
+
+.floating-note strong {
+font-size: 9px;
+}
+
+.floating-note span:last-child {
+font-size: 8px;
+}
+
+.hero-bottom {
+align-items: flex-start;
+padding-top: 20px;
+}
+
+.hero-bottom > span {
+max-width: 190px;
+font-size: 8px;
+line-height: 1.8;
+letter-spacing: 1.1px;
+}
+
+.hero-bottom button {
+font-size: 10px;
+white-space: nowrap;
+}
+
+.section-heading {
+align-items: flex-start;
+flex-direction: column;
+gap: 16px;
+margin-bottom: 27px;
+}
+
+.eyebrow {
+margin-bottom: 10px;
+font-size: 9px;
+letter-spacing: 1.5px;
+}
+
+.section-heading h2,
+.journey-intro h2 {
+font-size: clamp(28px, 7.5vw, 36px);
+letter-spacing: -1.2px;
+}
+
+.section-heading p {
+margin-top: 11px;
+font-size: 12px;
+}
+
+.category-grid {
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap: 11px;
+}
+
+.category-card {
+min-height: 157px;
+padding: 15px;
+border-radius: 13px;
+}
+
+.category-icon {
+width: 39px;
+height: 39px;
+margin-bottom: 14px;
+border-radius: 11px;
+}
+
+.category-icon svg {
+width: 20px;
+height: 20px;
+}
+
+.category-name {
+font-size: 13px;
+}
+
+.category-detail {
+max-width: 130px;
+font-size: 10px;
+}
+
+.category-arrow {
+top: 15px;
+right: 12px;
+}
+
+.opportunity-toolbar {
+align-items: stretch;
+flex-direction: column;
+gap: 12px;
+}
+
+.search-box {
+min-height: 47px;
+}
+
+.filter-wrap {
+align-items: center;
+justify-content: space-between;
+}
+
+.select-wrap {
+flex: 1;
+max-width: 230px;
+}
+
+.select-wrap select {
+width: 100%;
+min-height: 44px;
+}
+
+.opportunity-grid {
+grid-template-columns: 1fr;
+gap: 14px;
+}
+
+.listing-card {
+padding: 19px;
+}
+
+.listing-card-top {
+margin-bottom: 17px;
+}
+
+.listing-card h3 {
+font-size: 16px;
+}
+
+.listing-description {
+min-height: auto;
+margin-bottom: 15px;
+font-size: 11px;
+}
+
+.listing-tags {
+margin-bottom: 16px;
+}
+
+.listing-card-bottom {
+flex-wrap: wrap;
+}
+
+.verification-notice {
+gap: 10px;
+padding: 14px;
+}
+
+.verification-notice p {
+font-size: 10px;
+}
+
+.academy-grid {
+grid-template-columns: 1fr;
+gap: 45px;
+}
+
+.academy-art {
+min-height: 370px;
+padding: 15px;
+border-radius: 19px;
+}
+
+.academy-window {
+width: 100%;
+max-width: 390px;
+}
+
+.academy-window-content {
+padding: 18px;
+}
+
+.academy-window-content h3 {
+font-size: 22px;
+}
+
+.academy-floating {
+right: -4px;
+bottom: 17px;
+padding: 11px;
+}
+
+.academy-floating strong {
+font-size: 10px;
+}
+
+.academy-floating span {
+font-size: 8px;
+}
+
+.academy-copy h2 {
+font-size: clamp(31px, 8vw, 40px);
+letter-spacing: -1.5px;
+}
+
+.academy-copy > p {
+font-size: 12px;
+}
+
+.academy-benefits {
+gap: 13px;
+}
+
+.academy-benefits > div {
+font-size: 11px;
+}
+
+.journey-intro {
+margin-bottom: 30px;
+text-align: left;
+}
+
+.journey-intro > p {
+margin-top: 14px;
+font-size: 12px;
+}
+
+.journey-grid {
+grid-template-columns: 1fr;
+gap: 12px;
+}
+
+.journey-card {
+min-height: auto;
+padding: 22px;
+}
+
+.journey-card h3 {
+margin-top: 15px;
+font-size: 15px;
+}
+
+.journey-card p {
+max-width: 100%;
+font-size: 11px;
+}
+
+.cta-section {
+padding: 0 0 65px;
+}
+
+.cta-card {
+min-height: auto;
+padding: 32px 24px;
+border-radius: 19px;
+}
+
+.cta-content {
+max-width: 100%;
+}
+
+.cta-eyebrow {
+font-size: 8px;
+line-height: 1.7;
+letter-spacing: 1px;
+}
+
+.cta-content h2 {
+font-size: clamp(30px, 8vw, 39px);
+letter-spacing: -1.3px;
+}
+
+.cta-content p {
+font-size: 11px;
+}
+
+.cta-symbol {
+display: none;
+}
+
+.cta-decoration-one {
+right: -300px;
+}
+
+.cta-decoration-two {
+right: -180px;
+}
+
+.footer-main {
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap: 32px 22px;
+padding-top: 42px;
+padding-bottom: 35px;
+}
+
+.footer-brand-column {
+grid-column: 1 / -1;
+}
+
+.footer-brand-column > p {
+max-width: 340px;
+font-size: 11px;
+}
+
+.footer-column {
+gap: 12px;
+}
+
+.footer-column h4 {
+font-size: 11px;
+}
+
+.footer-column > button,
+.footer-help > div {
+font-size: 10px;
+}
+
+.footer-help {
+grid-column: auto;
+}
+
+.footer-bottom {
+align-items: flex-start;
+flex-direction: column;
+justify-content: center;
+gap: 8px;
+padding-top: 17px;
+padding-bottom: 17px;
+font-size: 9px;
+}
+
+.toast-message {
+right: 12px;
+bottom: 12px;
+gap: 8px;
+padding: 12px;
+}
+
+.toast-message > span {
+font-size: 10px;
+}
+}
+
+/* =========================================
+SMALL PHONES
+========================================= */
+
+@media (max-width: 380px) {
+.container {
+width: calc(100% - 28px);
+}
+
+.brand-name {
+font-size: 21px;
+}
+
+.brand-symbol {
+width: 31px;
+height: 31px;
+}
+
+.get-started-button {
+padding: 0 8px;
+font-size: 9px;
+}
+
+.menu-toggle {
+width: 34px;
+height: 36px;
+}
+
+.hero-copy h1 {
+font-size: 37px;
+letter-spacing: -1.9px;
+}
+
+.visual-card-main {
+padding: 16px;
+}
+
+.visual-card-heading h3 {
+font-size: 17px;
+}
+
+.progress-label {
+flex-wrap: wrap;
+}
+
+.category-card {
+padding: 12px;
+}
+
+.category-name {
+font-size: 12px;
+}
+
+.category-detail {
+font-size: 9px;
+}
+
+.academy-art {
+min-height: 350px;
+padding: 10px;
+}
+
+.academy-window-content {
+padding: 14px;
+}
+
+.academy-window-content h3 {
+font-size: 20px;
+}
+
+.learning-path {
+gap: 8px;
+}
+
+.learning-path strong {
+font-size: 9px;
+}
+
+.academy-floating {
+gap: 7px;
+right: -5px;
+padding: 9px;
+}
+
+.cta-card {
+padding: 28px 19px;
+}
+}
+
+/* =========================================
+REDUCED MOTION AND ACCESSIBILITY
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+*,
+*::before,
+*::after {
+scroll-behavior: auto !important;
+animation-duration: 0.01ms !important;
+animation-iteration-count: 1 !important;
+transition-duration: 0.01ms !important;
+}
+  }
