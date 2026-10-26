@@ -1,741 +1,627 @@
 import { useState } from "react";
 import {
-ArrowDown,
-ArrowRight,
-ArrowUpRight,
-BookOpen,
-BriefcaseBusiness,
-CheckCircle2,
-ChevronDown,
-GraduationCap,
-Menu,
-Search,
-Sparkles,
-Trophy,
-Wallet,
-X,
+  ArrowDownRight,
+  ArrowRight,
+  ArrowUpRight,
+  Bookmark,
+  BriefcaseBusiness,
+  CheckCircle2,
+  ChevronDown,
+  Clock3,
+  GraduationCap,
+  Heart,
+  Menu,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  Trophy,
+  Users,
+  Wallet,
+  X,
+  BookOpen,
+  Globe2,
+  Lightbulb,
+  Mail,
+  MapPin,
+  CalendarDays,
 } from "lucide-react";
 
 const categories = [
-{ name: "Jobs", detail: "Find your next career move", icon: BriefcaseBusiness, color: "blue" },
-{ name: "Scholarships", detail: "Explore education funding", icon: GraduationCap, color: "purple" },
-{ name: "Grants", detail: "Discover funding opportunities", icon: Wallet, color: "orange" },
-{ name: "Internships", detail: "Gain real-world experience", icon: Sparkles, color: "pink" },
-{ name: "Training", detail: "Learn valuable new skills", icon: BookOpen, color: "cyan" },
-{ name: "Competitions", detail: "Show what you can do", icon: Trophy, color: "yellow" },
+  {
+    name: "Scholarships",
+    description: "Fund your education",
+    icon: GraduationCap,
+    color: "blue",
+    count: "Explore scholarships",
+  },
+  {
+    name: "Jobs",
+    description: "Start your career",
+    icon: BriefcaseBusiness,
+    color: "purple",
+    count: "Explore job openings",
+  },
+  {
+    name: "Grants",
+    description: "Funding for your ideas",
+    icon: Wallet,
+    color: "orange",
+    count: "Explore available grants",
+  },
+  {
+    name: "Internships",
+    description: "Gain real experience",
+    icon: Users,
+    color: "green",
+    count: "Explore internships",
+  },
+  {
+    name: "Training",
+    description: "Learn valuable skills",
+    icon: BookOpen,
+    color: "pink",
+    count: "Explore training",
+  },
+  {
+    name: "Competitions",
+    description: "Show what you can do",
+    icon: Trophy,
+    color: "yellow",
+    count: "Explore competitions",
+  },
 ];
 
 const opportunities = [
-{
-id: 1,
-type: "Scholarship",
-title: "NNPC–SNEPCo National University Scholarship",
-organisation: "NNPC Limited & SNEPCo",
-location: "Nigeria",
-deadline: "30 November 2026",
-description: "Scholarship opportunity for eligible Nigerian undergraduates. Review the official requirements before applying.",
-tags: ["Undergraduates", "Education"],
-officialUrl: "https://candidate.scholastica.ng/schemes/NNPCLTDSNEPCo26",
-category: "Scholarships",
-status: "Check eligibility",
-},
-{
-id: 2,
-type: "Career",
-title: "Explore UNICEF Career Opportunities",
-organisation: "UNICEF",
-location: "Nigeria",
-deadline: "Varies by vacancy",
-description: "Explore vacancies on UNICEF's official careers portal and confirm each role's location and deadline.",
-tags: ["Career", "Various roles"],
-officialUrl: "https://jobs.unicef.org/en-us/search/?location=nigeria&search-keyword=",
-category: "Jobs",
-status: "Check vacancies",
-},
-{
-id: 3,
-type: "Training",
-title: "Federal Digital Training Academy",
-organisation: "Digital Training Academy",
-location: "Nigeria",
-deadline: "Check official website",
-description: "Visit the official portal to check available digital skills programmes and whether registration is open.",
-tags: ["Digital skills", "Learning"],
-officialUrl: "https://www.dta.education.gov.ng/",
-category: "Training",
-status: "Check availability",
-},
+  {
+    id: 1,
+    category: "Scholarships",
+    title: "NNPC/SNEPCo National University Scholarship",
+    organization: "NNPC Limited & SNEPCo",
+    description:
+      "An undergraduate scholarship opportunity for eligible Nigerian students.",
+    location: "Nigeria",
+    deadline: "30 Nov 2026",
+    type: "Scholarship",
+    badge: "Scholarship",
+    color: "blue",
+    url: "https://candidate.scholastica.ng/schemes/NNPCLTDSNEPCo26",
+    featured: true,
+  },
+  {
+    id: 2,
+    category: "Jobs",
+    title: "Explore Careers with UNICEF",
+    organization: "UNICEF",
+    description:
+      "Explore professional opportunities supporting children and communities.",
+    location: "Various locations",
+    deadline: "Check official listing",
+    type: "Career",
+    badge: "Career",
+    color: "purple",
+    url: "https://jobs.unicef.org/",
+    featured: true,
+  },
+  {
+    id: 3,
+    category: "Training",
+    title: "Federal Digital Training Opportunities",
+    organization: "Digital Skills & Training",
+    description:
+      "Discover digital skills programmes that can help you prepare for the modern workplace.",
+    location: "Online / Nigeria",
+    deadline: "Check official listing",
+    type: "Training",
+    badge: "Training",
+    color: "green",
+    url: "https://www.nitda.gov.ng/",
+    featured: false,
+  },
+  {
+    id: 4,
+    category: "Grants",
+    title: "SME Funding and Support Opportunities",
+    organization: "SME Support Resources",
+    description:
+      "Find official information about funding and support programmes for small businesses.",
+    location: "Nigeria",
+    deadline: "Varies by programme",
+    type: "Funding",
+    badge: "Business",
+    color: "orange",
+    url: "https://www.smedan.gov.ng/",
+    featured: false,
+  },
+  {
+    id: 5,
+    category: "Internships",
+    title: "Discover UN Internship Opportunities",
+    organization: "United Nations",
+    description:
+      "Explore internship listings and learn about eligibility requirements.",
+    location: "Various locations",
+    deadline: "Check official listing",
+    type: "Internship",
+    badge: "Internship",
+    color: "pink",
+    url: "https://careers.un.org/",
+    featured: false,
+  },
+  {
+    id: 6,
+    category: "Competitions",
+    title: "Innovation and Entrepreneurship Opportunities",
+    organization: "Innovation Programmes",
+    description:
+      "Discover programmes and competitions for people building new ideas and solutions.",
+    location: "Nigeria / Global",
+    deadline: "Varies by programme",
+    type: "Competition",
+    badge: "Innovation",
+    color: "yellow",
+    url: "https://www.tonyelumelufoundation.org/",
+    featured: false,
+  },
 ];
 
-const features = [
-{
-number: "01",
-title: "Discover opportunities",
-text: "Explore jobs, scholarships, grants and more in one organised place.",
-},
-{
-number: "02",
-title: "Build valuable skills",
-text: "Learn practical digital skills through our growing learning academy.",
-},
-{
-number: "03",
-title: "Move forward confidently",
-text: "Find official application links and clear information to plan your next step.",
-},
+const academyCourses = [
+  {
+    number: "01",
+    title: "AI for Beginners",
+    description:
+      "Understand artificial intelligence and learn how to use AI tools productively.",
+    level: "Beginner",
+    icon: Sparkles,
+  },
+  {
+    number: "02",
+    title: "Web Development",
+    description:
+      "Learn the foundations of websites, coding, and building digital products.",
+    level: "Beginner friendly",
+    icon: Globe2,
+  },
+  {
+    number: "03",
+    title: "Digital Skills for Work",
+    description:
+      "Build practical digital skills that can support your career and business.",
+    level: "All levels",
+    icon: Lightbulb,
+  },
 ];
-
-function Brand({ onClick }) {
-return (
-<button className="brand" onClick={onClick} aria-label="Nextora home">
-<span className="brand-symbol">
-<ArrowUpRight size={23} strokeWidth={2.8} />
-</span>
-<span className="brand-name">nextora<span>.</span></span>
-</button>
-);
-}
-
-function SectionHeading({ eyebrow, title, description, action }) {
-return (
-<div className="section-heading">
-<div>
-<span className="eyebrow">{eyebrow}</span>
-<h2>{title}</h2>
-{description && <p>{description}</p>}
-</div>
-{action}
-</div>
-);
-}
 
 function App() {
-const [search, setSearch] = useState("");
-const [activeCategory, setActiveCategory] = useState("All");
-const [mobileMenu, setMobileMenu] = useState(false);
-const [saved, setSaved] = useState([]);
-const [notice, setNotice] = useState("");
+  const [mobileMenu, setMobileMenu] = useState(false);
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [searchText, setSearchText] = useState("");
+  const [saved, setSaved] = useState([]);
+  const [toast, setToast] = useState("");
+  const [showAll, setShowAll] = useState(false);
 
-const visibleOpportunities = opportunities.filter((item) => {
-const matchesCategory =
-activeCategory === "All" || item.category === activeCategory;
+  const notify = (message) => {
+    setToast(message);
+    window.clearTimeout(window.nextoraToastTimer);
+    window.nextoraToastTimer = window.setTimeout(() => setToast(""), 3000);
+  };
 
-const text = [
-  item.title,
-  item.organisation,
-  item.description,
-  item.category,
-  ...item.tags,
-]
-  .join(" ")
-  .toLowerCase();
+  const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    setMobileMenu(false);
+  };
 
-return matchesCategory && text.includes(search.toLowerCase());
+  const toggleSave = (id) => {
+    const alreadySaved = saved.includes(id);
 
-});
+    setSaved((previous) =>
+      alreadySaved
+        ? previous.filter((item) => item !== id)
+        : [...previous, id]
+    );
 
-function showNotice(message) {
-setNotice(message);
-window.setTimeout(() => setNotice(""), 3000);
-}
+    notify(
+      alreadySaved
+        ? "Opportunity removed from your saved list."
+        : "Opportunity saved on this device for this session."
+    );
+  };
 
-function goTo(id) {
-setMobileMenu(false);
-document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-}
+  const filteredOpportunities = opportunities.filter((item) => {
+    const matchesCategory =
+      activeCategory === "All" || item.category === activeCategory;
 
-function toggleSaved(id) {
-setSaved((current) =>
-current.includes(id)
-? current.filter((item) => item !== id)
-: [...current, id]
-);
-showNotice(
-saved.includes(id)
-? "Opportunity removed from this session's saved list."
-: "Opportunity saved for this session."
-);
-}
+    const query = searchText.trim().toLowerCase();
 
-return (
-<div className="app-shell">
-<div className="announcement">
-<span className="announcement-dot" />
-Your next opportunity could change everything.
-<button onClick={() => goTo("opportunities")}>
-Explore opportunities <ArrowRight size={14} />
-</button>
-</div>
+    const matchesSearch =
+      !query ||
+      item.title.toLowerCase().includes(query) ||
+      item.organization.toLowerCase().includes(query) ||
+      item.category.toLowerCase().includes(query) ||
+      item.description.toLowerCase().includes(query);
 
-  <header className="site-header">
-    <div className="container nav-container">
-      <Brand onClick={() => goTo("home")} />
+    return matchesCategory && matchesSearch;
+  });
 
-      <nav className={mobileMenu ? "nav-links nav-open" : "nav-links"}>
-        <button onClick={() => goTo("home")}>Home</button>
-        <button onClick={() => goTo("opportunities")}>
-          Opportunities
-        </button>
-        <button onClick={() => goTo("academy")}>Academy</button>
-        <button onClick={() => goTo("about")}>About</button>
-        <button className="mobile-signin" onClick={() => showNotice("Account sign-in will be added in a future development step.")}>
-          Sign in
-        </button>
-      </nav>
+  const displayedOpportunities = showAll
+    ? filteredOpportunities
+    : filteredOpportunities.slice(0, 3);
 
-      <div className="nav-actions">
-        <button
-          className="signin-button"
-          onClick={() =>
-            showNotice("Account sign-in will be added in a future development step.")
-          }
-        >
-          Sign in
-        </button>
-        <button
-          className="get-started-button"
-          onClick={() => goTo("opportunities")}
-        >
-          Get started <ArrowUpRight size={16} />
-        </button>
-      </div>
-
-      <button
-        className="menu-toggle"
-        aria-label={mobileMenu ? "Close menu" : "Open menu"}
-        onClick={() => setMobileMenu((open) => !open)}
-      >
-        {mobileMenu ? <X size={23} /> : <Menu size={23} />}
-      </button>
-    </div>
-  </header>
-
-  <main>
-    <section className="hero" id="home">
-      <div className="hero-orb hero-orb-one" />
-      <div className="hero-orb hero-orb-two" />
-
-      <div className="container hero-grid">
-        <div className="hero-copy">
-          <div className="hero-badge">
-            <Sparkles size={15} />
-            <span>Opportunities meet preparation</span>
-          </div>
-
-          <h1>
-            Your next chapter
-            <br />
-            starts <span>right here.</span>
-          </h1>
-
-          <p className="hero-description">
-            Discover opportunities. Develop skills. Build the future you
-            deserve. Your journey to something greater starts with Nextora.
-          </p>
-
-          <div className="hero-actions">
-            <button
-              className="primary-button"
-              onClick={() => goTo("opportunities")}
-            >
-              Explore opportunities <ArrowRight size={17} />
-            </button>
-            <button
-              className="secondary-button"
-              onClick={() => goTo("academy")}
-            >
-              Discover the Academy <BookOpen size={17} />
-            </button>
-          </div>
-
-          <div className="hero-trust">
-            <div className="trust-icon">
-              <CheckCircle2 size={18} />
-            </div>
-            <div>
-              <strong>Start with clarity</strong>
-              <span>Official links. Clear next steps.</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="hero-visual">
-          <div className="visual-topline">
-            <span className="live-indicator" />
-            YOUR FUTURE, IN FOCUS
-          </div>
-
-          <div className="visual-card visual-card-main">
-            <div className="visual-card-heading">
-              <div>
-                <span className="mini-label">YOUR NEXT MOVE</span>
-                <h3>Make room for more.</h3>
-              </div>
-              <div className="visual-sparkle">
-                <Sparkles size={20} />
-              </div>
-            </div>
-
-            <div className="visual-progress">
-              <div className="progress-label">
-                <span>Your growth journey</span>
-                <strong>Just beginning</strong>
-              </div>
-              <div className="progress-track">
-                <div className="progress-fill" />
-              </div>
-              <span className="progress-caption">
-                One discovery can open a new door.
-              </span>
-            </div>
-
-            <div className="visual-opportunity">
-              <div className="opportunity-icon blue-icon">
-                <GraduationCap size={22} />
-              </div>
-              <div>
-                <strong>Learn something new</strong>
-                <span>Skills that move you forward</span>
-              </div>
-              <ArrowUpRight size={19} />
-            </div>
-
-            <div className="visual-opportunity">
-              <div className="opportunity-icon purple-icon">
-                <BriefcaseBusiness size={21} />
-              </div>
-              <div>
-                <strong>Find your next step</strong>
-                <span>Opportunities worth exploring</span>
-              </div>
-              <ArrowUpRight size={19} />
-            </div>
-          </div>
-
-          <div className="floating-note floating-note-top">
-            <span className="floating-note-icon">
-              <Sparkles size={17} />
-            </span>
-            <div>
-              <strong>Possibility starts here</strong>
-              <span>Discover. Prepare. Progress.</span>
-            </div>
-          </div>
-
-          <div className="floating-note floating-note-bottom">
-            <span className="floating-check">
-              <CheckCircle2 size={19} />
-            </span>
-            <div>
-              <strong>Your next chapter</strong>
-              <span>Begins with one step</span>
-            </div>
-          </div>
-
-          <div className="visual-decoration decoration-one" />
-          <div className="visual-decoration decoration-two" />
-        </div>
-      </div>
-
-      <div className="container hero-bottom">
-        <span>ONE PLATFORM. MORE POSSIBILITIES.</span>
-        <button onClick={() => goTo("categories")}>
-          Find your path <ArrowDown size={15} />
-        </button>
-      </div>
-    </section>
-
-    <section className="categories-section section-padding" id="categories">
-      <div className="container">
-        <SectionHeading
-          eyebrow="A WORLD OF POSSIBILITIES"
-          title="What are you looking for?"
-          description="Start with what matters to you. We'll help you find where to look next."
-        />
-
-        <div className="category-grid">
-          {categories.map((category) => {
-            const Icon = category.icon;
-            return (
-              <button
-                className="category-card"
-                key={category.name}
-                onClick={() => {
-                  setActiveCategory(
-                    category.name === "Scholarships" ||
-                      category.name === "Grants" ||
-                      category.name === "Jobs" ||
-                      category.name === "Training"
-                      ? category.name
-                      : "All"
-                  );
-                  goTo("opportunities");
-                }}
-              >
-                <span className={`category-icon ${category.color}`}>
-                  <Icon size={23} />
-                </span>
-                <span className="category-name">{category.name}</span>
-                <span className="category-detail">{category.detail}</span>
-                <span className="category-arrow">
-                  <ArrowUpRight size={18} />
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-
-    <section className="opportunities-section section-padding" id="opportunities">
-      <div className="container">
-        <SectionHeading
-          eyebrow="YOUR NEXT OPPORTUNITY"
-          title="A good place to start."
-          description="Explore official opportunity sources and check the requirements before applying."
-          action={
-            <span className="listing-count">
-              {visibleOpportunities.length} featured sources
-            </span>
-          }
-        />
-
-        <div className="opportunity-toolbar">
-          <div className="search-box">
-            <Search size={19} />
-            <input
-              type="search"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search opportunities..."
-              aria-label="Search opportunities"
-            />
-            <span className="search-shortcut">Search</span>
-          </div>
-
-          <div className="filter-wrap">
-            <label htmlFor="category-filter">Category</label>
-            <div className="select-wrap">
-              <select
-                id="category-filter"
-                value={activeCategory}
-                onChange={(event) => setActiveCategory(event.target.value)}
-              >
-                <option value="All">All categories</option>
-                <option value="Jobs">Jobs</option>
-                <option value="Scholarships">Scholarships</option>
-                <option value="Grants">Grants</option>
-                <option value="Internships">Internships</option>
-                <option value="Training">Training</option>
-                <option value="Competitions">Competitions</option>
-              </select>
-              <ChevronDown size={16} />
-            </div>
-          </div>
-        </div>
-
-        <div className="opportunity-grid">
-          {visibleOpportunities.map((item) => (
-            <article className="listing-card" key={item.id}>
-              <div className="listing-card-top">
-                <span className="listing-type">{item.type}</span>
-                <button
-                  className={saved.includes(item.id) ? "save-button is-saved" : "save-button"}
-                  aria-label={
-                    saved.includes(item.id)
-                      ? "Remove saved opportunity"
-                      : "Save opportunity"
-                  }
-                  onClick={() => toggleSaved(item.id)}
-                >
-                  {saved.includes(item.id) ? "Saved ✓" : "＋ Save"}
-                </button>
-              </div>
-
-              <div className="organisation-name">{item.organisation}</div>
-              <h3>{item.title}</h3>
-              <p className="listing-description">{item.description}</p>
-
-              <div className="listing-tags">
-                {item.tags.map((tag) => (
-                  <span key={tag}>{tag}</span>
-                ))}
-              </div>
-
-              <div className="listing-deadline">
-                <span>Deadline / status</span>
-                <strong>{item.deadline}</strong>
-              </div>
-
-              <div className="listing-card-bottom">
-                <span className="status-note">{item.status}</span>
-                <a
-                  href={item.officialUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="listing-link"
-                >
-                  Official source <ArrowUpRight size={16} />
-                </a>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        {visibleOpportunities.length === 0 && (
-          <div className="empty-state">
-            <Search size={28} />
-            <h3>No matching opportunities</h3>
-            <p>Try another search or choose a different category.</p>
-            <button
-              className="secondary-button"
-              onClick={() => {
-                setSearch("");
-                setActiveCategory("All");
-              }}
-            >
-              Clear filters
-            </button>
-          </div>
-        )}
-
-        <div className="verification-notice">
-          <span className="verification-icon">
-            <CheckCircle2 size={20} />
+  return (
+    <div className="nextora-app">
+      <div className="announcement">
+        <div className="announcement-inner">
+          <Sparkles size={15} />
+          <span>
+            Your next opportunity could change everything.
           </span>
-          <p>
-            <strong>Always verify before applying.</strong> Listings link to
-            official sources. Confirm the current deadline, eligibility,
-            and application requirements on the provider's website.
-            Nextora does not charge application fees.
-          </p>
+          <button onClick={() => scrollTo("opportunities")}>
+            Start exploring <ArrowRight size={14} />
+          </button>
         </div>
       </div>
-    </section>
 
-    <section className="academy-section section-padding" id="academy">
-      <div className="container academy-grid">
-        <div className="academy-art">
-          <div className="academy-art-glow" />
-          <div className="academy-window">
-            <div className="academy-window-bar">
-              <span />
-              <span />
-              <span />
-              <strong>nextora academy</strong>
-            </div>
+      <header className="site-header">
+        <div className="nav-container">
+          <button
+            className="brand"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            aria-label="NEXTORA home"
+          >
+            <span className="brand-symbol">
+              <ArrowUpRight size={24} strokeWidth={2.6} />
+            </span>
+            <span className="brand-text">
+              NEXTORA
+              <small>WHERE OPPORTUNITIES BEGIN.</small>
+            </span>
+          </button>
 
-            <div className="academy-window-content">
-              <div className="academy-welcome">YOUR LEARNING SPACE</div>
-              <h3>Learn today.<br />Go further tomorrow.</h3>
-              <p>Small steps. Practical skills. Bigger possibilities.</p>
+          <nav className={`main-nav ${mobileMenu ? "nav-open" : ""}`}>
+            <button className="nav-link active" onClick={() => scrollTo("home")}>
+              Home
+            </button>
+            <button
+              className="nav-link"
+              onClick={() => scrollTo("opportunities")}
+            >
+              Opportunities
+            </button>
+            <button
+              className="nav-link"
+              onClick={() => scrollTo("academy")}
+            >
+              Academy
+            </button>
+            <button className="nav-link" onClick={() => scrollTo("about")}>
+              About
+            </button>
 
-              <div className="learning-path">
-                <div className="learning-icon">
-                  <Sparkles size={21} />
-                </div>
-                <div>
-                  <strong>AI for Beginners</strong>
-                  <span>Start with the fundamentals</span>
-                </div>
-                <ArrowUpRight size={18} />
-              </div>
+            <button
+              className="mobile-signin"
+              onClick={() =>
+                notify("Account registration is coming soon.")
+              }
+            >
+              Sign in <ArrowRight size={16} />
+            </button>
+          </nav>
 
-              <div className="learning-path">
-                <div className="learning-icon learning-icon-purple">
-                  <BookOpen size={21} />
-                </div>
-                <div>
-                  <strong>Web Development</strong>
-                  <span>Build your digital foundation</span>
-                </div>
-                <ArrowUpRight size={18} />
-              </div>
-
-              <div className="learning-path">
-                <div className="learning-icon learning-icon-orange">
-                  <Wallet size={21} />
-                </div>
-                <div>
-                  <strong>Digital Skills for Business</strong>
-                  <span>Put skills into practice</span>
-                </div>
-                <ArrowUpRight size={18} />
-              </div>
-            </div>
-          </div>
-
-          <div className="academy-floating">
-            <GraduationCap size={22} />
-            <div>
-              <strong>Keep growing</strong>
-              <span>Your journey, your pace</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="academy-copy">
-          <span className="eyebrow">INTRODUCING NEXTORA ACADEMY</span>
-          <h2>
-            Don't just find
-            <br />
-            opportunities.
-            <br />
-            <span>Get ready for them.</span>
-          </h2>
-          <p>
-            Opportunities are powerful. The right skills help you make the
-            most of them. Nextora Academy is designed to help you learn,
-            build confidence, and prepare for your next big step.
-          </p>
-
-          <div className="academy-benefits">
-            <div>
-              <CheckCircle2 size={19} />
-              <span>Beginner-friendly learning paths</span>
-            </div>
-            <div>
-              <CheckCircle2 size={19} />
-              <span>Practical digital and AI skills</span>
-            </div>
-            <div>
-              <CheckCircle2 size={19} />
-              <span>Learn at your own pace</span>
-            </div>
+          <div className="nav-actions">
+            <button
+              className="signin-button"
+              onClick={() => notify("Account registration is coming soon.")}
+            >
+              Sign in
+            </button>
+            <button
+              className="nav-cta"
+              onClick={() => scrollTo("opportunities")}
+            >
+              Get started <ArrowRight size={16} />
+            </button>
           </div>
 
           <button
-            className="primary-button"
-            onClick={() =>
-              showNotice("Academy courses and lessons will be developed in the next phase.")
-            }
+            className="menu-toggle"
+            onClick={() => setMobileMenu((open) => !open)}
+            aria-label={mobileMenu ? "Close menu" : "Open menu"}
+            aria-expanded={mobileMenu}
           >
-            Explore the Academy <ArrowRight size={17} />
+            {mobileMenu ? <X size={24} /> : <Menu size={24} />}
           </button>
-
-          <span className="academy-note">
-            Course enrolment and progress tracking are coming in a future phase.
-          </span>
         </div>
-      </div>
-    </section>
+      </header>
 
-   <div className="journey-section section-padding" id="about">
-      <div className="container">
-        <div className="journey-intro">
-          <span className="eyebrow">THE NEXTORA APPROACH</span>
-          <h2>
-            Your ambition deserves
-            <br />
-            <span>a clear path.</span>
-          </h2>
-          <p>
-            Finding an opportunity is one thing. Knowing what to do next
-            is another. We're building a platform that brings discovery
-            and preparation closer together.
-          </p>
-        </div>
+      <main>
+        <section className="hero-section" id="home">
+          <div className="hero-glow hero-glow-one" />
+          <div className="hero-glow hero-glow-two" />
 
-        <div className="journey-grid">
-          {features.map((feature) => (
-            <article className="journey-card" key={feature.number}>
-              <span className="journey-number">{feature.number}</span>
-              <h3>{feature.title}</h3>
-              <p>{feature.text}</p>
-              <span className="journey-card-arrow">
-                <ArrowUpRight size={19} />
-              </span>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
+          <div className="hero-container">
+            <div className="hero-content">
+              <div className="hero-eyebrow">
+                <span className="eyebrow-dot" />
+                YOUR FUTURE STARTS HERE
+              </div>
 
-    <section className="cta-section">
-      <div className="container">
-        <div className="cta-card">
-          <div className="cta-decoration cta-decoration-one" />
-          <div className="cta-decoration cta-decoration-two" />
+              <h1>
+                Big dreams.
+                <br />
+                <span>Real opportunities.</span>
+                <br />
+                One place.
+              </h1>
 
-          <div className="cta-content">
-            <span className="cta-eyebrow">
-              <Sparkles size={15} /> YOUR FUTURE IS WORTH EXPLORING
-            </span>
-            <h2>
-              Ready to discover
-              <br />
-              what's next?
-            </h2>
-            <p>
-              Take the first step. Find an opportunity, learn a skill, and
-              give your next chapter room to begin.
-            </p>
-            <button
-              className="cta-button"
-              onClick={() => goTo("opportunities")}
-            >
-              Start exploring <ArrowRight size={17} />
-            </button>
+              <p className="hero-description">
+                Discover scholarships, jobs, grants and learning
+                opportunities designed to help you move forward.
+              </p>
+
+              <form
+                className="hero-search"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  scrollTo("opportunities");
+                }}
+              >
+                <Search size={20} />
+                <input
+                  type="search"
+                  placeholder="What opportunity are you looking for?"
+                  value={searchText}
+                  onChange={(event) => setSearchText(event.target.value)}
+                  aria-label="Search opportunities"
+                />
+                <button type="submit">
+                  Search <ArrowRight size={17} />
+                </button>
+              </form>
+
+              <div className="popular-searches">
+                <span>Popular:</span>
+                {["Scholarships", "Remote jobs", "Grants"].map((item) => (
+                  <button
+                    key={item}
+                    onClick={() => {
+                      setSearchText(item === "Remote jobs" ? "Jobs" : item);
+                      setActiveCategory(item === "Remote jobs" ? "Jobs" : item);
+                      scrollTo("opportunities");
+                    }}
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+
+              <div className="hero-trust">
+                <div className="trust-icon">
+                  <ShieldCheck size={18} />
+                </div>
+                <span>
+                  Discover opportunities. Verify details. Apply with confidence.
+                </span>
+              </div>
+            </div>
+
+            <div className="hero-visual">
+              <div className="hero-photo-frame">
+                <img
+                  src="/images/nextora-hero.jpg"
+                  alt="A student ready to pursue new opportunities"
+                  className="hero-photo"
+                  fetchPriority="high"
+                />
+                <div className="hero-photo-overlay" />
+
+                <div className="hero-photo-caption">
+                  <span className="caption-kicker">YOUR NEXT CHAPTER</span>
+                  <strong>Make room for what’s possible.</strong>
+                  <span>One opportunity can open many doors.</span>
+                </div>
+              </div>
+
+              <div className="floating-card floating-card-top">
+                <div className="floating-icon scholarship-icon">
+                  <GraduationCap size={21} />
+                </div>
+                <div>
+                  <strong>Scholarships</strong>
+                  <span>Invest in your future</span>
+                </div>
+                <ArrowUpRight size={17} className="floating-arrow" />
+              </div>
+
+              <div className="floating-card floating-card-bottom">
+                <div className="floating-icon skill-icon">
+                  <Sparkles size={21} />
+                </div>
+                <div>
+                  <strong>Learn something new</strong>
+                  <span>Grow with Nextora Academy</span>
+                </div>
+                <CheckCircle2 size={19} className="floating-check" />
+              </div>
+
+              <div className="hero-orbit orbit-one" />
+              <div className="hero-orbit orbit-two" />
+            </div>
           </div>
-          <div className="cta-symbol">
-            <ArrowUpRight size={78} strokeWidth={1.2} />
+
+          <div className="hero-bottom">
+            <div className="hero-bottom-inner">
+              <span>OPPORTUNITIES FOR YOUR NEXT CHAPTER</span>
+              <div>
+                <span><GraduationCap size={17} /> Education</span>
+                <span><BriefcaseBusiness size={17} /> Career</span>
+                <span><Lightbulb size={17} /> Skills</span>
+                <span><Wallet size={17} /> Funding</span>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </section>
-  </main>
+        </section>
 
-  <footer className="site-footer">
-    <div className="container footer-main">
-      <div className="footer-brand-column">
-        <Brand onClick={() => goTo("home")} />
-        <p>
-          Where opportunities begin. Discover possibilities, develop
-          skills, and take your next step with confidence.
-        </p>
-      </div>
+        <section className="categories-section section-pad" id="categories">
+          <div className="section-container">
+            <div className="section-heading">
+              <div>
+                <span className="section-kicker">FIND YOUR PATH</span>
+                <h2>
+                  Opportunity looks
+                  <br className="desktop-break" /> different for everyone.
+                </h2>
+              </div>
+              <p>
+                Whatever your next step looks like, there’s a place to start.
+                Explore opportunities built around your ambitions.
+              </p>
+            </div>
 
-      <div className="footer-column">
-        <h4>Explore</h4>
-        <button onClick={() => goTo("opportunities")}>Opportunities</button>
-        <button onClick={() => goTo("categories")}>Categories</button>
-        <button onClick={() => goTo("academy")}>Nextora Academy</button>
-      </div>
+            <div className="category-grid">
+              {categories.map((category) => {
+                const Icon = category.icon;
 
-      <div className="footer-column">
-        <h4>About</h4>
-        <button onClick={() => goTo("about")}>Our mission</button>
-        <button onClick={() => showNotice("Contact information will be added before launch.")}>
-          Contact us
-        </button>
-        <button onClick={() => showNotice("Our opportunity review policy will be published before launch.")}>
-          How we review listings
-        </button>
-      </div>
+                return (
+                  <button
+                    className={`category-card category-${category.color}`}
+                    key={category.name}
+                    onClick={() => {
+                      setActiveCategory(category.name);
+                      setSearchText("");
+                      setShowAll(true);
+                      scrollTo("opportunities");
+                    }}
+                  >
+                    <span className="category-icon">
+                      <Icon size={25} strokeWidth={1.8} />
+                    </span>
+                    <span className="category-title">{category.name}</span>
+                    <span className="category-description">
+                      {category.description}
+                    </span>
+                    <span className="category-bottom">
+                      <span>{category.count}</span>
+                      <ArrowUpRight size={18} />
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </section>
 
-      <div className="footer-column footer-help">
-        <h4>Our promise</h4>
-        <div><CheckCircle2 size={16} /> Official source links</div>
-        <div><CheckCircle2 size={16} /> Clear information</div>
-        <div><CheckCircle2 size={16} /> No application fees charged by Nextora</div>
-      </div>
-    </div>
+        <section className="opportunities-section section-pad" id="opportunities">
+          <div className="section-container">
+            <div className="section-heading opportunities-heading">
+              <div>
+                <span className="section-kicker">YOUR NEXT MOVE</span>
+                <h2>Explore opportunities.</h2>
+                <p className="heading-subtitle">
+                  A starting point for the things you want to achieve.
+                </p>
+              </div>
+              <button
+                className="text-link"
+                onClick={() => {
+                  setActiveCategory("All");
+                  setSearchText("");
+                  setShowAll(true);
+                }}
+              >
+                Browse all <ArrowRight size={17} />
+              </button>
+            </div>
 
-    <div className="container footer-bottom">
-      <span>© {new Date().getFullYear()} NEXTORA. All rights reserved.</span>
-      <span>Where Opportunities Begin.</span>
-    </div>
-  </footer>
+            <div className="filter-bar">
+              <div className="filter-pills">
+                {["All", ...categories.map((item) => item.name)].map(
+                  (category) => (
+                    <button
+                      key={category}
+                      className={`filter-pill ${
+                        activeCategory === category ? "selected" : ""
+                      }`}
+                      onClick={() => {
+                        setActiveCategory(category);
+                        setShowAll(false);
+                      }}
+                    >
+                      {category}
+                    </button>
+                  )
+                )}
+              </div>
 
-  {notice && (
-    <div className="toast-message" role="status">
-      <CheckCircle2 size={19} />
-      <span>{notice}</span>
-      <button onClick={() => setNotice("")} aria-label="Dismiss notification">
-        <X size={17} />
-      </button>
-    </div>
-  )}
-</div>
-); }
-export default App;
+              <div className="results-count">
+                <span>{filteredOpportunities.length}</span> listings
+              </div>
+            </div>
+
+            {displayedOpportunities.length > 0 ? (
+              <div className="opportunity-grid">
+                {displayedOpportunities.map((item) => (
+                  <article className="opportunity-card" key={item.id}>
+                    <div className="opportunity-card-top">
+                      <span className={`listing-badge badge-${item.color}`}>
+                        <span />
+                        {item.badge}
+                      </span>
+                      <button
+                        className={`save-button ${
+                          saved.includes(item.id) ? "is-saved" : ""
+                        }`}
+                        onClick={() => toggleSave(item.id)}
+                        aria-label={
+                          saved.includes(item.id)
+                            ? "Remove saved opportunity"
+                            : "Save opportunity"
+                        }
+                      >
+                        <Bookmark
+                          size={19}
+                          fill={saved.includes(item.id) ? "currentColor" : "none"}
+                        />
+                      </button>
+                    </div>
+
+                    <div className="organization-line">
+                      <span className={`organization-mark mark-${item.color}`}>
+                        {item.organization.charAt(0)}
+                      </span>
+                      <span>{item.organization}</span>
+                    </div>
+
+                    <h3>{item.title}</h3>
+                    <p className="opportunity-description">
+                      {item.description}
+                    </p>
+
+                    <div className="opportunity-meta">
+                      <span><MapPin size={15} /> {item.location}</span>
+                      <span><CalendarDays size={15} /> {item.deadline}</span>
+                    </div>
+
+                    <div className="opportunity-card-footer">
+                      <span className="status-note">
+                        <Clock3 size={14} />
+                        Check official details
+                      </span>
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="card-arrow"
+                        aria-label={`View ${item.title}`}
+                      >
+                        <ArrowUpRight size={19} />
+                      </a>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state">
+                <Search size={30} />
+                <h3>No matching opportunities yet</h3>
+                <p>Try another search term or choose a different category.</p>
+                <button
+               
