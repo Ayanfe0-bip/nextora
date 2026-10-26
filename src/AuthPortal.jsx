@@ -1518,5 +1518,842 @@ export function Dashboard({ user, onSignOut }) {
             }}
           >
             <label htmlFor="nx-profile-name">Update your full name</label>
-            <in
+                        <input
+              id="nx-profile-name"
+              value={profileName}
+              onChange={(event) =>
+                setProfileName(event.target.value)
+              }
+              minLength={2}
+              required
+            />
+
+            <div className="nx-profile-actions">
+              <button
+                type="submit"
+                className="nx-primary-button"
+              >
+                Save changes
+                <CheckCircle2 size={16} />
+              </button>
+
+              <button
+                type="button"
+                className="nx-secondary-button"
+                onClick={() => {
+                  setProfileName(
+                    user?.user_metadata?.full_name ||
+                      user?.email?.split("@")[0] ||
+                      "NEXTORA Member"
+                  );
+                  setEditingProfile(false);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        ) : (
+          <button
+            className="nx-primary-button nx-edit-profile"
+            onClick={() => setEditingProfile(true)}
+          >
+            Edit profile
+            <ArrowRight size={16} />
+          </button>
+        )}
+      </section>
+
+      <div className="nx-notice">
+        <ShieldCheck size={18} />
+        <div>
+          Your account is managed by Supabase. Keep your
+          login details private and secure.
+        </div>
+      </div>
+    </>
+  );
+
+  const renderActivePage = () => {
+    switch (active) {
+      case "Overview":
+        return renderOverview();
+
+      case "Opportunities":
+        return renderOpportunities();
+
+      case "Saved Opportunities":
+        return renderSaved();
+
+      case "My Applications":
+        return renderApplications();
+
+      case "Recommendations":
+        return renderRecommendations();
+
+      case "Deadlines":
+        return renderDeadlines();
+
+      case "Notifications":
+        return renderNotifications();
+
+      case "NEXTORA Academy":
+        return renderAcademy();
+
+      case "My Profile":
+        return renderProfile();
+
+      default:
+        return renderOverview();
+    }
+  };
+
+  return (
+    <div className="nx-dashboard">
+      {mobileMenu && (
+        <button
+          type="button"
+          className="nx-sidebar-overlay"
+          aria-label="Close navigation"
+          onClick={() => setMobileMenu(false)}
+        />
+      )}
+
+      <aside
+        className={`nx-sidebar ${
+          mobileMenu ? "nx-sidebar-open" : ""
+        }`}
+      >
+        <button
+          type="button"
+          className="nx-sidebar-brand"
+          onClick={() => navigate("Overview")}
+        >
+          <span className="nx-brand-mark">
+            <ArrowUpRight size={25} />
+          </span>
+
+          <span>
+            NEXTORA
+            <small>WHERE OPPORTUNITIES BEGIN</small>
+          </span>
+        </button>
+
+        <div className="nx-sidebar-label">
+          WORKSPACE
+        </div>
+
+        <nav className="nx-sidebar-nav">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = active === item.label;
+
+            const badge =
+              item.label === "Saved Opportunities"
+                ? savedItems.length
+                : item.label === "My Applications"
+                  ? applications.length
+                  : item.label === "Notifications"
+                    ? notifications.length
+                    : 0;
+
+            return (
+              <button
+                type="button"
+                key={item.label}
+                className={`nx-nav-item ${
+                  isActive ? "nx-nav-active" : ""
+                }`}
+                onClick={() => navigate(item.label)}
+              >
+                <Icon size={19} />
+
+                <span>{item.label}</span>
+
+                {badge > 0 && (
+                  <span className="nx-nav-badge">
+                    {badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className="nx-sidebar-bottom">
+          <div className="nx-sidebar-help">
+            <span className="nx-help-icon">
+              <Sparkles size={20} />
+            </span>
+
+            <strong>Your next chapter</strong>
+
+            <p>
+              Keep learning and exploring possibilities.
+            </p>
+
+            <button
+              type="button"
+              onClick={() => navigate("NEXTORA Academy")}
+            >
+              Explore Academy
+              <ArrowRight size={15} />
+            </button>
+          </div>
+
+          <button
+            type="button"
+            className="nx-signout-button"
+            onClick={onSignOut}
+          >
+            <LogOut size={18} />
+            Sign out
+          </button>
+
+          <div className="nx-sidebar-footer">
+            © {new Date().getFullYear()} NEXTORA
+            <br />
+            Ayanfe Innovation Labs Limited
+          </div>
+        </div>
+      </aside>
+
+      <div className="nx-dashboard-main">
+        <header className="nx-topbar">
+          <div className="nx-topbar-left">
+            <button
+              type="button"
+              className="nx-mobile-menu-button"
+              onClick={() =>
+                setMobileMenu((current) => !current)
+              }
+              aria-label="Toggle navigation"
+            >
+              <Menu size={22} />
+            </button>
+
+            <div>
+              <span className="nx-topbar-eyebrow">
+                YOUR NEXT CHAPTER
+              </span>
+
+              <strong>{sectionTitle[active] || active}</strong>
+            </div>
+          </div>
+
+          <div className="nx-topbar-right">
+            <button
+              type="button"
+              className="nx-topbar-icon"
+              aria-label="View notifications"
+              onClick={() => navigate("Notifications")}
+            >
+              <BookOpen size={19} />
+
+              {notifications.length > 0 && (
+                <span className="nx-notification-dot" />
+              )}
+            </button>
+
+            <button
+              type="button"
+              className="nx-user-button"
+              onClick={() => navigate("My Profile")}
+            >
+              <span className="nx-avatar">{initials}</span>
+
+              <span className="nx-user-info">
+                <strong>{firstName}</strong>
+                <small>Member</small>
+              </span>
+
+              <ArrowUpRight size={16} />
+            </button>
+          </div>
+        </header>
+
+        <main className="nx-content">
+          {notice && (
+            <div className="nx-toast" role="status">
+              <CheckCircle2 size={18} />
+              <span>{notice}</span>
+
+              <button
+                type="button"
+                aria-label="Dismiss notification"
+                onClick={() => setNotice("")}
+              >
+                <X size={17} />
+              </button>
+            </div>
+          )}
+
+          {renderActivePage()}
+
+          <footer className="nx-content-footer">
+            <span>
+              © {new Date().getFullYear()} NEXTORA
+            </span>
+
+            <span>
+              Created by Ayanfe Innovation Labs Limited
+            </span>
+
+            <span>
+              Discover. Learn. Grow.
+            </span>
+          </footer>
+        </main>
+      </div>
+
+      <style>{`
+        .nx-dashboard {
+          min-height: 100vh;
+          display: flex;
+          background: #f6f8fc;
+          color: #202b46;
+          font-family: inherit;
+        }
+
+        .nx-dashboard * {
+          box-sizing: border-box;
+        }
+
+        .nx-sidebar {
+          width: 258px;
+          min-width: 258px;
+          min-height: 100vh;
+          height: 100vh;
+          position: sticky;
+          top: 0;
+          display: flex;
+          flex-direction: column;
+          padding: 24px 16px 16px;
+          background: #fff;
+          border-right: 1px solid #e8ecf4;
+          overflow-y: auto;
+          z-index: 50;
+        }
+
+        .nx-sidebar-brand {
+          display: flex;
+          align-items: center;
+          gap: 11px;
+          border: 0;
+          background: transparent;
+          color: #243d85;
+          text-align: left;
+          padding: 0 5px 27px;
+          cursor: pointer;
+          font-size: 19px;
+          font-weight: 900;
+          letter-spacing: -.5px;
+        }
+
+        .nx-sidebar-brand > span:last-child {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .nx-sidebar-brand small {
+          font-size: 8px;
+          letter-spacing: .9px;
+          color: #8993aa;
+          font-weight: 800;
+        }
+
+        .nx-brand-mark {
+          width: 43px;
+          height: 43px;
+          display: grid;
+          place-items: center;
+          border-radius: 14px;
+          background: #eaf0ff;
+          color: #29458f;
+        }
+
+        .nx-sidebar-label {
+          padding: 0 12px;
+          margin: 8px 0 12px;
+          font-size: 10px;
+          font-weight: 900;
+          letter-spacing: 1.4px;
+          color: #9aa3b7;
+        }
+
+        .nx-sidebar-nav {
+          display: grid;
+          gap: 5px;
+        }
+
+        .nx-nav-item {
+          width: 100%;
+          min-height: 45px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 11px 12px;
+          border: 0;
+          border-radius: 11px;
+          background: transparent;
+          color: #69758e;
+          text-align: left;
+          font-size: 12px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: background .2s, color .2s;
+        }
+
+        .nx-nav-item:hover {
+          background: #f3f6fc;
+          color: #29458f;
+        }
+
+        .nx-nav-active {
+          background: #eaf0ff;
+          color: #29458f;
+        }
+
+        .nx-nav-item > span:nth-child(2) {
+          flex: 1;
+        }
+
+        .nx-nav-badge {
+          min-width: 22px;
+          height: 22px;
+          padding: 0 6px;
+          display: grid;
+          place-items: center;
+          border-radius: 20px;
+          background: #dce6ff;
+          color: #29458f;
+          font-size: 10px;
+          font-weight: 900;
+        }
+
+        .nx-sidebar-bottom {
+          margin-top: auto;
+          padding-top: 25px;
+        }
+
+        .nx-sidebar-help {
+          padding: 16px;
+          border: 1px solid #e8ecf7;
+          border-radius: 15px;
+          background: #f8f9fe;
+        }
+
+        .nx-help-icon {
+          width: 36px;
+          height: 36px;
+          display: grid;
+          place-items: center;
+          margin-bottom: 12px;
+          border-radius: 11px;
+          background: #eaf0ff;
+          color: #29458f;
+        }
+
+        .nx-sidebar-help strong {
+          display: block;
+          font-size: 12px;
+        }
+
+        .nx-sidebar-help p {
+          color: #78839b;
+          font-size: 11px;
+          line-height: 1.6;
+          margin: 7px 0 12px;
+        }
+
+        .nx-sidebar-help button {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          padding: 0;
+          border: 0;
+          background: transparent;
+          color: #29458f;
+          font-size: 11px;
+          font-weight: 800;
+          cursor: pointer;
+        }
+
+        .nx-signout-button {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-top: 15px;
+          padding: 12px;
+          border: 0;
+          border-radius: 10px;
+          background: transparent;
+          color: #7c8498;
+          font-size: 12px;
+          font-weight: 700;
+          cursor: pointer;
+        }
+
+        .nx-signout-button:hover {
+          background: #fff0f0;
+          color: #ad3947;
+        }
+
+        .nx-sidebar-footer {
+          padding: 13px 12px 0;
+          color: #a0a8b9;
+          font-size: 9px;
+          line-height: 1.7;
+        }
+
+        .nx-dashboard-main {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .nx-topbar {
+          min-height: 82px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 15px;
+          padding: 15px 34px;
+          background: #fff;
+          border-bottom: 1px solid #e8ecf4;
+        }
+
+        .nx-topbar-left,
+        .nx-topbar-right {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+        }
+
+        .nx-topbar-left > div {
+          display: grid;
+          gap: 5px;
+        }
+
+        .nx-topbar-eyebrow {
+          color: #8792aa;
+          font-size: 9px;
+          font-weight: 900;
+          letter-spacing: 1.3px;
+        }
+
+        .nx-topbar-left strong {
+          font-size: 16px;
+          color: #202b46;
+        }
+
+        .nx-mobile-menu-button {
+          display: none;
+          width: 40px;
+          height: 40px;
+          place-items: center;
+          border: 1px solid #e6eaf2;
+          border-radius: 11px;
+          background: #fff;
+          color: #29458f;
+          cursor: pointer;
+        }
+
+        .nx-topbar-icon {
+          width: 40px;
+          height: 40px;
+          position: relative;
+          display: grid;
+          place-items: center;
+          border: 1px solid #e6eaf2;
+          border-radius: 12px;
+          background: #fff;
+          color: #596681;
+          cursor: pointer;
+        }
+
+        .nx-notification-dot {
+          position: absolute;
+          top: 7px;
+          right: 7px;
+          width: 8px;
+          height: 8px;
+          border: 2px solid #fff;
+          border-radius: 50%;
+          background: #e66d84;
+        }
+
+        .nx-user-button {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 0;
+          border: 0;
+          background: transparent;
+          text-align: left;
+          color: #738099;
+          cursor: pointer;
+        }
+
+        .nx-user-info {
+          display: grid;
+          gap: 4px;
+        }
+
+        .nx-user-info strong {
+          color: #27344f;
+          font-size: 12px;
+        }
+
+        .nx-user-info small {
+          color: #929bb0;
+          font-size: 10px;
+        }
+
+        .nx-avatar {
+          width: 38px;
+          height: 38px;
+          display: grid;
+          place-items: center;
+          flex-shrink: 0;
+          border-radius: 13px;
+          background: #eaf0ff;
+          color: #29458f;
+          font-size: 12px;
+          font-weight: 900;
+        }
+
+        .nx-avatar-large {
+          width: 68px;
+          height: 68px;
+          border-radius: 20px;
+          font-size: 20px;
+        }
+
+        .nx-content {
+          width: min(100%, 1400px);
+          margin: 0 auto;
+          padding: 30px 34px 20px;
+        }
+
+        .nx-toast {
+          position: sticky;
+          top: 12px;
+          z-index: 30;
+          display: flex;
+          align-items: flex-start;
+          gap: 10px;
+          margin-bottom: 20px;
+          padding: 14px 15px;
+          border: 1px solid #cfe9dd;
+          border-radius: 12px;
+          background: #f0fbf5;
+          color: #237452;
+          font-size: 12px;
+          line-height: 1.6;
+          box-shadow: 0 8px 24px rgba(30, 50, 80, .06);
+        }
+
+        .nx-toast span {
+          flex: 1;
+        }
+
+        .nx-toast button {
+          display: grid;
+          place-items: center;
+          padding: 0;
+          border: 0;
+          background: transparent;
+          color: inherit;
+          cursor: pointer;
+        }
+
+        .nx-section-heading {
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+          gap: 20px;
+          margin: 5px 0 23px;
+        }
+
+        .nx-eyebrow {
+          display: block;
+          margin-bottom: 10px;
+          color: #526fc4;
+          font-size: 10px;
+          font-weight: 900;
+          letter-spacing: 1.5px;
+        }
+
+        .nx-section-heading h1 {
+          margin: 0;
+          color: #202b46;
+          font-size: clamp(24px, 3vw, 33px);
+          line-height: 1.2;
+          letter-spacing: -1px;
+        }
+
+        .nx-section-heading p {
+          max-width: 650px;
+          margin: 10px 0 0;
+          color: #77839b;
+          font-size: 13px;
+          line-height: 1.7;
+        }
+
+        .nx-welcome {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 25px;
+          min-height: 245px;
+          overflow: hidden;
+          padding: 35px;
+          border-radius: 23px;
+          background: linear-gradient(120deg, #243d85, #4967b7 75%, #7188ce);
+          color: #fff;
+          margin-bottom: 33px;
+        }
+
+        .nx-welcome-copy {
+          position: relative;
+          z-index: 2;
+          max-width: 640px;
+        }
+
+        .nx-light {
+          color: #dbe5ff;
+        }
+
+        .nx-welcome h1 {
+          margin: 0 0 13px;
+          font-size: clamp(27px, 4vw, 39px);
+          line-height: 1.2;
+          letter-spacing: -1.3px;
+        }
+
+        .nx-welcome h1 span {
+          color: #ffd98c;
+        }
+
+        .nx-welcome p {
+          max-width: 560px;
+          margin: 0 0 23px;
+          color: #e4eaff;
+          font-size: 13px;
+          line-height: 1.8;
+        }
+
+        .nx-white-button {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 9px;
+          padding: 12px 17px;
+          border: 0;
+          border-radius: 10px;
+          background: #fff;
+          color: #29458f;
+          font-size: 12px;
+          font-weight: 900;
+          cursor: pointer;
+        }
+
+        .nx-orbit-art {
+          position: relative;
+          width: 190px;
+          height: 190px;
+          flex-shrink: 0;
+          display: grid;
+          place-items: center;
+        }
+
+        .nx-orbit {
+          position: absolute;
+          border: 1px solid rgba(255,255,255,.35);
+          border-radius: 50%;
+        }
+
+        .nx-orbit-one {
+          width: 135px;
+          height: 135px;
+        }
+
+        .nx-orbit-two {
+          width: 185px;
+          height: 185px;
+          border-style: dashed;
+        }
+
+        .nx-orbit-core {
+          width: 76px;
+          height: 76px;
+          display: grid;
+          place-items: center;
+          border: 1px solid rgba(255,255,255,.5);
+          border-radius: 24px;
+          background: rgba(255,255,255,.15);
+          color: #ffe0a1;
+          transform: rotate(-8deg);
+        }
+
+        .nx-orbit-dot {
+          position: absolute;
+          width: 13px;
+          height: 13px;
+          border: 3px solid #fff;
+          border-radius: 50%;
+          background: #ffcb75;
+        }
+
+        .dot-one { top: 20px; right: 42px; }
+        .dot-two { bottom: 18px; left: 30px; }
+        .dot-three { top: 85px; left: 0; }
+
+        .nx-stats {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: 15px;
+          margin-bottom: 27px;
+        }
+
+        .nx-stat {
+          display: flex;
+          align-items: flex-start;
+          gap: 13px;
+          min-width: 0;
+          padding: 19px 16px;
+          border: 1px solid #e8ecf4;
+          border-radius: 15px;
+          background: #fff;
+        }
+
+        .nx-stat-icon {
+          width: 42px;
+          height: 42px;
+          flex-shrink: 0;
+          display: grid;
+          place-items: center;
+          border-radius: 13px;
+        }
+
+        .nx-stat p {
+          margin: 1px 0 7px;
+          color: #77839b;
+          font-size: 10px;
+          line-height: 1.5;
+        }
+
+        .nx-stat strong {
+          display: block;
+          color: #25324e;
+          font-size: 19px;
+          line-height: 1.4;
+          overflow-wrap: anywhere;
+        }
+
+        .nx-stat small {
+          displa
                 
