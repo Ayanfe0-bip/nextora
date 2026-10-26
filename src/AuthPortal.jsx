@@ -5,6 +5,7 @@ import {
   ArrowUpRight,
   BookOpen,
   BriefcaseBusiness,
+  CheckCircle2,
   GraduationCap,
   Heart,
   LogOut,
@@ -12,6 +13,7 @@ import {
   Sparkles,
   User,
   Wallet,
+  X,
 } from "lucide-react";
 import { supabase } from "./lib/supabaseclient";
 
