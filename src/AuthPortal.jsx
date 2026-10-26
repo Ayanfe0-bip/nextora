@@ -1459,3 +1459,126 @@ export function Dashboard({ user, onSignOut }) {
                 {notice}
               </div>
          
+                          )}
+
+            {active === "Overview" && <Overview />}
+
+            {active === "Opportunities" && <Opportunities />}
+
+            {active === "NEXTORA Academy" && <Academy />}
+
+            {active === "My Profile" && <Profile />}
+
+            {[
+              "Saved Opportunities",
+              "My Applications",
+              "Recommendations",
+              "Deadlines",
+              "Notifications",
+            ].includes(active) && (
+              <section className="nx-section-heading">
+                <div>
+                  <span className="nx-eyebrow">YOUR WORKSPACE</span>
+                  <h1>{active}</h1>
+                  <p>
+                    {active === "Saved Opportunities" &&
+                      "Keep track of opportunities you want to revisit."}
+
+                    {active === "My Applications" &&
+                      "Review and track your opportunity applications."}
+
+                    {active === "Recommendations" &&
+                      "Discover opportunities suited to your interests."}
+
+                    {active === "Deadlines" &&
+                      "Keep track of important closing dates."}
+
+                    {active === "Notifications" &&
+                      "Stay informed about important updates."}
+                  </p>
+                </div>
+              </section>
+            )}
+
+            {[
+              "Saved Opportunities",
+              "My Applications",
+              "Recommendations",
+              "Deadlines",
+              "Notifications",
+            ].includes(active) && (
+              <section className="nx-panel">
+                <div className="nx-panel-head">
+                  <div>
+                    <h3>
+                      {active === "Saved Opportunities" &&
+                        "Your saved list"}
+
+                      {active === "My Applications" &&
+                        "Your application history"}
+
+                      {active === "Recommendations" &&
+                        "Personalized suggestions"}
+
+                      {active === "Deadlines" &&
+                        "Upcoming deadlines"}
+
+                      {active === "Notifications" &&
+                        "Your notifications"}
+                    </h3>
+
+                    <p>
+                      This section will become functional as its
+                      supporting features are connected.
+                    </p>
+                  </div>
+
+                  <span className="nx-soft-pill">Coming soon</span>
+                </div>
+
+                <EmptyState
+                  title={
+                    active === "Saved Opportunities"
+                      ? "No saved opportunities yet"
+                      : active === "My Applications"
+                        ? "No applications to display"
+                        : active === "Recommendations"
+                          ? "Recommendations are coming soon"
+                          : active === "Deadlines"
+                            ? "No deadlines to display"
+                            : "You're all caught up"
+                  }
+                  description={
+                    active === "Saved Opportunities"
+                      ? "Saved opportunities will appear here when saving is implemented."
+                      : active === "My Applications"
+                        ? "Your application records will appear here when application tracking is implemented."
+                        : active === "Recommendations"
+                          ? "Recommendations will become available when the opportunity catalogue and preferences are connected."
+                          : active === "Deadlines"
+                            ? "Verified opportunity closing dates will appear here when listings are connected."
+                            : "Notifications will appear here when the notification system is implemented."
+                  }
+                />
+              </section>
+            )}
+                      </main>
+
+          <footer className="nx-footer">
+            <div>
+              © {new Date().getFullYear()} NEXTORA
+            </div>
+
+            <div>
+              Created by Ayanfe Innovation Labs Limited
+            </div>
+
+            <div>
+              Discover opportunities. Build skills. Move forward.
+            </div>
+          </footer>
+        </div>
+      </div>
+    </div>
+  );
+}
