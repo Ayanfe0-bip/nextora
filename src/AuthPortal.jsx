@@ -1318,9 +1318,187 @@ export function Dashboard({ user, onSignOut }) {
           <div className="nx-section-head">
             <div>
               <span className="nx-eyebrow">
-                YOUR OPPORTUNITY SPACE
+                                YOUR OPPORTUNITY SPACE
               </span>
               <h2>What are you looking for?</h2>
               <p>
                 Choose an area to explore. Full listings are being
-                pr
+                prepared for a future update.
+              </p>
+            </div>
+          </div>
+
+          <div
+            className="nx-filters"
+            aria-label="Filter opportunity categories"
+          >
+            {categoryNames.map((name) => (
+              <button
+                key={name}
+                className={`nx-filter ${
+                  activeCategory === name ? "active" : ""
+                }`}
+                onClick={() => setActiveCategory(name)}
+              >
+                {name}
+              </button>
+            ))}
+          </div>
+
+          <div className="nx-cards">
+            {visibleCards.map((item) => {
+              const Icon = item.icon;
+              const isSaved = saved.includes(item.title);
+
+              return (
+                <article className="nx-card" key={item.title}>
+                  <div className="nx-card-top">
+                    <div
+                      className="nx-card-icon"
+                      style={{
+                        background: item.tint,
+                        color: item.ink,
+                      }}
+                    >
+                      <Icon size={24} strokeWidth={1.8} />
+                    </div>
+
+                    <button
+                      className={`nx-save ${
+                        isSaved ? "saved" : ""
+                      }`}
+                      aria-label={
+                        isSaved
+                          ? `Remove ${item.title} from saved categories`
+                          : `Save ${item.title} category`
+                      }
+                      title={
+                        isSaved
+                          ? "Remove saved category"
+                          : "Save category"
+                      }
+                      onClick={() =>
+                        setSaved((previous) =>
+                          isSaved
+                            ? previous.filter(
+                                (title) => title !== item.title
+                              )
+                            : [...previous, item.title]
+                        )
+                      }
+                    >
+                      <Bookmark
+                        size={16}
+                        fill={isSaved ? "currentColor" : "none"}
+                      />
+                    </button>
+                  </div>
+
+                  <h3>{item.title}</h3>
+                  <p>{item.desc}</p>
+
+                  <div className="nx-card-foot">
+                    <span>{item.tag}</span>
+                    <span className="nx-status">COMING SOON</span>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="nx-lower">
+          <div className="nx-panel">
+            <div className="nx-panel-title">
+              <Sparkles size={19} color="#5269c6" />
+              A few ways to get ready
+            </div>
+
+            <div className="nx-tip">
+              <div className="nx-tip-icon">
+                <User size={18} />
+              </div>
+              <div>
+                <strong>Keep your profile details ready</strong>
+                <p>
+                  Use a professional email and make sure your name
+                  is correct for future applications.
+                </p>
+              </div>
+            </div>
+
+            <div className="nx-tip">
+              <div
+                className="nx-tip-icon"
+                style={{
+                  background: "#EAF0FF",
+                  color: "#4565D8",
+                }}
+              >
+                <GraduationCap size={18} />
+              </div>
+              <div>
+                <strong>Gather your education documents</strong>
+                <p>
+                  Certificates, results, and a simple CV may be
+                  useful when opportunities open.
+                </p>
+              </div>
+            </div>
+
+            <div className="nx-tip">
+              <div
+                className="nx-tip-icon"
+                style={{
+                  background: "#FFF0E3",
+                  color: "#C47735",
+                }}
+              >
+                <BookOpen size={18} />
+              </div>
+              <div>
+                <strong>Keep learning</strong>
+                <p>
+                  Small, consistent steps can help you prepare for
+                  scholarships and career opportunities.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="nx-panel">
+            <div className="nx-panel-title">
+              <User size={19} color="#5269c6" />
+              Your account
+            </div>
+
+            <div className="nx-account-row">
+              <span className="nx-avatar">{initials || "N"}</span>
+              <div>
+                <strong>{fullName}</strong>
+                <div className="nx-account-email">
+                  {user?.email || "Email not available"}
+                </div>
+              </div>
+            </div>
+
+            <p className="nx-account-message">
+              You're signed in and ready to explore NEXTORA.
+              Saved categories currently stay in this page and
+              are not yet synced to your account.
+            </p>
+
+            <div className="nx-session">
+              <ShieldCheck size={16} />
+              Account session active
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="nx-footer">
+        © {new Date().getFullYear()} NEXTORA · Ayanfe Innovation Labs Limited
+      </footer>
+    </div>
+  );
+              }
