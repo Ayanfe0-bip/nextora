@@ -619,9 +619,251 @@ function App() {
                 ))}
               </div>
             ) : (
-              <div className="empty-state">
+             <div className="empty-state">
                 <Search size={30} />
                 <h3>No matching opportunities yet</h3>
                 <p>Try another search term or choose a different category.</p>
                 <button
+                  onClick={() => {
+                    setSearchText("");
+                    setActiveCategory("All");
+                  }}
+                >
+                  Clear filters
+                </button>
+              </div>
+            )}
+
+            {filteredOpportunities.length > 3 && (
+              <div className="center-action">
+                <button
+                  className="outline-button"
+                  onClick={() => setShowAll((value) => !value)}
+                >
+                  {showAll ? "Show fewer opportunities" : "Explore more opportunities"}
+                  {showAll ? <ChevronDown className="rotate-up" size={17} /> : <ArrowRight size={17} />}
+                </button>
+              </div>
+            )}
+
+            <div className="verification-note">
+              <ShieldCheck size={20} />
+              <div>
+                <strong>A smart reminder before you apply</strong>
+                <p>
+                  Listings are discovery starting points, not guarantees.
+                  Always confirm eligibility, deadlines and application
+                  requirements on the official website. Never pay an
+                  unofficial agent for a promised opportunity.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="academy-section section-pad" id="academy">
+          <div className="section-container">
+            <div className="academy-panel">
+              <div className="academy-content">
+                <span className="section-kicker light-kicker">
+                  MEET YOUR POTENTIAL
+                </span>
+                <h2>
+                  Find opportunities.
+                  <br />
+                  <span>Build your skills.</span>
+                  <br />
+                  Become more.
+                </h2>
+                <p>
+                  Nextora is more than a place to find opportunities. Nextora
+                  Academy is designed to help you develop the practical skills
+                  and confidence to pursue them.
+                </p>
+                <button
+                  className="academy-button"
+                  onClick={() => notify("Nextora Academy courses are coming soon.")}
+                >
+                  Explore the Academy <ArrowRight size={17} />
+                </button>
+
+                <div className="academy-benefits">
+                  <span><CheckCircle2 size={16} /> Beginner-friendly learning</span>
+                  <span><CheckCircle2 size={16} /> Practical digital skills</span>
+                  <span><CheckCircle2 size={16} /> Learn at your own pace</span>
+                </div>
+              </div>
+
+              <div className="academy-visual">
+                <div className="academy-photo-frame">
+                  <img
+                    src="/images/nextora-cta.jpg"
+                    alt="A student looking ahead toward future possibilities"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="academy-sticker">
+                  <Sparkles size={20} />
+                  <span>Learn today.</span>
+                  <strong>Grow tomorrow.</strong>
+                </div>
+                <div className="academy-dots" />
+              </div>
+            </div>
+
+            <div className="courses-heading">
+              <div>
+                <span className="section-kicker">NEXTORA ACADEMY</span>
+                <h2>Skills for the world ahead.</h2>
+              </div>
+              <button
+                className="text-link"
+                onClick={() => notify("The Academy learning experience is coming soon.")}
+              >
+                View learning paths <ArrowRight size={17} />
+              </button>
+            </div>
+
+            <div className="course-grid">
+              {academyCourses.map((course) => {
+                const Icon = course.icon;
+
+                return (
+                  <button
+                    className="course-card"
+                    key={course.number}
+                    onClick={() => notify(`${course.title} is planned for Nextora Academy.`)}
+                  >
+                    <div className="course-card-top">
+                      <span className="course-number">{course.number}</span>
+                      <span className="course-icon"><Icon size={23} /></span>
+                    </div>
+                    <span className="course-level">{course.level}</span>
+                    <h3>{course.title}</h3>
+                    <p>{course.description}</p>
+                    <span className="course-link">
+                      Explore course <ArrowRight size={16} />
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section className="about-section section-pad" id="about">
+          <div className="section-container about-grid">
+            <div className="about-copy">
+              <span className="section-kicker">WHY NEXTORA EXISTS</span>
+              <h2>
+                Your background
+                <br />
+                shouldn't limit
+                <br />
+                <span>your possibilities.</span>
+              </h2>
+              <p>
+                Great opportunities can be difficult to find. Information is
+                scattered across websites, social media pages and communities.
+                Nextora aims to bring discovery and learning together in one
+                accessible place.
+              </p>
+              <p>
+                Whether you're a student, graduate, job seeker or aspiring
+                entrepreneur, your next chapter deserves a starting point.
+              </p>
+              <button className="dark-outline-button" onClick={() => scrollTo("categories")}>
+                Discover your next step <ArrowRight size={17} />
+              </button>
+            </div>
+
+            <div className="about-features">
+              <div className="about-feature">
+                <span className="feature-number">01</span>
+                <div>
+                  <h3>Opportunity discovery</h3>
+                  <p>Find pathways for education, employment, funding and growth.</p>
+                </div>
+                <Search size={22} />
+              </div>
+              <div className="about-feature">
+                <span className="feature-number">02</span>
+                <div>
+                  <h3>Learning in one place</h3>
+                  <p>Build practical skills to help prepare for your next step.</p>
+                </div>
+                <BookOpen size={22} />
+              </div>
+              <div className="about-feature">
+                <span className="feature-number">03</span>
+                <div>
+                  <h3>Clearer next steps</h3>
+                  <p>Get directed to official sources to check details and apply.</p>
+                </div>
+                <ArrowUpRight size={22} />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="final-cta-section">
+          <div className="final-cta-container">
+            <div className="final-cta-icon">
+              <Heart size={25} />
+            </div>
+            <span className="section-kicker light-kicker">YOUR JOURNEY STARTS HERE</span>
+            <h2>
+              The next opportunity
+              <br />
+              could be <span>yours.</span>
+            </h2>
+            <p>
+              Take a moment to explore what’s possible. Your future is worth
+              investing in, one step at a time.
+            </p>
+            <button
+              className="final-cta-button"
+              onClick={() => scrollTo("opportunities")}
+            >
+              Find your opportunity <ArrowUpRight size={18} />
+            </button>
+            <div className="final-cta-decoration decoration-one" />
+            <div className="final-cta-decoration decoration-two" />
+          </div>
+        </section>
+      </main>
+
+      <footer className="site-footer">
+        <div className="section-container">
+          <div className="footer-main">
+            <div className="footer-brand-column">
+              <button
+                className="brand footer-brand"
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              >
+                <span className="brand-symbol">
+                  <ArrowUpRight size={24} strokeWidth={2.6} />
+                </span>
+                <span className="brand-text">
+                  NEXTORA
+                  <small>WHERE OPPORTUNITIES BEGIN.</small>
+                </span>
+              </button>
+              <p>
+                Discover opportunities. Develop skills.
+                <br />
+                Build the future you imagine.
+              </p>
+              <span className="footer-location">
+                <Globe2 size={15} /> Built with ambition in Nigeria.
+              </span>
+            </div>
+
+            <div className="footer-links-column">
+              <h4>Explore</h4>
+              <button onClick={() => scrollTo("opportunities")}>Opportunities</button>
+              <button onClick={() => scrollTo("categories")}>Categories</button>
+              <button onClick={() => scrollTo("academy")}>Nextora Academy</button>
+            </div>
+            
                
