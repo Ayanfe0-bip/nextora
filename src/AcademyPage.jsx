@@ -1103,4 +1103,253 @@ If you or someone else is in immediate danger, or there is a risk of self-harm, 
     sections: ["Health Literacy", "Everyday Prevention"],
     lessons: [
       {
+        title: "Understanding health information",
+        content: `Health literacy is the ability to find, understand, and use health information when making decisions.
+
+Health claims should be evaluated carefully. Look for the source, publication date, supporting evidence, and whether qualified professionals or recognized public health institutions support the claim.
+
+A social media post, testimonial, or AI-generated answer is not sufficient proof that a remedy or treatment is effective.
+
+Health needs vary between people. For symptoms, medication questions, or treatment decisions, consult a qualified health professional who can assess your circumstances.`,
+        example: "Before sharing a viral post claiming that a household ingredient cures a disease, check trustworthy health sources and ask a qualified professional when necessary.",
+        exercise: "Choose a health claim you have encountered and list the source, evidence, date, and questions that need verification.",
+        questions: [
+          {
+            question: "What should you do before sharing a health claim?",
+            options: ["Check reliable evidence and sources", "Trust every forwarded message", "Assume popularity proves effectiveness", "Remove all context"],
+            answer: 0,
+            explanation: "Reliable sources and evidence help distinguish useful information from misinformation."
+          },
+          {
+            question: "Who can assess a person's individual medical needs?",
+            options: ["A qualified health professional", "An anonymous comment alone", "An unverified advertisement", "A random online quiz"],
+            answer: 0,
+            explanation: "Individual medical decisions require appropriate professional assessment."
+          }
+        ]
+      },
+      {
+        title: "Hygiene and disease prevention",
+        content: `Everyday prevention includes washing hands with soap and water when appropriate, handling food safely, keeping living spaces clean, and following relevant public health guidance.
+
+Vaccination, screening, and other preventive services depend on the person's age, circumstances, and local recommendations. A qualified health professional can explain which services are appropriate.
+
+No single habit prevents every illness. Prevention combines practical habits, access to appropriate healthcare, and accurate information.`,
+        example: "Before preparing food, wash your hands, use clean utensils, and keep raw ingredients separate from ready-to-eat food.",
+        exercise: "Create a daily hygiene checklist with five practical habits that fit your household.",
+        questions: [
+          {
+            question: "Which practice supports safer food handling?",
+            options: ["Keeping raw food separate from ready-to-eat food", "Using dirty utensils for every ingredient", "Leaving all food uncovered indefinitely", "Ignoring hand hygiene"],
+            answer: 0,
+            explanation: "Separating raw ingredients from ready-to-eat food helps reduce cross-contamination."
+          },
+          {
+            question: "Where should you check individualized prevention advice?",
+            options: ["With a qualified health professional", "Only in anonymous online comments", "In unrelated entertainment posts", "From an unverified sales claim"],
+            answer: 0,
+            explanation: "Qualified professionals can explain relevant preventive services and recommendations."
+          }
+        ]
+      }
+    ]
+  },
+
+  // =========================================================
+  // DEPARTMENT 8: YORUBA HERBAL KNOWLEDGE
+  // =========================================================
+  {
+    code: "NAC-YHK-001",
+    departmentId: "NAC-YHK",
+    title: "Introduction to Yoruba Herbal Heritage",
+    description: "Explore traditional plant knowledge, cultural context, and responsible documentation.",
+    level: "Beginner",
+    duration: "3 hours",
+    sections: ["Cultural Heritage", "Safety and Documentation"],
+    lessons: [
+      {
+        title: "Traditional plant knowledge and culture",
+        content: `Yoruba communities have diverse traditions of plant knowledge, names, uses, and cultural practices. Knowledge can differ between families, locations, and practitioners.
+
+Learning about this heritage involves respecting elders and knowledgeable community members, documenting local names carefully, and distinguishing cultural accounts from scientifically established medical evidence.
+
+A traditional use recorded in a story or interview does not by itself prove that a plant treats a disease. Plant identification, preparation, dose, and safety can be complex.
+
+This course focuses on cultural learning and responsible documentation, not prescribing herbal treatments or claiming unverified cures.`,
+        example: "When documenting a plant, record the local name, the community where the name is used, the person sharing the information with their consent, and the date of the interview.",
+        exercise: "Design a plant-knowledge record with fields for local name, location, source of information, date, and verification status.",
+        questions: [
+          {
+            question: "Why should the source of traditional knowledge be recorded?",
+            options: ["To preserve context and provenance", "To prove every claim is medically effective", "To avoid asking permission", "To replace scientific research"],
+            answer: 0,
+            explanation: "Recording the source and context helps preserve the origin of information without overstating its evidence."
+          },
+          {
+            question: "Does a traditional use automatically prove a plant cures a disease?",
+            options: ["No, the claim requires appropriate evidence", "Yes, every traditional claim is proven", "Yes, regardless of the plant", "Only if it appears in a social post"],
+            answer: 0,
+            explanation: "Traditional knowledge deserves careful documentation, while medical claims require appropriate evidence."
+          }
+        ]
+      },
+      {
+        title: "Plant identification and safety",
+        content: `Never identify a plant for consumption or treatment from a vague description or photograph alone. Similar-looking plants can have very different properties, and some are poisonous.
+
+Do not taste unknown plants or prepare remedies from uncertain identifications. Some plants may cause poisoning, allergic reactions, or interactions with prescribed medicines.
+
+Pregnant people, children, older adults, and people with existing medical conditions may face additional risks. Do not stop prescribed treatment or delay urgent care in favor of an unverified remedy.
+
+For poisoning or a serious reaction, seek urgent medical assistance.`,
+        example: "If two plants have similar leaves but their identity is uncertain, record the uncertainty and consult a qualified local botanist or other appropriate expert rather than consuming either plant.",
+        exercise: "Write a safety checklist for documenting a plant without tasting, ingesting, or making medical claims about it.",
+        questions: [
+          {
+            question: "What should you do when a plant's identity is uncertain?",
+            options: ["Avoid consuming it and seek expert identification", "Taste it to find out", "Mix it with other unknown plants", "Assume it is safe"],
+            answer: 0,
+            explanation: "Uncertain identification can lead to serious harm, so consumption should be avoided."
+          },
+          {
+            question: "What is a responsible approach to prescribed medicine?",
+            options: ["Do not stop it for an unverified remedy without medical advice", "Replace it immediately with an unknown plant", "Ignore all instructions", "Assume plant products never interact with medicines"],
+            answer: 0,
+            explanation: "Treatment changes and possible interactions should be discussed with a qualified health professional."
+          }
+        ]
+      }
+    ]
+  },
+
+  // =========================================================
+  // DEPARTMENT 9: DIGITAL SKILLS
+  // =========================================================
+  {
+    code: "NAC-DGS-001",
+    departmentId: "NAC-DGS",
+    title: "Essential Digital Skills",
+    description: "Build practical skills in online research, digital communication, files, and internet safety.",
+    level: "Beginner",
+    duration: "4 hours",
+    sections: ["Digital Foundations", "Online Safety"],
+    lessons: [
+      {
+        title: "Managing digital information",
+        content: `Digital skills include searching for information, evaluating sources, managing files, communicating online, and using applications effectively.
+
+Use descriptive file names and organized folders so that documents are easy to find. When working on a phone, learn how to locate downloads, manage storage, and back up important files securely.
+
+When researching, compare multiple reliable sources and distinguish evidence from opinion. Check publication dates when information may have changed.`,
+        example: "Use folders named Learning, Work, and Personal Documents, then give each file a descriptive name such as Biology_Revision_Notes.",
+        exercise: "Plan a simple folder structure for your schoolwork or business documents.",
+        questions: [
+          {
+            question: "Why are descriptive file names useful?",
+            options: ["They make documents easier to find", "They guarantee every file is safe", "They remove the need for backups", "They increase battery capacity"],
+            answer: 0,
+            explanation: "Descriptive names make it easier to recognize and locate the right document."
+          },
+          {
+            question: "How can you evaluate an online information source?",
+            options: ["Check its author, evidence, and date", "Trust it because it has many emojis", "Ignore the source entirely", "Assume the first result is always correct"],
+            answer: 0,
+            explanation: "Checking authorship, evidence, and dates helps assess reliability."
+          }
+        ]
+      },
+      {
+        title: "Passwords, scams, and account security",
+        content: `Use unique, strong passwords for important accounts. A reputable password manager can help you store them. Enable two-factor authentication when available.
+
+Never share verification codes or passwords with someone who contacts you unexpectedly. Be cautious of urgent messages promising guaranteed income, prizes, or investment returns.
+
+Check website addresses carefully before signing in or making payments. Avoid installing apps from unknown sources, and review permissions before granting access.
+
+If an account may have been compromised, use the official service to secure it and change affected passwords.`,
+        example: "A message claiming that you must send a one-time verification code to receive a prize is a warning sign. Do not share the code; verify the offer through the service's official channel.",
+        exercise: "Create a personal account-security checklist containing five actions you can take today.",
+        questions: [
+          {
+            question: "Should you share a one-time verification code with a stranger?",
+            options: ["No, keep it private", "Yes, if the message sounds urgent", "Yes, if a prize is promised", "Only when asked in a public group"],
+            answer: 0,
+            explanation: "Verification codes can allow someone else to access your account."
+          },
+          {
+            question: "What is a warning sign of a possible online scam?",
+            options: ["Pressure to act urgently for a guaranteed reward", "A clearly stated privacy policy", "A normal account settings page", "A document you created yourself"],
+            answer: 0,
+            explanation: "Urgency and unrealistic promises are common warning signs, though context should always be checked."
+          }
+        ]
+      }
+    ]
+  },
+
+  // =========================================================
+  // DEPARTMENT 10: PROJECTS AND CERTIFICATES
+  // =========================================================
+  {
+    code: "NAC-PAC-001",
+    departmentId: "NAC-PAC",
+    title: "Building Your First Digital Portfolio",
+    description: "Plan a small project, document your work, and prepare a portfolio presentation.",
+    level: "Beginner",
+    duration: "5 hours",
+    sections: ["Project Planning", "Portfolio Presentation"],
+    lessons: [
+      {
+        title: "Choosing and planning a project",
+        content: `A portfolio demonstrates what you can do. A small, completed project with a clear purpose is often more useful than a large unfinished idea.
+
+Start by describing the problem, intended users, key features, and what a successful result looks like. Break the work into tasks that can be completed and tested individually.
+
+Record important decisions and test the result with realistic examples. If you use AI-generated material or code, review it, understand it, and disclose its use when required.`,
+        example: "A beginner might create a simple personal portfolio page with an introduction, a skills section, two project descriptions, and contact information.",
+        exercise: "Write a one-page project brief with the problem, audience, three core features, and a simple success measure.",
+        questions: [
+          {
+            question: "What is a useful first portfolio project?",
+            options: ["A small project that works and solves a clear problem", "A very large unfinished idea", "A copied project you cannot explain", "A page filled with unrelated claims"],
+            answer: 0,
+            explanation: "A focused, completed project makes your skills easier to demonstrate and evaluate."
+          },
+          {
+            question: "What should you do with AI-generated code?",
+            options: ["Review and understand it before relying on it", "Assume it can never contain errors", "Hide every problem", "Publish it without testing"],
+            answer: 0,
+            explanation: "AI-generated code can contain bugs or security issues, so review and testing remain important."
+          }
+        ]
+      },
+      {
+        title: "Presenting projects professionally",
+        content: `A project presentation should explain the problem, your approach, the tools used, the result, and what you learned.
+
+Include screenshots or a working demonstration when appropriate. Be honest about your contribution and identify features that are incomplete or still being tested.
+
+Never publish passwords, API keys, private customer data, or confidential documents in a public portfolio or repository.
+
+A certificate may document course completion or assessment, but it does not automatically prove professional competence. A project demonstration provides additional evidence of practical skills.`,
+        example: "A portfolio entry might include the project name, its purpose, the technologies used, a live demo link, a repository link, and two lessons learned.",
+        exercise: "Write a portfolio entry for a project you have completed or are currently building. Clearly label unfinished features.",
+        questions: [
+          {
+            question: "What should a professional project presentation include?",
+            options: ["Purpose, approach, result, and your contribution", "Only an exaggerated claim", "Private access credentials", "Unrelated personal information"],
+            answer: 0,
+            explanation: "These details help others understand the work and evaluate your contribution."
+          },
+          {
+            question: "What does a course certificate establish?",
+            options: ["It documents the completion or assessment it represents", "It guarantees every employer will hire you", "It proves every skill without evidence", "It replaces all practical experience"],
+            answer: 0,
+            explanation: "A certificate should accurately represent the course or assessment completed, not guarantee employment."
+          }
+        ]
+      }
+    ]
+  }
+];
      
