@@ -4,9 +4,12 @@ import {
   ArrowRight,
   ArrowUpRight,
   BookOpen,
+  Bell,
+  Bookmark,
   BriefcaseBusiness,
+  CheckCircle2,
+  Compass,
   GraduationCap,
-  Heart,
   LogOut,
   ShieldCheck,
   Sparkles,
@@ -14,33 +17,6 @@ import {
   Wallet,
 } from "lucide-react";
 import { supabase } from "./lib/supabaseclient";
-
-const opportunities = [
-  {
-    title: "Scholarships",
-    description: "Discover educational funding opportunities.",
-    icon: GraduationCap,
-    color: "#EAF1FF",
-  },
-  {
-    title: "Jobs & Careers",
-    description: "Explore career opportunities and internships.",
-    icon: BriefcaseBusiness,
-    color: "#F2EAFE",
-  },
-  {
-    title: "Grants & Funding",
-    description: "Find support for your ideas and projects.",
-    icon: Wallet,
-    color: "#FFF0E3",
-  },
-  {
-    title: "NEXTORA Academy",
-    description: "Prepare for your future with useful skills.",
-    icon: BookOpen,
-    color: "#E5F7F0",
-  },
-];
 
 const styles = {
   page: {
@@ -53,7 +29,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: "18px 6%",
+    padding: "16px 6%",
     background: "#FFFFFF",
     borderBottom: "1px solid #E8EAF1",
     gap: 12,
@@ -193,31 +169,6 @@ const styles = {
     color: "#69738C",
     margin: "4px 0 20px",
   },
-  dashboardMain: {
-    width: "min(100% - 32px, 1050px)",
-    margin: "35px auto 60px",
-  },
-  welcome: {
-    background: "linear-gradient(120deg, #243D85, #526FC4)",
-    color: "#FFFFFF",
-    padding: "30px 25px",
-    borderRadius: 22,
-    marginBottom: 28,
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-    gap: 16,
-    marginTop: 20,
-  },
-  tile: {
-    padding: 22,
-    background: "#FFFFFF",
-    border: "1px solid #E9ECF4",
-    borderRadius: 17,
-    textAlign: "left",
-    color: "#18213B",
-  },
 };
 
 function Header({ onBack, dashboard = false, onSignOut }) {
@@ -334,12 +285,17 @@ export function AuthPortal({ initialMode = "signup", onBack }) {
       <main style={styles.main}>
         <div style={styles.card}>
           <div style={styles.eyebrow}>
-            <Sparkles size={14} style={{ verticalAlign: "middle" }} />{" "}
+            <Sparkles
+              size={14}
+              style={{ display: "inline", verticalAlign: "middle" }}
+            />{" "}
             WHERE OPPORTUNITIES BEGIN
           </div>
 
           <h1 style={styles.title}>
-            {isSignup ? "Create your NEXTORA account." : "Welcome back."}
+            {isSignup
+              ? "Create your NEXTORA account."
+              : "Welcome back."}
           </h1>
 
           <p style={styles.description}>
@@ -361,7 +317,9 @@ export function AuthPortal({ initialMode = "signup", onBack }) {
                   id="nextora-name"
                   style={styles.input}
                   value={fullName}
-                  onChange={(event) => setFullName(event.target.value)}
+                  onChange={(event) =>
+                    setFullName(event.target.value)
+                  }
                   autoComplete="name"
                   placeholder="Enter your full name"
                   required
@@ -394,8 +352,12 @@ export function AuthPortal({ initialMode = "signup", onBack }) {
                 style={styles.input}
                 type="password"
                 value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                autoComplete={isSignup ? "new-password" : "current-password"}
+                onChange={(event) =>
+                  setPassword(event.target.value)
+                }
+                autoComplete={
+                  isSignup ? "new-password" : "current-password"
+                }
                 placeholder="At least 6 characters"
                 minLength={6}
                 required
@@ -439,7 +401,14 @@ export function AuthPortal({ initialMode = "signup", onBack }) {
               </>
             )}
 
-            <button style={styles.primary} type="submit" disabled={loading}>
+            <button
+              style={{
+                ...styles.primary,
+                opacity: loading ? 0.7 : 1,
+              }}
+              type="submit"
+              disabled={loading}
+            >
               {loading
                 ? "Please wait..."
                 : isSignup
@@ -450,7 +419,10 @@ export function AuthPortal({ initialMode = "signup", onBack }) {
           </form>
 
           <div style={styles.switch}>
-            {isSignup ? "Already have an account? " : "New to NEXTORA? "}
+            {isSignup
+              ? "Already have an account? "
+              : "New to NEXTORA? "}
+
             <button
               style={styles.link}
               type="button"
@@ -474,7 +446,10 @@ export function AuthPortal({ initialMode = "signup", onBack }) {
             marginTop: 22,
           }}
         >
-          <ShieldCheck size={14} style={{ verticalAlign: "middle" }} />{" "}
+          <ShieldCheck
+            size={14}
+            style={{ display: "inline", verticalAlign: "middle" }}
+          />{" "}
           Your account is protected by Supabase authentication.
         </p>
       </main>
@@ -491,131 +466,861 @@ export function AuthPortal({ initialMode = "signup", onBack }) {
       </footer>
     </div>
   );
-}
-
+      }
 export function Dashboard({ user, onSignOut }) {
   const fullName =
     user?.user_metadata?.full_name ||
     user?.email?.split("@")[0] ||
     "NEXTORA member";
 
-  return (
-    <div style={styles.page}>
-      <Header dashboard onSignOut={onSignOut} />
+  const firstName = fullName.trim().split(/\s+/)[0] || "there";
 
-      <main style={styles.dashboardMain}>
-        <section style={styles.welcome}>
-          <div style={{ opacity: 0.85, fontSize: 13, marginBottom: 10 }}>
-            YOUR NEXT CHAPTER STARTS HERE
+  const initials = fullName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0].toUpperCase())
+    .join("");
+
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [saved, setSaved] = useState([]);
+
+  const categoryNames = [
+    "All",
+    "Education",
+    "Careers",
+    "Funding",
+    "Skills",
+  ];
+
+  const cards = [
+    {
+      title: "Scholarships",
+      desc: "Explore education support and scholarship opportunities.",
+      tag: "Education",
+      icon: GraduationCap,
+      tint: "#EAF0FF",
+      ink: "#4565D8",
+    },
+    {
+      title: "Jobs & Careers",
+      desc: "Get ready for job openings, internships, and career growth.",
+      tag: "Careers",
+      icon: BriefcaseBusiness,
+      tint: "#F1EAFE",
+      ink: "#8155C8",
+    },
+    {
+      title: "Grants & Funding",
+      desc: "Discover funding pathways for ideas, learning, and projects.",
+      tag: "Funding",
+      icon: Wallet,
+      tint: "#FFF0E3",
+      ink: "#C47735",
+    },
+    {
+      title: "NEXTORA Academy",
+      desc: "Build practical skills and prepare for your next step.",
+      tag: "Skills",
+      icon: BookOpen,
+      tint: "#E5F7F0",
+      ink: "#258660",
+    },
+  ];
+
+  const visibleCards = cards.filter(
+    (card) =>
+      activeCategory === "All" ||
+      card.tag === activeCategory
+  );
+
+  return (
+    <div className="nx-dashboard">
+      <style>{`
+        .nx-dashboard {
+          min-height: 100vh;
+          background: #f6f8fe;
+          color: #192744;
+          font-family: inherit;
+        }
+
+        .nx-topbar {
+          position: sticky;
+          top: 0;
+          z-index: 20;
+          background: rgba(255,255,255,.95);
+          backdrop-filter: blur(14px);
+          border-bottom: 1px solid #e8edf6;
+        }
+
+        .nx-topbar-inner {
+          width: min(1180px, calc(100% - 36px));
+          min-height: 76px;
+          margin: auto;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+        }
+
+        .nx-brand {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-size: 21px;
+          font-weight: 900;
+          letter-spacing: -.7px;
+          color: #243d85;
+        }
+
+        .nx-brand-mark {
+          width: 40px;
+          height: 40px;
+          display: grid;
+          place-items: center;
+          border-radius: 13px;
+          background: linear-gradient(145deg,#7891ff,#3855ce);
+          color: #fff;
+          box-shadow: 0 7px 18px #4263eb30;
+        }
+
+        .nx-top-actions {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .nx-icon-btn {
+          width: 41px;
+          height: 41px;
+          display: grid;
+          place-items: center;
+          border: 1px solid #e8edf6;
+          border-radius: 12px;
+          background: #fff;
+          color: #65738d;
+        }
+
+        .nx-user-chip {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 5px 10px 5px 5px;
+          border: 1px solid #e8edf6;
+          border-radius: 14px;
+          background: #fff;
+          max-width: 210px;
+        }
+
+        .nx-avatar {
+          width: 35px;
+          height: 35px;
+          flex-shrink: 0;
+          display: grid;
+          place-items: center;
+          border-radius: 11px;
+          background: #eaf0ff;
+          color: #3855ce;
+          font-size: 12px;
+          font-weight: 900;
+        }
+
+        .nx-user-name {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          font-size: 12px;
+          font-weight: 700;
+        }
+
+        .nx-logout {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          padding: 11px 13px;
+          border: 0;
+          border-radius: 11px;
+          background: #fff0f0;
+          color: #a73c48;
+          font-size: 12px;
+          font-weight: 800;
+        }
+
+        .nx-wrap {
+          width: min(1180px, calc(100% - 36px));
+          margin: 0 auto;
+          padding: 30px 0 54px;
+        }
+
+        .nx-hero {
+          position: relative;
+          isolation: isolate;
+          overflow: hidden;
+          display: grid;
+          grid-template-columns: minmax(0,1fr) 220px;
+          align-items: center;
+          gap: 22px;
+          padding: 32px;
+          border-radius: 25px;
+          background: linear-gradient(
+            115deg,
+            #233c85 0%,
+            #4868d7 64%,
+            #7887ee 100%
+          );
+          color: white;
+          box-shadow: 0 18px 44px #304bc425;
+        }
+
+        .nx-hero:before,
+        .nx-hero:after {
+          content: "";
+          position: absolute;
+          z-index: -1;
+          border: 1px solid #ffffff24;
+          border-radius: 50%;
+          pointer-events: none;
+        }
+
+        .nx-hero:before {
+          width: 300px;
+          height: 300px;
+          right: -70px;
+          top: -160px;
+        }
+
+        .nx-hero:after {
+          width: 240px;
+          height: 240px;
+          right: 20px;
+          bottom: -190px;
+        }
+
+        .nx-kicker {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          margin-bottom: 14px;
+          color: #e0e7ff;
+          font-size: 10px;
+          font-weight: 900;
+          letter-spacing: 1.7px;
+        }
+
+        .nx-hero h1 {
+          margin: 0 0 12px;
+          font-size: clamp(27px,4vw,39px);
+          line-height: 1.17;
+          letter-spacing: -1.2px;
+          overflow-wrap: anywhere;
+        }
+
+        .nx-hero p {
+          max-width: 600px;
+          margin: 0;
+          color: #e8edff;
+          font-size: 14px;
+          line-height: 1.8;
+        }
+
+        .nx-hero-art {
+          justify-self: center;
+          display: grid;
+          place-items: center;
+          width: 160px;
+          height: 160px;
+          border: 1px solid #ffffff42;
+          border-radius: 38px;
+          background: linear-gradient(145deg,#ffffff2b,#ffffff0b);
+          transform: rotate(-5deg);
+        }
+
+        .nx-hero-art-inner {
+          display: grid;
+          place-items: center;
+          width: 108px;
+          height: 108px;
+          border-radius: 30px;
+          background: #ffffffed;
+          color: #4263d1;
+          box-shadow: 0 14px 30px #172d7833;
+          transform: rotate(5deg);
+        }
+
+        .nx-stat-row {
+          display: grid;
+          grid-template-columns: repeat(3,minmax(0,1fr));
+          gap: 14px;
+          margin: 18px 0 34px;
+        }
+
+        .nx-stat {
+          display: flex;
+          align-items: center;
+          gap: 13px;
+          padding: 17px 18px;
+          border: 1px solid #e8edf6;
+          border-radius: 17px;
+          background: #fff;
+        }
+
+        .nx-stat-icon {
+          width: 43px;
+          height: 43px;
+          display: grid;
+          place-items: center;
+          flex-shrink: 0;
+          border-radius: 13px;
+          background: #edf2ff;
+          color: #4c66d3;
+        }
+
+        .nx-stat strong {
+          display: block;
+          margin-bottom: 4px;
+          font-size: 13px;
+        }
+
+        .nx-stat span {
+          color: #8290a6;
+          font-size: 11px;
+          line-height: 1.5;
+        }
+
+        .nx-section-head {
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+          gap: 16px;
+          margin-bottom: 18px;
+        }
+
+        .nx-eyebrow {
+          display: block;
+          margin-bottom: 8px;
+          color: #526bc9;
+          font-size: 10px;
+          font-weight: 900;
+          letter-spacing: 1.7px;
+        }
+
+        .nx-section-head h2 {
+          margin: 0;
+          color: #1c2a48;
+          font-size: clamp(22px,3vw,29px);
+          letter-spacing: -.7px;
+        }
+
+        .nx-section-head p {
+          margin: 7px 0 0;
+          color: #7a879d;
+          font-size: 13px;
+          line-height: 1.7;
+        }
+
+        .nx-filters {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 7px;
+          margin: 20px 0;
+        }
+
+        .nx-filter {
+          padding: 9px 13px;
+          border: 1px solid #e2e8f3;
+          border-radius: 9px;
+          background: #fff;
+          color: #718099;
+          font-size: 11px;
+          font-weight: 800;
+        }
+
+        .nx-filter.active {
+          border-color: #4263eb;
+          background: #4263eb;
+          color: #fff;
+          box-shadow: 0 5px 14px #4263eb2b;
+        }
+
+        .nx-cards {
+          display: grid;
+          grid-template-columns: repeat(4,minmax(0,1fr));
+          gap: 14px;
+        }
+
+        .nx-card {
+          min-width: 0;
+          min-height: 225px;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          padding: 20px;
+          border: 1px solid #e7ecf5;
+          border-radius: 18px;
+          background: #fff;
+          text-align: left;
+          transition: transform .2s,border-color .2s,box-shadow .2s;
+        }
+
+        .nx-card:hover {
+          transform: translateY(-4px);
+          border-color: #cbd6ff;
+          box-shadow: 0 16px 32px #1d31510d;
+        }
+
+        .nx-card-top {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+        }
+
+        .nx-card-icon {
+          width: 48px;
+          height: 48px;
+          display: grid;
+          place-items: center;
+          border-radius: 15px;
+        }
+
+        .nx-save {
+          width: 34px;
+          height: 34px;
+          display: grid;
+          place-items: center;
+          border: 1px solid #e8edf6;
+          border-radius: 10px;
+          background: #fff;
+          color: #8995a8;
+        }
+
+        .nx-save.saved {
+          color: #4263eb;
+          background: #edf2ff;
+          border-color: #dce5ff;
+        }
+
+        .nx-card h3 {
+          margin: 20px 0 8px;
+          font-size: 15px;
+          letter-spacing: -.2px;
+        }
+
+        .nx-card p {
+          margin: 0;
+          color: #7b879b;
+          font-size: 12px;
+          line-height: 1.75;
+        }
+
+        .nx-card-foot {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 8px;
+          width: 100%;
+          margin-top: auto;
+          padding-top: 18px;
+          color: #5069ca;
+          font-size: 11px;
+          font-weight: 800;
+        }
+
+        .nx-status {
+          padding: 6px 8px;
+          border-radius: 7px;
+          background: #f2f5fb;
+          color: #7a879d;
+          font-size: 9px;
+          font-weight: 900;
+          white-space: nowrap;
+        }
+
+        .nx-lower {
+          display: grid;
+          grid-template-columns: minmax(0,1.35fr) minmax(260px,.65fr);
+          gap: 16px;
+          margin-top: 25px;
+        }
+
+        .nx-panel {
+          padding: 22px;
+          border: 1px solid #e7ecf5;
+          border-radius: 18px;
+          background: #fff;
+        }
+
+        .nx-panel-title {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 14px;
+          font-size: 15px;
+          font-weight: 900;
+        }
+
+        .nx-tip {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          padding: 13px 0;
+          border-bottom: 1px solid #eff2f8;
+        }
+
+        .nx-tip:last-child {
+          border-bottom: 0;
+          padding-bottom: 0;
+        }
+
+        .nx-tip-icon {
+          width: 36px;
+          height: 36px;
+          display: grid;
+          place-items: center;
+          flex-shrink: 0;
+          border-radius: 11px;
+          background: #f0eaff;
+          color: #8254d4;
+        }
+
+        .nx-tip strong {
+          display: block;
+          margin: 1px 0 5px;
+          font-size: 12px;
+        }
+
+        .nx-tip p {
+          margin: 0;
+          color: #7b879b;
+          font-size: 11px;
+          line-height: 1.6;
+        }
+
+        .nx-account-email {
+          overflow-wrap: anywhere;
+          color: #77859b;
+          font-size: 12px;
+          line-height: 1.6;
+        }
+
+        .nx-account-row {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin: 16px 0;
+          padding: 13px;
+          border-radius: 13px;
+          background: #f7f9fe;
+        }
+
+        .nx-account-row strong {
+          display: block;
+          margin-bottom: 4px;
+          font-size: 12px;
+        }
+
+        .nx-account-message {
+          color: #7b879b;
+          font-size: 12px;
+          line-height: 1.75;
+        }
+
+        .nx-session {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          margin-top: 14px;
+          color: #258660;
+          font-size: 11px;
+          font-weight: 800;
+        }
+
+        .nx-footer {
+          padding: 0 18px 26px;
+          text-align: center;
+          color: #98a2b4;
+          font-size: 11px;
+        }
+
+        @media (max-width: 900px) {
+          .nx-cards {
+            grid-template-columns: repeat(2,minmax(0,1fr));
+          }
+
+          .nx-hero {
+            grid-template-columns: minmax(0,1fr) 150px;
+            padding: 26px;
+          }
+
+          .nx-hero-art {
+            width: 125px;
+            height: 125px;
+            border-radius: 30px;
+          }
+
+          .nx-hero-art-inner {
+            width: 85px;
+            height: 85px;
+            border-radius: 24px;
+          }
+
+          .nx-hero-art-inner svg {
+            width: 44px;
+            height: 44px;
+          }
+        }
+
+        @media (max-width: 600px) {
+          .nx-topbar-inner,
+          .nx-wrap {
+            width: calc(100% - 24px);
+          }
+
+          .nx-topbar-inner {
+            min-height: 66px;
+          }
+
+          .nx-brand {
+            font-size: 18px;
+          }
+
+          .nx-brand-mark {
+            width: 36px;
+            height: 36px;
+          }
+
+          .nx-user-chip {
+            display: none;
+          }
+
+          .nx-logout {
+            padding: 10px;
+          }
+
+          .nx-logout span {
+            display: none;
+          }
+
+          .nx-wrap {
+            padding-top: 18px;
+          }
+
+          .nx-hero {
+            grid-template-columns: 1fr;
+            padding: 24px 20px;
+            border-radius: 21px;
+          }
+
+          .nx-hero-art {
+            display: none;
+          }
+
+          .nx-hero h1 {
+            font-size: 29px;
+          }
+
+          .nx-hero p {
+            font-size: 13px;
+          }
+
+          .nx-stat-row {
+            gap: 8px;
+            margin: 12px 0 29px;
+          }
+
+          .nx-stat {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 9px;
+            padding: 12px 10px;
+            border-radius: 13px;
+          }
+
+          .nx-stat-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+          }
+
+          .nx-stat strong {
+            font-size: 11px;
+          }
+
+          .nx-stat span {
+            font-size: 10px;
+          }
+
+          .nx-section-head {
+            align-items: flex-start;
+            flex-direction: column;
+          }
+
+          .nx-section-head p {
+            font-size: 12px;
+          }
+
+          .nx-cards {
+            grid-template-columns: 1fr;
+            gap: 10px;
+          }
+
+          .nx-card {
+            min-height: 0;
+            padding: 17px;
+          }
+
+          .nx-card h3 {
+            margin-top: 14px;
+          }
+
+          .nx-card-foot {
+            padding-top: 14px;
+          }
+
+          .nx-lower {
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 18px;
+          }
+
+          .nx-panel {
+            padding: 18px;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .nx-card {
+            transition: none;
+          }
+
+          .nx-card:hover {
+            transform: none;
+          }
+        }
+      `}</style>
+
+      <header className="nx-topbar">
+        <div className="nx-topbar-inner">
+          <div className="nx-brand">
+            <span className="nx-brand-mark">
+              <ArrowUpRight size={24} />
+            </span>
+            <span>NEXTORA</span>
           </div>
 
-          <h1 style={{ margin: "0 0 12px", fontSize: "clamp(26px, 5vw, 38px)" }}>
-            Welcome, {fullName}!
-          </h1>
+          <div className="nx-top-actions">
+            <button
+              className="nx-icon-btn"
+              aria-label="Notifications"
+              title="Notifications coming soon"
+              onClick={() =>
+                window.alert(
+                  "Notifications will be available when NEXTORA opportunities are connected."
+                )
+              }
+            >
+              <Bell size={18} />
+            </button>
 
-          <p style={{ lineHeight: 1.7, margin: 0, maxWidth: 620 }}>
-            Your NEXTORA journey starts here. Explore opportunity categories
-            and keep preparing for your next step.
-          </p>
-        </section>
+            <div className="nx-user-chip">
+              <span className="nx-avatar">{initials || "N"}</span>
+              <span className="nx-user-name">{fullName}</span>
+            </div>
 
-        <div style={styles.eyebrow}>YOUR OPPORTUNITY SPACE</div>
-        <h2 style={{ fontSize: 25, margin: "8px 0" }}>
-          What are you looking for?
-        </h2>
-        <p style={{ color: "#69738C", lineHeight: 1.7 }}>
-          Choose a category to get started. Opportunity listings and learning
-          resources will be connected in a later step.
-        </p>
+            <button
+              className="nx-logout"
+              onClick={onSignOut}
+            >
+              <LogOut size={16} />
+              <span>Sign out</span>
+            </button>
+          </div>
+        </div>
+      </header>
 
-        <section style={styles.grid}>
-          {opportunities.map((item) => {
-            const Icon = item.icon;
+      <main className="nx-wrap">
+        <section className="nx-hero">
+          <div>
+            <div className="nx-kicker">
+              <Sparkles size={14} />
+              YOUR NEXT CHAPTER STARTS HERE
+            </div>
 
-            return (
-              <div key={item.title} style={styles.tile}>
-                <div
-                  style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 14,
-                    background: item.color,
-                    display: "grid",
-                    placeItems: "center",
-                    marginBottom: 18,
-                  }}
-                >
-                  <Icon size={24} />
-                </div>
+            <h1>
+              Welcome back, {firstName}{" "}
+              <span aria-hidden="true">✦</span>
+            </h1>
 
-                <h3 style={{ margin: "0 0 8px", fontSize: 17 }}>
-                  {item.title}
-                </h3>
+            <p>
+              Your future has possibilities. Explore pathways for
+              education, careers, funding, and skills—all in one
+              place to help you take your next step with confidence.
+            </p>
+          </div>
 
-                <p
-                  style={{
-                    color: "#69738C",
-                    fontSize: 13,
-                    lineHeight: 1.7,
-                    margin: 0,
-                  }}
-                >
-                  {item.description}
-                </p>
-              </div>
-            );
-          })}
+          <div className="nx-hero-art" aria-hidden="true">
+            <div className="nx-hero-art-inner">
+              <Compass size={56} strokeWidth={1.5} />
+            </div>
+          </div>
         </section>
 
         <section
-          style={{
-            marginTop: 28,
-            background: "#FFFFFF",
-            border: "1px solid #E9ECF4",
-            borderRadius: 17,
-            padding: 22,
-          }}
+          className="nx-stat-row"
+          aria-label="Your NEXTORA overview"
         >
-          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-            <User size={22} />
-            <div style={{ minWidth: 0 }}>
-              <strong>Your account</strong>
-              <p
-                style={{
-                  color: "#69738C",
-                  fontSize: 13,
-                  overflowWrap: "anywhere",
-                }}
-              >
-                {user?.email}
-              </p>
+          <div className="nx-stat">
+            <div className="nx-stat-icon">
+              <Compass size={20} />
+            </div>
+            <div>
+              <strong>Find your path</strong>
+              <span>Explore different directions</span>
             </div>
           </div>
 
-          <p style={{ color: "#69738C", fontSize: 13, lineHeight: 1.7 }}>
-            Your account is signed in. We'll add profile editing, saved
-            opportunities, and personalized recommendations as NEXTORA grows.
-          </p>
+          <div className="nx-stat">
+            <div
+              className="nx-stat-icon"
+              style={{
+                background: "#F2EAFE",
+                color: "#8155C8",
+              }}
+            >
+              <Bookmark size={20} />
+            </div>
+            <div>
+              <strong>{saved.length} saved</strong>
+              <span>Your personal shortlist</span>
+            </div>
+          </div>
 
-          <button
-            style={{ ...styles.primary, maxWidth: 180 }}
-            onClick={onSignOut}
-          >
-            <LogOut size={17} /> Sign out
-          </button>
+          <div className="nx-stat">
+            <div
+              className="nx-stat-icon"
+              style={{
+                background: "#E5F7F0",
+                color: "#258660",
+              }}
+            >
+              <CheckCircle2 size={20} />
+            </div>
+            <div>
+              <strong>One step at a time</strong>
+              <span>Build your next chapter</span>
+            </div>
+          </div>
         </section>
-      </main>
 
-      <footer
-        style={{
-          textAlign: "center",
-          color: "#8991A5",
-          fontSize: 12,
-          padding: "0 20px 28px",
-        }}
-      >
-        © {new Date().getFullYear()} NEXTORA · Ayanfe Innovation Labs Limited
-      </footer>
-    </div>
-  );
-               }
+        <section>
+          <div className="nx-section-head">
+            <div>
+              <span className="nx-eyebrow">
+                YOUR OPPORTUNITY SPACE
+              </span>
+              <h2>What are you looking for?</h2>
+              <p>
+                Choose an area to explore. Full listings are being
+                pr
