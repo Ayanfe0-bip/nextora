@@ -511,4 +511,252 @@ Attempt the exercise yourself before checking the solution. This helps you ident
 
 For school assignments, follow your institution's rules about permitted AI assistance and acknowledge it when required.
             `,
-    
+                example:
+              "Ask an AI assistant to explain a biology topic, provide a worked example, and then give you a practice question to solve independently.",
+            exercise:
+              "Choose a topic you are learning. Ask an AI assistant to explain it, give one example, and create three practice questions.",
+            questions: [
+              {
+                question:
+                  "Which approach supports effective learning with AI?",
+                options: [
+                  "Copy every answer without understanding it.",
+                  "Use explanations, attempt exercises and review feedback.",
+                  "Avoid checking the accuracy of answers.",
+                  "Allow AI to make every decision for you.",
+                ],
+                answer: 1,
+                explanation:
+                  "Active practice and feedback help you understand a topic instead of merely copying an answer.",
+              },
+            ],
+          },
+          {
+            title: "Evaluating an AI assistant's response",
+            content: `
+An AI assistant can produce a response that sounds convincing but contains mistakes. You should therefore evaluate important answers before relying on them.
+
+Use these checks:
+
+1. Accuracy: Can you confirm the facts using reliable sources?
+2. Relevance: Does the answer address your actual question?
+3. Completeness: Are important details missing?
+4. Clarity: Can the intended reader understand the explanation?
+5. Safety: Could following the advice cause harm?
+
+For schoolwork, compare explanations with appropriate textbooks, class notes and instructions from your teacher.
+
+For medical, legal, financial or other high-stakes decisions, consult an appropriately qualified professional instead of relying solely on an AI assistant.
+
+Remember that confidence in the wording does not guarantee that a response is correct.
+            `,
+            example:
+              "If an assistant gives you a scientific definition, compare it with your textbook and correct any differences before using it in your assignment.",
+            exercise:
+              "Write down three checks you would perform before using an AI-generated answer in an important assignment.",
+            questions: [
+              {
+                question:
+                  "What should you do when an AI answer contains an important factual claim?",
+                options: [
+                  "Believe it because it sounds professional.",
+                  "Share it immediately.",
+                  "Verify it using reliable sources.",
+                  "Assume it is correct if it is long.",
+                ],
+                answer: 2,
+                explanation:
+                  "Important factual claims should be checked against trustworthy sources.",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+
+  {
+    code: "NAC-AIF-003",
+    departmentId: "ai-fundamentals",
+    title: "Advanced Prompt Engineering",
+    description:
+      "Develop structured prompts, refine AI outputs and build repeatable workflows for practical tasks.",
+    level: "Intermediate",
+    duration: "60 minutes",
+    sections: [
+      {
+        title: "Section 1: Designing Structured Prompts",
+        lessons: [
+          {
+            title: "Breaking complex tasks into steps",
+            content: `
+A complex task often becomes easier when you divide it into smaller steps.
+
+Instead of asking an AI assistant to create an entire business plan, website specification or training programme in one request, define the stages of work.
+
+A structured workflow may include:
+
+1. Clarify the objective.
+2. Identify the intended audience.
+3. Gather the information needed.
+4. Create an outline.
+5. Develop each section.
+6. Review the result.
+7. Correct errors and prepare the final output.
+
+This approach gives you more opportunities to inspect the work and identify missing information.
+
+You can also ask the assistant to state its assumptions and identify information it still needs. For factual work, request sources you can independently verify.
+
+Remember that dividing a task into steps improves control, but it does not automatically guarantee accuracy.
+            `,
+            example:
+              "For a small-business plan, first request an outline, then develop the marketing section, review the estimated costs, and finally assemble the sections into one document.",
+            exercise:
+              "Choose a complex task and divide it into at least five smaller steps that an AI assistant could help you complete.",
+            questions: [
+              {
+                question:
+                  "Why divide a complex task into smaller steps?",
+                options: [
+                  "To eliminate every possible error.",
+                  "To make the task easier to review and manage.",
+                  "To avoid giving the assistant any context.",
+                  "To guarantee that all information is current.",
+                ],
+                answer: 1,
+                explanation:
+                  "Smaller steps make it easier to manage requirements and review the output.",
+              },
+            ],
+          },
+          {
+            title: "Adding constraints and output formats",
+            content: `
+Constraints describe the boundaries your result should follow. They may specify length, tone, audience, required sections or information that must not be invented.
+
+Output formats describe how the result should be organised.
+
+Common formats include:
+
+• Numbered instructions.
+• Bullet-point summaries.
+• Tables comparing alternatives.
+• Lesson plans with objectives and exercises.
+• JSON data for compatible software workflows.
+• Reports with headings and recommendations.
+
+Be specific about essential requirements. If a fact is unknown, instruct the assistant to mark it as unknown rather than inventing a value.
+
+For coding tasks, specify the programming language, the relevant framework, the expected behaviour and any restrictions on changing existing files.
+            `,
+            example:
+              "Prepare a 300-word project summary using simple English, four headings and a final checklist. Do not invent statistics; mark missing information clearly.",
+            exercise:
+              "Write a prompt with a clear task, audience, word limit, required headings and a rule against inventing facts.",
+            questions: [
+              {
+                question:
+                  "What is the purpose of a constraint in a prompt?",
+                options: [
+                  "To specify a requirement or boundary.",
+                  "To guarantee every response is correct.",
+                  "To remove the need for context.",
+                  "To prevent all follow-up questions.",
+                ],
+                answer: 0,
+                explanation:
+                  "Constraints define requirements such as length, tone, scope and permitted changes.",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        title: "Section 2: Refinement and Reusable Workflows",
+        lessons: [
+          {
+            title: "Improving an output through feedback",
+            content: `
+The first response from an AI assistant is often a starting point rather than the finished result.
+
+Useful feedback identifies a specific weakness and explains what needs to change.
+
+For example, instead of saying "Make it better", you could say:
+
+• Shorten the introduction to two sentences.
+• Explain the technical terms for a beginner.
+• Add one practical example from a small business.
+• Remove repeated ideas.
+• Check whether every requested section is included.
+
+Review the revised result rather than assuming that the changes are correct.
+
+When working with code, test the result after changes. Confirm that important existing features still work and that the update did not introduce new errors.
+            `,
+            example:
+              "After receiving a long explanation, ask the assistant to keep the key ideas, remove repetition and rewrite it for secondary-school students.",
+            exercise:
+              "Write three specific feedback instructions that would improve a long, unclear AI-generated lesson.",
+            questions: [
+              {
+                question:
+                  "Which feedback instruction is most useful?",
+                options: [
+                  "Do something better.",
+                  "Change everything without explanation.",
+                  "Remove repetition and add two relevant examples.",
+                  "Make it perfect.",
+                ],
+                answer: 2,
+                explanation:
+                  "Specific feedback identifies clear, testable improvements.",
+              },
+            ],
+          },
+          {
+            title: "Creating a reusable prompt template",
+            content: `
+A reusable prompt template is a structured instruction that can be adapted for similar tasks.
+
+Templates save time and help you remember important requirements. They are particularly useful for lesson preparation, customer communication, reports and software planning.
+
+A basic template can contain:
+
+TASK: What should be completed?
+CONTEXT: What background information matters?
+AUDIENCE: Who will use the result?
+REQUIREMENTS: What must be included?
+LIMITATIONS: What must be avoided?
+FORMAT: How should the answer be organised?
+REVIEW: What should be checked before delivery?
+
+Replace the placeholders with details for each new task. Do not include passwords, secret keys or unnecessary personal information.
+
+A reusable template should still be reviewed and adjusted when the task or circumstances change.
+            `,
+            example:
+              "TASK: Prepare a beginner lesson. AUDIENCE: JSS2 students. REQUIREMENTS: Definition, explanation, two worked examples and five revision questions. FORMAT: Clear headings and numbered questions.",
+            exercise:
+              "Create a reusable prompt template for preparing a lesson, business report or simple website specification.",
+            questions: [
+              {
+                question:
+                  "What is a major benefit of a reusable prompt template?",
+                options: [
+                  "It makes checking the output unnecessary.",
+                  "It helps organise repeated tasks consistently.",
+                  "It guarantees access to current information.",
+                  "It removes all privacy concerns.",
+                ],
+                answer: 1,
+                explanation:
+                  "Templates provide a repeatable structure while still allowing task-specific changes.",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+];
