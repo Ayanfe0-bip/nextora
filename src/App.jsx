@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabaseclient";
 import { AuthPortal, Dashboard } from "./AuthPortal";
+import AcademyPage from "./AcademyPage";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -66,7 +67,7 @@ function App() {
   const [authMode, setAuthMode] = useState(null);
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
-
+const [academyOpen, setAcademyOpen] = useState(false);
   useEffect(() => {
     let mounted = true;
 
@@ -168,7 +169,9 @@ function App() {
       </div>
     );
   }
-
+if (academyOpen) {
+  return <AcademyPage onBack={() => setAcademyOpen(false)} />;
+}
   if (user) {
     return (
       <Dashboard
@@ -528,12 +531,10 @@ function App() {
                 </p>
 
                 <button
-                  className="academy-button"
-                  onClick={() =>
-                    notify(
-                      "NEXTORA Academy learning resources are coming soon."
-                    )
-                  }
+                  onClick={() => {
+  setAcademyOpen(true);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}}
                 >
                   Explore the Academy{" "}
                   <ArrowRight size={17} />
