@@ -1982,9 +1982,9 @@ line-height: 1.6;
   }
 
   .hero-photo-frame {
-    min-height: 200px;
-    max-width: 350px;
-    border-radius: 20px;
+  height: 255px;
+  max-width: 350px;
+  border-radius: 20px;
   }
 
   .floating-card {
@@ -2185,12 +2185,9 @@ line-height: 1.6;
     border-radius: 20px;
   }
 
-  .academy-content h2 {
-    font-size: clamp(31px, 8vw, 40px);
-  }
-
-  .academy-content > p {
-    font-size: 11px;
+  .academy-photo-frame {
+  height: 220px;
+  max-width: 330px;
   }
 
   .academy-visual {
