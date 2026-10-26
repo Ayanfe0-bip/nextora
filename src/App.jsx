@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "./lib/supabaseclient";
+import { AuthPortal, Dashboard } from "./AuthPortal";
 import {
   ArrowRight,
   ArrowUpRight,
