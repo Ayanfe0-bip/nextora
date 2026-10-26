@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "./lib/supabaseclient";
+import { AuthPortal, Dashboard } from "./AuthPortal";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -61,31 +63,141 @@ const categories = [
 function App() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [toast, setToast] = useState("");
+  const [authMode, setAuthMode] = useState(null);
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (!mounted) return;
+
+      if (error) {
+        console.error(
+          "NEXTORA session check failed:",
+          error.message
+        );
+      }
+
+      setUser(data?.session?.user ?? null);
+      setAuthLoading(false);
+    });
+
+    const { data: authListener } =
+      supabase.auth.onAuthStateChange(
+        (_event, session) => {
+          if (!mounted) return;
+
+          setUser(session?.user ?? null);
+
+          if (session?.user) {
+            setAuthMode(null);
+          }
+        }
+      );
+
+    return () => {
+      mounted = false;
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
 
   const notify = (message) => {
     setToast(message);
+
     window.clearTimeout(window.nextoraToastTimer);
+
     window.nextoraToastTimer = window.setTimeout(
       () => setToast(""),
       3000
     );
   };
 
+  const openAuth = (mode) => {
+    setAuthMode(mode);
+    setMobileMenu(false);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      notify(
+        "Unable to sign out right now. Please try again."
+      );
+      return;
+    }
+
+    setUser(null);
+    setAuthMode(null);
+    setMobileMenu(false);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
   const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({
       behavior: "smooth",
     });
+
     setMobileMenu(false);
   };
+
+  if (authLoading) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "grid",
+          placeItems: "center",
+          background: "#F7F8FC",
+          color: "#243D85",
+          fontWeight: 700,
+        }}
+      >
+        Loading NEXTORA...
+      </div>
+    );
+  }
+
+  if (user) {
+    return (
+      <Dashboard
+        user={user}
+        onSignOut={handleSignOut}
+      />
+    );
+  }
+
+  if (authMode) {
+    return (
+      <AuthPortal
+        key={authMode}
+        initialMode={authMode}
+        onBack={() => setAuthMode(null)}
+      />
+    );
+  }
 
   return (
     <div className="nextora-app">
       <div className="announcement">
         <div className="announcement-inner">
           <Sparkles size={15} />
+
           <span>
             Your next opportunity could change everything.
           </span>
+
           <button onClick={() => scrollTo("about")}>
             Learn more <ArrowRight size={14} />
           </button>
@@ -97,12 +209,18 @@ function App() {
           <button
             className="brand"
             onClick={() =>
-              window.scrollTo({ top: 0, behavior: "smooth" })
+              window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+              })
             }
             aria-label="NEXTORA home"
           >
             <span className="brand-symbol">
-              <ArrowUpRight size={24} strokeWidth={2.6} />
+              <ArrowUpRight
+                size={24}
+                strokeWidth={2.6}
+              />
             </span>
 
             <span className="brand-text">
@@ -139,9 +257,7 @@ function App() {
 
             <button
               className="mobile-signin"
-              onClick={() =>
-                notify("Account registration is coming soon.")
-              }
+              onClick={() => openAuth("signin")}
             >
               Sign in <ArrowRight size={16} />
             </button>
@@ -150,18 +266,14 @@ function App() {
           <div className="nav-actions">
             <button
               className="signin-button"
-              onClick={() =>
-                notify("Sign-in will be available soon.")
-              }
+              onClick={() => openAuth("signin")}
             >
               Sign in
             </button>
 
             <button
               className="nav-cta"
-              onClick={() =>
-                notify("Account registration is coming soon.")
-              }
+              onClick={() => openAuth("signup")}
             >
               Get started <ArrowRight size={16} />
             </button>
@@ -222,11 +334,7 @@ function App() {
 
                 <button
                   type="button"
-                  onClick={() =>
-                    notify(
-                      "Account registration is coming soon."
-                    )
-                  }
+                  onClick={() => openAuth("signup")}
                 >
                   Get started <ArrowRight size={17} />
                 </button>
@@ -259,9 +367,11 @@ function App() {
                   <span className="caption-kicker">
                     YOUR NEXT CHAPTER
                   </span>
+
                   <strong>
                     Make room for what’s possible.
                   </strong>
+
                   <span>
                     One opportunity can open many doors.
                   </span>
@@ -315,12 +425,15 @@ function App() {
                 <span>
                   <GraduationCap size={17} /> Education
                 </span>
+
                 <span>
                   <BriefcaseBusiness size={17} /> Career
                 </span>
+
                 <span>
                   <Lightbulb size={17} /> Skills
                 </span>
+
                 <span>
                   <Wallet size={17} /> Funding
                 </span>
@@ -363,13 +476,7 @@ function App() {
                   <button
                     className={`category-card category-${category.color}`}
                     key={category.name}
-                    onClick={() =>
-                      notify(
-                        "Create an account to explore " +
-                          category.name.toLowerCase() +
-                          " opportunities."
-                      )
-                    }
+                    onClick={() => openAuth("signup")}
                   >
                     <span className="category-icon">
                       <Icon
@@ -524,11 +631,7 @@ function App() {
 
               <button
                 className="dark-outline-button"
-                onClick={() =>
-                  notify(
-                    "NEXTORA account registration is coming soon."
-                  )
-                }
+                onClick={() => openAuth("signup")}
               >
                 Join NEXTORA <ArrowRight size={17} />
               </button>
@@ -604,11 +707,7 @@ function App() {
 
             <button
               className="final-cta-button"
-              onClick={() =>
-                notify(
-                  "NEXTORA account registration is coming soon."
-                )
-              }
+              onClick={() => openAuth("signup")}
             >
               Get started <ArrowUpRight size={18} />
             </button>
