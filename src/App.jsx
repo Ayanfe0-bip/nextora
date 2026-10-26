@@ -247,18 +247,17 @@ function App() {
     : filteredOpportunities.slice(0, 3);
 
   return (
-    <div className="nextora-app">
-      <div className="announcement">
-        <div className="announcement-inner">
-          <Sparkles size={15} />
-          <span>
-            Your next opportunity could change everything.
-          </span>
-          <button onClick={() => scrollTo("opportunities")}>
-            Start exploring <ArrowRight size={14} />
-          </button>
-        </div>
-      </div>
+    <div className="announcement">
+  <div className="announcement-inner">
+    <Sparkles size={15} />
+    <span>
+      Your next opportunity could change everything.
+    </span>
+    <button onClick={() => scrollTo("about")}>
+      Learn more <ArrowRight size={14} />
+    </button>
+  </div>
+</div>
 
       <header className="site-header">
         <div className="nav-container">
@@ -277,34 +276,34 @@ function App() {
           </button>
 
           <nav className={`main-nav ${mobileMenu ? "nav-open" : ""}`}>
-            <button className="nav-link active" onClick={() => scrollTo("home")}>
-              Home
-            </button>
-            <button
-              className="nav-link"
-              onClick={() => scrollTo("opportunities")}
-            >
-              Opportunities
-            </button>
-            <button
-              className="nav-link"
-              onClick={() => scrollTo("academy")}
-            >
-              Academy
-            </button>
-            <button className="nav-link" onClick={() => scrollTo("about")}>
-              About
-            </button>
+  <button
+    className="nav-link active"
+    onClick={() => scrollTo("home")}
+  >
+    Home
+  </button>
 
-            <button
-              className="mobile-signin"
-              onClick={() =>
-                notify("Account registration is coming soon.")
-              }
-            >
-              Sign in <ArrowRight size={16} />
-            </button>
-          </nav>
+  <button
+    className="nav-link"
+    onClick={() => scrollTo("about")}
+  >
+    About
+  </button>
+
+  <button
+    className="nav-link"
+    onClick={() => scrollTo("academy")}
+  >
+    Academy
+  </button>
+
+  <button
+    className="mobile-signin"
+    onClick={() => notify("Account registration is coming soon.")}
+  >
+    Sign in <ArrowRight size={16} />
+  </button>
+</nav>
 
           <div className="nav-actions">
             <button
