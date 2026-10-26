@@ -439,16 +439,14 @@ input:focus-visible {
 }
 
 .hero-photo-frame {
-  position: relative;
-  width: 100%;
-  max-width: 390px;
-  min-height: 340px;
-  border: 1px solid #dfe7fb;
-  border-radius: 26px;
-  background: linear-gradient(145deg, #edf2ff, #dbe5ff 55%, #f7f8ff);
-  box-shadow: 0 25px 65px rgba(37, 59, 113, 0.12);
+position: relative;
+isolation: isolate;
+width: 100%;
+max-width: 390px;
+height: 360px;
+overflow: hidden;
+border-radius: 26px;
 }
-
 
 .hero-photo {
 position: absolute;
