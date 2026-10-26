@@ -1969,4 +1969,540 @@ export default function AcademyPage({ onBack }) {
                                         color: "#30314f",
                                       }}
                                     >
-           
+                                 {String.fromCharCode(65 + optionIndex)}.{" "}
+                                      {option}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+
+                              {showAnswers && answered && (
+                                <div
+                                  style={{
+                                    marginTop: 12,
+                                    color: correct ? "#16815f" : "#b44a59",
+                                    lineHeight: 1.7,
+                                    fontSize: 13,
+                                  }}
+                                >
+                                  <strong>
+                                    {correct ? "Correct!" : "Not quite."}
+                                  </strong>{" "}
+                                  {question.explanation}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+
+                        <button
+                          style={{ ...primaryButton, marginTop: 15 }}
+                          onClick={() => setShowAnswers(true)}
+                        >
+                          Check answers
+                        </button>
+
+                        {showAnswers && (
+                          <div style={{ ...mutedStyle, marginTop: 12 }}>
+                            Score:{" "}
+                            {
+                              lesson.questions.filter(
+                                (question, index) =>
+                                  answers[index] === question.answer
+                              ).length
+                            }{" "}
+                            / {lesson.questions.length}. You can change an
+                            answer and check again.
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* LESSON ACTIONS */}
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: 10,
+                        marginTop: 28,
+                        paddingTop: 20,
+                        borderTop: "1px solid #ededf6",
+                      }}
+                    >
+                      <button
+                        style={secondaryButton}
+                        disabled={selectedLesson === 0}
+                        onClick={() => moveLesson(-1)}
+                      >
+                        <ArrowLeft
+                          size={15}
+                          style={{ verticalAlign: "middle" }}
+                        />{" "}
+                        Previous
+                      </button>
+
+                      <button
+                        style={{
+                          ...primaryButton,
+                          background: completedInCourse.includes(selectedLesson)
+                            ? "#248568"
+                            : "#6657d9",
+                        }}
+                        onClick={() =>
+                          saveProgress(
+                            selectedCourse.code,
+                            selectedLesson,
+                            !completedInCourse.includes(selectedLesson)
+                          )
+                        }
+                      >
+                        <CheckCircle2
+                          size={15}
+                          style={{ verticalAlign: "middle" }}
+                        />{" "}
+                        {completedInCourse.includes(selectedLesson)
+                          ? "Mark incomplete"
+                          : "Mark lesson complete"}
+                      </button>
+
+                      <button
+                        style={secondaryButton}
+                        disabled={
+                          selectedLesson === currentLessons.length - 1
+                        }
+                        onClick={() => moveLesson(1)}
+                      >
+                        Next{" "}
+                        <ArrowRight
+                          size={15}
+                          style={{ verticalAlign: "middle" }}
+                        />
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <p>No lessons are available in this course yet.</p>
+                )}
+              </section>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* ACADEMY HERO */}
+            <section
+              style={{
+                ...cardStyle,
+                padding: "clamp(24px, 5vw, 42px)",
+                background:
+                  "linear-gradient(125deg, #fff 0%, #f0edff 65%, #fff5fb 100%)",
+                overflow: "hidden",
+              }}
+            >
+              <div style={badgeStyle}>
+                <Sparkles size={13} /> YOUR LEARNING JOURNEY
+              </div>
+
+              <h1
+                style={{
+                  fontSize: "clamp(32px, 5vw, 48px)",
+                  lineHeight: 1.13,
+                  letterSpacing: "-1.3px",
+                  margin: "18px 0 12px",
+                }}
+              >
+                Learn skills.
+                <br />
+                Build your <span style={{ color: "#7567ec" }}>future.</span>
+              </h1>
+
+              <p
+                style={{
+                  color: "#656784",
+                  lineHeight: 1.85,
+                  maxWidth: 660,
+                  fontSize: 15,
+                }}
+              >
+                Explore practical courses in artificial intelligence, digital
+                skills, business, health education, and creative technology.
+                Learn at your own pace and track your progress as you go.
+              </p>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    "repeat(auto-fit, minmax(125px, 1fr))",
+                  gap: 12,
+                  marginTop: 26,
+                }}
+              >
+                {[
+                  {
+                    label: "Departments",
+                    value: departments.length,
+                    icon: GraduationCap,
+                  },
+                  {
+                    label: "Courses",
+                    value: allCourses.length,
+                    icon: BookOpen,
+                  },
+                  {
+                    label: "Lessons",
+                    value: totalLessons,
+                    icon: PlayCircle,
+                  },
+                  {
+                    label: "Completed",
+                    value: `${overallProgress}%`,
+                    icon: Trophy,
+                  },
+                ].map((stat) => {
+                  const Icon = stat.icon;
+
+                  return (
+                    <div
+                      key={stat.label}
+                      style={{
+                        background: "rgba(255,255,255,0.85)",
+                        border: "1px solid #e8e5fb",
+                        borderRadius: 15,
+                        padding: 16,
+                      }}
+                    >
+                      <Icon size={20} color="#7768e5" />
+                      <div
+                        style={{
+                          fontSize: 25,
+                          fontWeight: 900,
+                          marginTop: 8,
+                        }}
+                      >
+                        {stat.value}
+                      </div>
+                      <div style={mutedStyle}>{stat.label}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* SEARCH AND FILTERS */}
+            <section style={{ marginTop: 30 }}>
+              <h2 style={{ fontSize: 25, marginBottom: 5 }}>
+                Explore the Academy
+              </h2>
+              <p style={{ ...mutedStyle, marginTop: 0 }}>
+                Find a course that matches your goals.
+              </p>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    "repeat(auto-fit, minmax(min(100%, 250px), 1fr))",
+                  gap: 12,
+                  margin: "20px 0",
+                }}
+              >
+                <label
+                  style={{
+                    ...cardStyle,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    padding: "0 14px",
+                  }}
+                >
+                  <Search size={19} color="#8075ce" />
+                  <input
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                    placeholder="Search courses or departments..."
+                    aria-label="Search courses"
+                    style={{
+                      width: "100%",
+                      minWidth: 0,
+                      border: "none",
+                      outline: "none",
+                      padding: "17px 0",
+                      fontSize: 14,
+                      background: "transparent",
+                      color: "#292a4a",
+                    }}
+                  />
+                </label>
+
+                <label
+                  style={{
+                    ...cardStyle,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    padding: "0 14px",
+                  }}
+                >
+                  <BookOpen size={19} color="#8075ce" />
+                  <select
+                    value={selectedDepartment}
+                    onChange={(event) =>
+                      setSelectedDepartment(event.target.value)
+                    }
+                    aria-label="Filter by department"
+                    style={{
+                      width: "100%",
+                      border: "none",
+                      outline: "none",
+                      padding: "17px 0",
+                      fontSize: 14,
+                      background: "transparent",
+                      color: "#292a4a",
+                    }}
+                  >
+                    <option value="all">All departments</option>
+                    {departments.map((department) => (
+                      <option key={department.id} value={department.id}>
+                        {department.title}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            </section>
+
+            {/* DEPARTMENT QUICK FILTERS */}
+            {mobileMenuOpen && (
+              <section style={{ ...cardStyle, marginBottom: 20 }}>
+                <h3 style={{ marginTop: 0 }}>Browse departments</h3>
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns:
+                      "repeat(auto-fit, minmax(min(100%, 190px), 1fr))",
+                    gap: 9,
+                  }}
+                >
+                  {departments.map((department) => {
+                    const Icon = department.icon;
+
+                    return (
+                      <button
+                        key={department.id}
+                        onClick={() => {
+                          setSelectedDepartment(department.id);
+                          setMobileMenuOpen(false);
+                        }}
+                        style={{
+                          ...secondaryButton,
+                          textAlign: "left",
+                          background: "#faf9ff",
+                          border: "1px solid #e8e5fb",
+                        }}
+                      >
+                        <Icon
+                          size={16}
+                          style={{
+                            verticalAlign: "middle",
+                            marginRight: 7,
+                          }}
+                        />
+                        {department.title}
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+
+            {/* COURSE CARDS */}
+            <section
+              style={{
+                display: "grid",
+                gridTemplateColumns:
+                  "repeat(auto-fit, minmax(min(100%, 270px), 1fr))",
+                gap: 16,
+              }}
+            >
+              {filteredCourses.map((course) => {
+                const department = getDepartment(course);
+                const Icon = department?.icon || BookOpen;
+                const courseDone = progress[course.code]?.completed || [];
+                const percent = Math.round(
+                  (courseDone.length /
+                    Math.max(1, getCourseLessons(course).length)) *
+                    100
+                );
+
+                return (
+                  <article
+                    key={course.code}
+                    style={{
+                      ...cardStyle,
+                      display: "flex",
+                      flexDirection: "column",
+                      minWidth: 0,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                        gap: 10,
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 46,
+                          height: 46,
+                          borderRadius: 15,
+                          background: department?.color || "#eeecff",
+                          color: "#fff",
+                          display: "grid",
+                          placeItems: "center",
+                        }}
+                      >
+                        <Icon size={22} />
+                      </div>
+                      <span style={badgeStyle}>{course.level}</span>
+                    </div>
+
+                    <div
+                      style={{
+                        ...mutedStyle,
+                        marginTop: 16,
+                        fontWeight: 800,
+                      }}
+                    >
+                      {course.code}
+                    </div>
+
+                    <h3
+                      style={{
+                        fontSize: 19,
+                        lineHeight: 1.4,
+                        margin: "7px 0",
+                      }}
+                    >
+                      {course.title}
+                    </h3>
+
+                    <p
+                      style={{
+                        ...mutedStyle,
+                        flexGrow: 1,
+                        margin: "0 0 15px",
+                      }}
+                    >
+                      {course.description}
+                    </p>
+
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: 8,
+                        marginBottom: 14,
+                      }}
+                    >
+                      <span style={badgeStyle}>
+                        <Clock3 size={12} /> {course.duration}
+                      </span>
+                      <span style={badgeStyle}>
+                        {getCourseLessons(course).length} lessons
+                      </span>
+                    </div>
+
+                    <div
+                      style={{
+                        height: 6,
+                        borderRadius: 10,
+                        background: "#eeedf7",
+                        overflow: "hidden",
+                        marginBottom: 15,
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: `${percent}%`,
+                          height: "100%",
+                          background: "#7b6be7",
+                        }}
+                      />
+                    </div>
+
+                    <button
+                      style={{ ...primaryButton, width: "100%" }}
+                      onClick={() => openCourse(course)}
+                    >
+                      {percent === 100 ? "Review course" : "Start learning"}{" "}
+                      <ArrowRight
+                        size={15}
+                        style={{ verticalAlign: "middle" }}
+                      />
+                    </button>
+                  </article>
+                );
+              })}
+            </section>
+
+            {filteredCourses.length === 0 && (
+              <div
+                style={{
+                  ...cardStyle,
+                  marginTop: 20,
+                  textAlign: "center",
+                }}
+              >
+                <Search
+                  size={30}
+                  color="#8172e7"
+                  style={{ margin: "0 auto" }}
+                />
+                <h3>No matching courses</h3>
+                <p style={mutedStyle}>
+                  Try another search or select a different department.
+                </p>
+                <button
+                  style={secondaryButton}
+                  onClick={() => {
+                    setSearch("");
+                    setSelectedDepartment("all");
+                  }}
+                >
+                  Clear filters
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </main>
+
+      {/* FOOTER */}
+      <footer
+        style={{
+          maxWidth: 1180,
+          margin: "20px auto 0",
+          padding: "24px 20px",
+          borderTop: "1px solid #e5e5f2",
+          textAlign: "center",
+          color: "#777993",
+          fontSize: 12,
+          lineHeight: 1.9,
+        }}
+      >
+        <div style={{ fontWeight: 900, color: "#5d51c3", fontSize: 14 }}>
+          NEXTORA Academy
+        </div>
+        Learn at your own pace. Build skills through practice.
+        <br />
+        Educational content is for learning purposes and does not replace
+        qualified professional advice.
+        <br />
+        © {new Date().getFullYear()} Ayanfe Innovation Labs Limited.
+      </footer>
+    </div>
+  );
+                      }
