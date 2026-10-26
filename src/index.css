@@ -2245,3 +2245,17 @@ animation-iteration-count: 1 !important;
 transition-duration: 0.01ms !important;
 }
   }
+/* TEMPORARILY HIDE PHOTOS WHILE FIXING THE LAYOUT */
+
+.hero-photo,
+.academy-photo-frame img {
+  display: none !important;
+}
+
+.hero-photo-frame {
+  background: linear-gradient(135deg, #152d50, #3678d8);
+}
+
+.academy-photo-frame {
+  background: linear-gradient(135deg, #e6efff, #b9d2ff);
+}
