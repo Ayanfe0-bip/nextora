@@ -760,3 +760,347 @@ A reusable template should still be reviewed and adjusted when the task or circu
     ],
   },
 ];
+const additionalCourses = [
+  // =========================================================
+  // DEPARTMENT 2: AI IMAGE CREATION
+  // =========================================================
+  {
+    code: "NAC-AIC-001",
+    departmentId: "NAC-AIC",
+    title: "Introduction to AI Image Creation",
+    description: "Learn to describe, plan, generate, and evaluate images with AI tools.",
+    level: "Beginner",
+    duration: "3 hours",
+    sections: ["Image Generation Basics", "Writing Image Prompts"],
+    lessons: [
+      {
+        title: "How AI image generation works",
+        content: `AI image generators create pictures from instructions called prompts. Depending on the tool, a prompt may describe the subject, environment, composition, lighting, mood, and artistic style.
+
+The result depends on how clearly the request communicates the intended image. Different tools have different capabilities, and results may not always match the prompt exactly.
+
+AI-generated images can be useful for illustrations, concept art, posters, product mock-ups, and educational visuals.`,
+        example: "Create an illustration of a young African student reading in a bright library, with warm daylight and a clean editorial illustration style.",
+        exercise: "Write a prompt for an educational illustration about the water cycle.",
+        questions: [
+          {
+            question: "What is a prompt?",
+            options: ["A description given to an AI tool", "A computer battery", "A printed photograph", "A keyboard shortcut"],
+            answer: 0,
+            explanation: "A prompt describes what you want the AI system to produce."
+          },
+          {
+            question: "Which detail can help guide an image generator?",
+            options: ["Subject and lighting", "Your phone password", "Battery percentage", "SIM serial number"],
+            answer: 0,
+            explanation: "Subject, composition, lighting, and style can help guide the generated image."
+          }
+        ]
+      },
+      {
+        title: "Writing clearer image prompts",
+        content: `A useful image prompt often contains five elements:
+
+1. Subject: what should appear.
+2. Setting: where the scene takes place.
+3. Composition: how objects are arranged.
+4. Lighting and mood: how the scene should feel.
+5. Visual style: for example, photography, watercolor, or flat illustration.
+
+You do not need to include every element in every prompt. Start with the most important details and refine the result when necessary.
+
+Avoid contradictory instructions, such as requesting both a bright sunny afternoon and a completely dark nighttime scene unless that contrast is intentional.`,
+        example: "Subject: a baker decorating a cake. Setting: a small modern bakery. Composition: medium shot with the cake in the foreground. Lighting: soft morning daylight. Style: realistic commercial photography.",
+        exercise: "Write two versions of a prompt for the same subject: one realistic and one cartoon-style.",
+        questions: [
+          {
+            question: "Why should a prompt identify its subject?",
+            options: ["To clarify what the image should show", "To increase phone storage", "To change the internet provider", "To install a new operating system"],
+            answer: 0,
+            explanation: "The subject tells the generator what the main image content should be."
+          },
+          {
+            question: "What is a sensible way to improve a weak result?",
+            options: ["Refine the prompt with clearer details", "Add unrelated instructions", "Ignore the result", "Delete every project"],
+            answer: 0,
+            explanation: "Specific, relevant details can help the tool produce a result closer to your intention."
+          }
+        ]
+      }
+    ]
+  },
+
+  // =========================================================
+  // DEPARTMENT 3: AI VIDEO AND CARTOONS
+  // =========================================================
+  {
+    code: "NAC-AVC-001",
+    departmentId: "NAC-AVC",
+    title: "AI Video Production Fundamentals",
+    description: "Plan short videos, structure scenes, and understand AI-assisted video production.",
+    level: "Beginner",
+    duration: "4 hours",
+    sections: ["Video Planning", "Creating and Reviewing Scenes"],
+    lessons: [
+      {
+        title: "Planning a short video",
+        content: `A good video begins with a clear purpose. Decide who the video is for, what viewers should learn or feel, and what action they should take afterward.
+
+A simple video plan contains a title, a short script, a scene list, narration, and any visual or sound requirements.
+
+A storyboard describes the scenes in order. It helps you identify missing transitions and unnecessary shots before spending time generating or editing video.`,
+        example: "For a 30-second school advert, plan a welcome scene, a classroom scene, a student activity scene, and a final scene showing the school's approved contact details.",
+        exercise: "Create a four-scene storyboard for a short video introducing your business or school.",
+        questions: [
+          {
+            question: "What is a storyboard used for?",
+            options: ["Planning scenes in sequence", "Charging a phone", "Registering a SIM card", "Measuring internet speed"],
+            answer: 0,
+            explanation: "A storyboard organizes the visual sequence before production."
+          },
+          {
+            question: "What should you decide before making a video?",
+            options: ["The video's purpose and audience", "The viewer's private password", "An unrelated app name", "Nothing at all"],
+            answer: 0,
+            explanation: "A clear purpose and audience guide the script and visual decisions."
+          }
+        ]
+      },
+      {
+        title: "Maintaining consistency across scenes",
+        content: `AI-generated scenes may change a character's face, clothes, age, or surroundings between shots. Consistency requires careful planning and review.
+
+Describe recurring characters consistently, keep reference images when the tool supports them, and use a scene plan with clear actions and settings.
+
+Check the finished video for abrupt changes, incorrect text, strange movement, poor synchronization, and misleading visual details. AI tools can make mistakes, so review every scene before publishing.`,
+        example: "For a cartoon about a schoolboy, reuse the same character description and reference image where supported, and keep his clothing and appearance consistent throughout the scenes.",
+        exercise: "Write a short character description and a three-scene sequence that keeps the character recognizable.",
+        questions: [
+          {
+            question: "Why should recurring characters be reviewed?",
+            options: ["Their appearance may change between generated scenes", "Videos cannot contain characters", "It automatically increases internet speed", "It removes the need for editing"],
+            answer: 0,
+            explanation: "AI tools may not maintain identical character details in every scene."
+          },
+          {
+            question: "What should happen before publishing an AI video?",
+            options: ["Review its scenes, sound, and accuracy", "Publish it without watching", "Remove the script automatically", "Assume every detail is correct"],
+            answer: 0,
+            explanation: "Review helps identify visual errors, misleading content, and technical problems."
+          }
+        ]
+      }
+    ]
+  },
+
+  // =========================================================
+  // DEPARTMENT 4: WEBSITE AND APP DEVELOPMENT
+  // =========================================================
+  {
+    code: "NAC-WAD-001",
+    departmentId: "NAC-WAD",
+    title: "Web Development Foundations",
+    description: "Understand HTML, CSS, JavaScript, responsive design, and website structure.",
+    level: "Beginner",
+    duration: "6 hours",
+    sections: ["Core Web Technologies", "Building a Simple Website"],
+    lessons: [
+      {
+        title: "Understanding HTML, CSS, and JavaScript",
+        content: `Websites commonly use three core technologies.
+
+HTML defines the structure and meaning of content, such as headings, paragraphs, forms, links, and images.
+
+CSS controls presentation, including colors, spacing, typography, layout, and responsive behavior.
+
+JavaScript adds behavior, such as responding to button clicks, validating forms, updating page content, and managing interactive components.
+
+Modern applications may also use frameworks, databases, authentication services, and deployment platforms. Learn the fundamentals before relying entirely on frameworks or AI-generated code.`,
+        example: `HTML creates a heading. CSS changes how the heading looks. JavaScript can respond when a user clicks a button.`,
+        exercise: "Describe one feature of a website and identify which parts could use HTML, CSS, and JavaScript.",
+        questions: [
+          {
+            question: "Which technology primarily defines page structure?",
+            options: ["HTML", "CSS", "JavaScript only", "A spreadsheet"],
+            answer: 0,
+            explanation: "HTML provides the structure and semantic content of a web page."
+          },
+          {
+            question: "Which technology primarily controls visual styling?",
+            options: ["CSS", "HTML alone", "A SIM card", "A database password"],
+            answer: 0,
+            explanation: "CSS controls layout, colors, typography, spacing, and other visual presentation."
+          }
+        ]
+      },
+      {
+        title: "Responsive design and accessibility",
+        content: `Responsive design helps a website adapt to different screen sizes. This is especially important when visitors use phones rather than computers.
+
+Use flexible layouts, readable text, appropriately sized controls, and images that fit their containers.
+
+Accessibility means making digital content usable by people with different abilities. Helpful practices include meaningful headings, labels for form fields, descriptive alternative text for informative images, keyboard navigation, and sufficient color contrast.
+
+Test your work on a narrow screen and check that important buttons and text remain usable.`,
+        example: "A registration form should fit a phone screen, have a visible label for each field, and provide a readable message when information is missing.",
+        exercise: "Review a website on your phone and list three improvements that could make it easier to use.",
+        questions: [
+          {
+            question: "What is the goal of responsive design?",
+            options: ["Make layouts adapt to different screens", "Force every visitor to use a computer", "Remove all page content", "Disable navigation"],
+            answer: 0,
+            explanation: "Responsive layouts adjust to different screen sizes and viewing conditions."
+          },
+          {
+            question: "Which is an accessibility improvement?",
+            options: ["Adding labels to form fields", "Using unreadably small text", "Removing keyboard navigation", "Hiding every heading"],
+            answer: 0,
+            explanation: "Labels help users understand form fields, including people using assistive technology."
+          }
+        ]
+      }
+    ]
+  },
+
+  // =========================================================
+  // DEPARTMENT 5: AI FOR BUSINESS AND CAREERS
+  // =========================================================
+  {
+    code: "NAC-ABC-001",
+    departmentId: "NAC-ABC",
+    title: "AI for Business Productivity",
+    description: "Use AI to support planning, communication, marketing, and everyday business tasks.",
+    level: "Beginner",
+    duration: "4 hours",
+    sections: ["Business Applications", "Responsible Business Use"],
+    lessons: [
+      {
+        title: "Using AI to support daily business work",
+        content: `AI assistants can help draft customer messages, organize ideas, create first drafts of product descriptions, summarize non-sensitive documents, and develop content calendars.
+
+Treat generated content as a draft rather than an unquestionable final answer. Check prices, dates, product details, spelling, and claims before using it with customers.
+
+Never enter passwords, payment card information, confidential customer records, or other sensitive information into a tool unless you have verified that the tool is appropriate and authorized for that data.`,
+        example: "Ask an assistant to draft three polite responses to a customer asking about delivery. Review the responses and add your actual delivery fees and policies.",
+        exercise: "Choose a small business and list three repetitive tasks an AI assistant could help with safely.",
+        questions: [
+          {
+            question: "How should AI-generated business content be treated?",
+            options: ["As a draft that needs checking", "As guaranteed truth", "As a replacement for every business decision", "As proof of a customer's identity"],
+            answer: 0,
+            explanation: "Human review is needed to verify facts, context, and suitability."
+          },
+          {
+            question: "Which information should you protect?",
+            options: ["Customer records and passwords", "Publicly available product names only", "A general business slogan", "A public holiday date"],
+            answer: 0,
+            explanation: "Sensitive personal and account information must be handled carefully."
+          }
+        ]
+      },
+      {
+        title: "Creating a simple marketing plan",
+        content: `A marketing plan identifies a target audience, a product or service, a main benefit, a communication channel, and a way to measure results.
+
+AI can help brainstorm headlines, promotional messages, and post ideas. You must ensure the claims are accurate and that customers are not misled.
+
+For a small business, begin with a manageable plan. Track enquiries, completed sales, customer feedback, and the costs of the campaign instead of relying only on likes or views.`,
+        example: "A local bakery could plan three weekly posts: one showing products, one explaining ordering and delivery, and one sharing customer-approved feedback.",
+        exercise: "Draft a one-week marketing plan for a product you know, including the audience, message, channel, and one measure of success.",
+        questions: [
+          {
+            question: "What should a marketing plan identify?",
+            options: ["Audience and main message", "Only the owner's favorite color", "A customer's password", "An unrelated website"],
+            answer: 0,
+            explanation: "The audience and message help determine what to communicate and where."
+          },
+          {
+            question: "Which measure is useful for evaluating a sales campaign?",
+            options: ["Relevant enquiries and completed sales", "The number of letters in the business name", "The owner's phone wallpaper", "An unrelated weather report"],
+            answer: 0,
+            explanation: "Enquiries and sales help show whether a campaign is producing useful business outcomes."
+          }
+        ]
+      }
+    ]
+  },
+
+  // =========================================================
+  // DEPARTMENT 6: MENTAL WELLNESS
+  // =========================================================
+  {
+    code: "NAC-MHW-001",
+    departmentId: "NAC-MHW",
+    title: "Everyday Mental Wellness",
+    description: "Learn general wellbeing practices, stress awareness, and healthy support-seeking habits.",
+    level: "Beginner",
+    duration: "3 hours",
+    sections: ["Understanding Wellbeing", "Healthy Coping Skills"],
+    lessons: [
+      {
+        title: "Understanding mental wellness",
+        content: `Mental wellness includes how people manage emotions, handle everyday challenges, relate to others, and carry out daily activities.
+
+Feeling stressed, worried, sad, or overwhelmed sometimes is part of human experience. These feelings can have many causes, and one lesson cannot determine what a particular person is experiencing.
+
+Helpful foundations may include regular sleep, balanced meals, physical activity appropriate to your abilities, meaningful relationships, rest, and asking for support when needed.
+
+Seeking help is a reasonable step, not a personal failure. This course provides general education and does not diagnose conditions or replace professional care.`,
+        example: "A student feeling overwhelmed before examinations might break study into smaller sessions, take reasonable breaks, and speak with a trusted person about the pressure.",
+        exercise: "Create a simple weekly wellbeing plan with time for rest, learning, movement, and social connection.",
+        questions: [
+          {
+            question: "Which is a healthy approach to everyday stress?",
+            options: ["Break tasks into manageable steps", "Ignore every difficulty indefinitely", "Stop speaking to everyone", "Assume stress is always a personal failure"],
+            answer: 0,
+            explanation: "Breaking tasks down can make challenges feel more manageable."
+          },
+          {
+            question: "What is the purpose of this course?",
+            options: ["Provide general wellbeing education", "Diagnose every mental health condition", "Replace all professional care", "Prescribe medication"],
+            answer: 0,
+            explanation: "Educational material can support understanding but cannot replace individual professional assessment."
+          }
+        ]
+      },
+      {
+        title: "Recognizing when to seek support",
+        content: `Consider speaking with a qualified health professional if emotional distress persists, becomes difficult to manage, or interferes with sleep, work, study, relationships, or daily responsibilities.
+
+A trusted friend, family member, teacher, or community leader may offer support, but they are not a substitute for professional help when it is needed.
+
+If you or someone else is in immediate danger, or there is a risk of self-harm, contact local emergency services or go to the nearest emergency department. Stay with a person at immediate risk if you can do so safely.`,
+        example: "Someone whose anxiety is repeatedly preventing them from attending school could speak with a qualified professional and a trusted support person.",
+        exercise: "Write down three trusted sources of support someone could approach when struggling, including a qualified health professional.",
+        questions: [
+          {
+            question: "When is professional support worth considering?",
+            options: ["When distress persists or disrupts daily life", "Only when every friend agrees", "Never under any circumstances", "Only after abandoning every routine"],
+            answer: 0,
+            explanation: "Persistent distress or disruption to everyday functioning can be a reason to seek professional advice."
+          },
+          {
+            question: "What should someone do if there is immediate danger?",
+            options: ["Seek urgent local emergency assistance", "Wait indefinitely without help", "Rely only on an online quiz", "Ignore the danger"],
+            answer: 0,
+            explanation: "Immediate danger requires urgent assistance rather than an educational course."
+          }
+        ]
+      }
+    ]
+  },
+
+  // =========================================================
+  // DEPARTMENT 7: HEALTH EDUCATION
+  // =========================================================
+  {
+    code: "NAC-HEA-001",
+    departmentId: "NAC-HEA",
+    title: "Foundations of Personal Health",
+    description: "Explore general health literacy, prevention, hygiene, and informed health decisions.",
+    level: "Beginner",
+    duration: "4 hours",
+    sections: ["Health Literacy", "Everyday Prevention"],
+    lessons: [
+      {
+     
