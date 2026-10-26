@@ -859,11 +859,63 @@ function App() {
               </span>
             </div>
 
+            
             <div className="footer-links-column">
               <h4>Explore</h4>
               <button onClick={() => scrollTo("opportunities")}>Opportunities</button>
               <button onClick={() => scrollTo("categories")}>Categories</button>
               <button onClick={() => scrollTo("academy")}>Nextora Academy</button>
             </div>
+
+            <div className="footer-links-column">
+              <h4>Nextora</h4>
+              <button onClick={() => scrollTo("about")}>About us</button>
+              <button onClick={() => notify("Support information will be added soon.")}>
+                Contact & support
+              </button>
+              <button onClick={() => notify("Terms and privacy information will be published before launch.")}>
+                Terms & privacy
+              </button>
+            </div>
+
+            <div className="footer-newsletter">
+              <h4>Stay in the loop</h4>
+              <p>Keep an eye out for new opportunities and learning resources.</p>
+              <button
+                className="newsletter-button"
+                onClick={() => notify("Newsletter signup will be available soon.")}
+              >
+                <Mail size={17} /> Get updates <ArrowRight size={16} />
+              </button>
+              <span className="newsletter-note">
+                No promises of guaranteed funding or employment.
+              </span>
+            </div>
+          </div>
+
+          <div className="footer-bottom">
+            <span>© {new Date().getFullYear()} Nextora. All rights reserved.</span>
+            <span className="footer-tagline">Where Opportunities Begin.</span>
+            <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+              Back to top <ArrowUpRight size={15} />
+            </button>
+          </div>
+        </div>
+      </footer>
+
+      {toast && (
+        <div className="toast-message" role="status">
+          <CheckCircle2 size={19} />
+          <span>{toast}</span>
+          <button onClick={() => setToast("")} aria-label="Dismiss notification">
+            <X size={16} />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default App;
             
                
