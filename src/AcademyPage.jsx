@@ -1352,4 +1352,621 @@ A certificate may document course completion or assessment, but it does not auto
     ]
   }
 ];
-     
+ // =========================================================
+// PART 3: NEXTORA ACADEMY INTERFACE
+// Course browsing, lessons, quizzes and saved progress
+// =========================================================
+
+const allCourses = [...initialCourses, ...additionalCourses];
+
+const getDepartment = (course) => {
+  return departments.find(
+    (department) =>
+      department.id === course.departmentId ||
+      department.code === course.departmentId
+  );
+};
+
+const getCourseLessons = (course) => {
+  return course?.lessons || [];
+};
+
+const getStorageKey = () => "nextora-academy-progress-v1";
+
+const readProgress = () => {
+  try {
+    const saved = localStorage.getItem(getStorageKey());
+    return saved ? JSON.parse(saved) : {};
+  } catch {
+    return {};
+  }
+};
+
+export default function AcademyPage({ onBack }) {
+  const [search, setSearch] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState("all");
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [selectedLesson, setSelectedLesson] = useState(0);
+  const [progress, setProgress] = useState(readProgress);
+  const [answers, setAnswers] = useState({});
+  const [showAnswers, setShowAnswers] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const filteredCourses = useMemo(() => {
+    const term = search.trim().toLowerCase();
+
+    return allCourses.filter((course) => {
+      const department = getDepartment(course);
+
+      const matchesDepartment =
+        selectedDepartment === "all" ||
+        department?.id === selectedDepartment;
+
+      const matchesSearch =
+        !term ||
+        course.title.toLowerCase().includes(term) ||
+        course.description.toLowerCase().includes(term) ||
+        course.code.toLowerCase().includes(term) ||
+        department?.title.toLowerCase().includes(term);
+
+      return matchesDepartment && matchesSearch;
+    });
+  }, [search, selectedDepartment]);
+
+  const totalLessons = allCourses.reduce(
+    (total, course) => total + getCourseLessons(course).length,
+    0
+  );
+
+  const completedLessons = Object.values(progress).reduce(
+    (total, courseProgress) =>
+      total +
+      (Array.isArray(courseProgress?.completed)
+        ? courseProgress.completed.length
+        : 0),
+    0
+  );
+
+  const overallProgress = totalLessons
+    ? Math.min(100, Math.round((completedLessons / totalLessons) * 100))
+    : 0;
+
+  const currentLessons = getCourseLessons(selectedCourse);
+  const lesson = currentLessons[selectedLesson];
+
+  const currentProgress = selectedCourse
+    ? progress[selectedCourse.code] || { completed: [] }
+    : { completed: [] };
+
+  const completedInCourse = currentProgress.completed || [];
+
+  const courseProgressPercent = selectedCourse
+    ? Math.round(
+        (completedInCourse.length /
+          Math.max(1, currentLessons.length)) *
+          100
+      )
+    : 0;
+
+  const saveProgress = (courseCode, lessonIndex, completed) => {
+    setProgress((previous) => {
+      const current = previous[courseCode] || { completed: [] };
+      const existing = current.completed || [];
+
+      const nextCompleted = completed
+        ? [...new Set([...existing, lessonIndex])]
+        : existing.filter((index) => index !== lessonIndex);
+
+      const next = {
+        ...previous,
+        [courseCode]: {
+          ...current,
+          completed: nextCompleted,
+        },
+      };
+
+      try {
+        localStorage.setItem(getStorageKey(), JSON.stringify(next));
+      } catch {
+        // The current session still works if storage is unavailable.
+      }
+
+      return next;
+    });
+  };
+
+  const openCourse = (course) => {
+    setSelectedCourse(course);
+    setSelectedLesson(0);
+    setAnswers({});
+    setShowAnswers(false);
+    setMobileMenuOpen(false);
+  };
+
+  const closeCourse = () => {
+    setSelectedCourse(null);
+    setSelectedLesson(0);
+    setAnswers({});
+    setShowAnswers(false);
+  };
+
+  const moveLesson = (direction) => {
+    const nextIndex = selectedLesson + direction;
+
+    if (nextIndex >= 0 && nextIndex < currentLessons.length) {
+      setSelectedLesson(nextIndex);
+      setAnswers({});
+      setShowAnswers(false);
+    }
+  };
+
+  const resetCourseProgress = () => {
+    if (!selectedCourse) return;
+
+    const confirmed = window.confirm(
+      "Reset completed lessons for this course?"
+    );
+
+    if (!confirmed) return;
+
+    setProgress((previous) => {
+      const next = { ...previous };
+      delete next[selectedCourse.code];
+
+      try {
+        localStorage.setItem(getStorageKey(), JSON.stringify(next));
+      } catch {
+        // Continue without persistent storage.
+      }
+
+      return next;
+    });
+
+    setAnswers({});
+    setShowAnswers(false);
+  };
+
+  const pageStyle = {
+    minHeight: "100vh",
+    background:
+      "linear-gradient(145deg, #f7f7ff 0%, #f3f5ff 50%, #fff8fc 100%)",
+    color: "#202344",
+    fontFamily:
+      "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+    paddingBottom: 40,
+  };
+
+  const buttonStyle = {
+    border: "none",
+    borderRadius: 12,
+    padding: "11px 16px",
+    fontWeight: 700,
+    cursor: "pointer",
+    fontSize: 14,
+  };
+
+  const primaryButton = {
+    ...buttonStyle,
+    background: "#6657d9",
+    color: "#fff",
+  };
+
+  const secondaryButton = {
+    ...buttonStyle,
+    background: "#eeecff",
+    color: "#5143bd",
+  };
+
+  const cardStyle = {
+    background: "#fff",
+    border: "1px solid #e7e7f5",
+    borderRadius: 20,
+    padding: 20,
+    boxShadow: "0 8px 28px rgba(53, 48, 110, 0.055)",
+  };
+
+  const mutedStyle = {
+    color: "#70738f",
+    fontSize: 13,
+    lineHeight: 1.7,
+  };
+
+  const badgeStyle = {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 5,
+    padding: "5px 9px",
+    background: "#f0efff",
+    color: "#6253ca",
+    borderRadius: 20,
+    fontSize: 11,
+    fontWeight: 800,
+  };
+
+  return (
+    <div style={pageStyle}>
+      {/* HEADER */}
+      <header
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 20,
+          background: "rgba(255,255,255,0.94)",
+          backdropFilter: "blur(14px)",
+          borderBottom: "1px solid #e7e7f5",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1180,
+            margin: "auto",
+            padding: "14px 20px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 12,
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
+            <div
+              style={{
+                width: 42,
+                height: 42,
+                borderRadius: 14,
+                display: "grid",
+                placeItems: "center",
+                color: "#fff",
+                background: "linear-gradient(135deg, #7567ec, #a88bf5)",
+              }}
+            >
+              <GraduationCap size={23} />
+            </div>
+
+            <div>
+              <div style={{ fontSize: 19, fontWeight: 900 }}>
+                NEXTORA <span style={{ color: "#7567ec" }}>Academy</span>
+              </div>
+              <div style={{ ...mutedStyle, fontSize: 11 }}>
+                Learn. Practice. Build your future.
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", gap: 8 }}>
+            {onBack && (
+              <button
+                style={secondaryButton}
+                onClick={onBack}
+                aria-label="Return to dashboard"
+              >
+                <ArrowLeft size={15} style={{ verticalAlign: "middle" }} />{" "}
+                <span className="nextora-back-label">Dashboard</span>
+              </button>
+            )}
+
+            <button
+              style={{ ...secondaryButton, padding: 11 }}
+              onClick={() => setMobileMenuOpen((value) => !value)}
+              aria-label="Toggle department menu"
+            >
+              <Menu size={18} />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main style={{ maxWidth: 1180, margin: "auto", padding: "26px 20px" }}>
+        {/* COURSE LESSON VIEW */}
+        {selectedCourse ? (
+          <div>
+            <button
+              style={{ ...secondaryButton, marginBottom: 18 }}
+              onClick={closeCourse}
+            >
+              <ArrowLeft size={15} style={{ verticalAlign: "middle" }} />{" "}
+              All courses
+            </button>
+
+            <section
+              style={{
+                ...cardStyle,
+                background:
+                  "linear-gradient(120deg, #fff 0%, #f1efff 100%)",
+                marginBottom: 20,
+              }}
+            >
+              <div style={badgeStyle}>{selectedCourse.code}</div>
+
+              <h1
+                style={{
+                  fontSize: "clamp(25px, 4vw, 36px)",
+                  lineHeight: 1.2,
+                  margin: "14px 0 8px",
+                }}
+              >
+                {selectedCourse.title}
+              </h1>
+
+              <p style={{ color: "#626582", lineHeight: 1.8 }}>
+                {selectedCourse.description}
+              </p>
+
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 10,
+                  marginTop: 16,
+                }}
+              >
+                <span style={badgeStyle}>
+                  <Clock3 size={13} /> {selectedCourse.duration}
+                </span>
+                <span style={badgeStyle}>{selectedCourse.level}</span>
+                <span style={badgeStyle}>
+                  {completedInCourse.length}/{currentLessons.length} lessons
+                  completed
+                </span>
+              </div>
+
+              <div
+                style={{
+                  height: 8,
+                  background: "#e6e4f7",
+                  borderRadius: 20,
+                  marginTop: 18,
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    width: `${courseProgressPercent}%`,
+                    height: "100%",
+                    background: "#7567ec",
+                    borderRadius: 20,
+                    transition: "width 0.25s",
+                  }}
+                />
+              </div>
+            </section>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 260px), 1fr))",
+                gap: 20,
+                alignItems: "start",
+              }}
+            >
+              {/* LESSON NAVIGATION */}
+              <aside style={cardStyle}>
+                <h2 style={{ fontSize: 17, marginTop: 0 }}>
+                  <BookOpen
+                    size={18}
+                    style={{ verticalAlign: "middle", marginRight: 7 }}
+                  />
+                  Course lessons
+                </h2>
+
+                {currentLessons.map((item, index) => {
+                  const isComplete = completedInCourse.includes(index);
+                  const active = selectedLesson === index;
+
+                  return (
+                    <button
+                      key={`${selectedCourse.code}-${index}`}
+                      onClick={() => {
+                        setSelectedLesson(index);
+                        setAnswers({});
+                        setShowAnswers(false);
+                      }}
+                      style={{
+                        display: "flex",
+                        width: "100%",
+                        textAlign: "left",
+                        gap: 10,
+                        alignItems: "flex-start",
+                        padding: 12,
+                        marginBottom: 7,
+                        borderRadius: 12,
+                        border: active
+                          ? "1px solid #8e82ed"
+                          : "1px solid #ececf6",
+                        background: active ? "#f1efff" : "#fff",
+                        color: "#292a4a",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {isComplete ? (
+                        <CheckCircle2 size={17} color="#299b77" />
+                      ) : (
+                        <PlayCircle size={17} color="#8274df" />
+                      )}
+
+                      <span style={{ fontSize: 13, lineHeight: 1.5 }}>
+                        {index + 1}. {item.title}
+                      </span>
+                    </button>
+                  );
+                })}
+
+                <button
+                  style={{
+                    ...secondaryButton,
+                    width: "100%",
+                    marginTop: 12,
+                  }}
+                  onClick={resetCourseProgress}
+                >
+                  <RotateCcw
+                    size={14}
+                    style={{ verticalAlign: "middle", marginRight: 5 }}
+                  />
+                  Reset course progress
+                </button>
+              </aside>
+
+              {/* LESSON CONTENT */}
+              <section style={cardStyle}>
+                {lesson ? (
+                  <>
+                    <div style={badgeStyle}>
+                      Lesson {selectedLesson + 1} of {currentLessons.length}
+                    </div>
+
+                    <h2
+                      style={{
+                        fontSize: "clamp(22px, 3vw, 29px)",
+                        lineHeight: 1.3,
+                      }}
+                    >
+                      {lesson.title}
+                    </h2>
+
+                    <div
+                      style={{
+                        whiteSpace: "pre-line",
+                        lineHeight: 1.95,
+                        color: "#454765",
+                        fontSize: 15,
+                      }}
+                    >
+                      {lesson.content}
+                    </div>
+
+                    {lesson.example && (
+                      <div
+                        style={{
+                          background: "#f5f3ff",
+                          borderLeft: "4px solid #8172e7",
+                          borderRadius: "0 12px 12px 0",
+                          padding: 16,
+                          marginTop: 22,
+                        }}
+                      >
+                        <h3 style={{ margin: "0 0 8px", fontSize: 15 }}>
+                          <Lightbulb
+                            size={17}
+                            style={{
+                              verticalAlign: "middle",
+                              marginRight: 7,
+                            }}
+                          />
+                          Practical example
+                        </h3>
+                        <div style={{ lineHeight: 1.8, fontSize: 14 }}>
+                          {lesson.example}
+                        </div>
+                      </div>
+                    )}
+
+                    {lesson.exercise && (
+                      <div
+                        style={{
+                          background: "#eefaf6",
+                          border: "1px solid #d8f1e8",
+                          borderRadius: 14,
+                          padding: 16,
+                          marginTop: 16,
+                        }}
+                      >
+                        <h3 style={{ margin: "0 0 8px", fontSize: 15 }}>
+                          <Target
+                            size={17}
+                            style={{
+                              verticalAlign: "middle",
+                              marginRight: 7,
+                            }}
+                          />
+                          Your practice task
+                        </h3>
+                        <p style={{ lineHeight: 1.8, margin: 0 }}>
+                          {lesson.exercise}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* REVISION QUESTIONS */}
+                    {lesson.questions?.length > 0 && (
+                      <div style={{ marginTop: 26 }}>
+                        <h3 style={{ fontSize: 19 }}>
+                          <ClipboardCheck
+                            size={19}
+                            style={{
+                              verticalAlign: "middle",
+                              marginRight: 7,
+                            }}
+                          />
+                          Check your understanding
+                        </h3>
+
+                        {lesson.questions.map((question, questionIndex) => {
+                          const selectedAnswer =
+                            answers[questionIndex] ?? null;
+                          const answered = selectedAnswer !== null;
+                          const correct =
+                            selectedAnswer === question.answer;
+
+                          return (
+                            <div
+                              key={`${selectedCourse.code}-${selectedLesson}-${questionIndex}`}
+                              style={{
+                                border: "1px solid #e8e8f4",
+                                borderRadius: 14,
+                                padding: 15,
+                                marginTop: 13,
+                              }}
+                            >
+                              <p
+                                style={{
+                                  fontWeight: 800,
+                                  lineHeight: 1.7,
+                                  marginTop: 0,
+                                }}
+                              >
+                                {questionIndex + 1}. {question.question}
+                              </p>
+
+                              <div
+                                style={{
+                                  display: "grid",
+                                  gap: 8,
+                                }}
+                              >
+                                {question.options.map((option, optionIndex) => {
+                                  const isSelected =
+                                    selectedAnswer === optionIndex;
+                                  const isCorrect =
+                                    optionIndex === question.answer;
+
+                                  return (
+                                    <button
+                                      key={optionIndex}
+                                      onClick={() => {
+                                        setAnswers((previous) => ({
+                                          ...previous,
+                                          [questionIndex]: optionIndex,
+                                        }));
+                                        setShowAnswers(false);
+                                      }}
+                                      style={{
+                                        textAlign: "left",
+                                        padding: 12,
+                                        borderRadius: 10,
+                                        cursor: "pointer",
+                                        border:
+                                          showAnswers && isCorrect
+                                            ? "1px solid #46ae87"
+                                            : isSelected
+                                              ? "1px solid #8172e7"
+                                              : "1px solid #e7e7f2",
+                                        background:
+                                          showAnswers && isCorrect
+                                            ? "#eaf9f2"
+                                            : isSelected
+                                              ? "#f1efff"
+                                              : "#fff",
+                                        color: "#30314f",
+                                      }}
+                                    >
+           
