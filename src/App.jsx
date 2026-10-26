@@ -356,51 +356,21 @@ function App() {
                 opportunities designed to help you move forward.
               </p>
 
-              <form
-                className="hero-search"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  scrollTo("opportunities");
-                }}
-              >
-                <Search size={20} />
-                <input
-                  type="search"
-                  placeholder="What opportunity are you looking for?"
-                  value={searchText}
-                  onChange={(event) => setSearchText(event.target.value)}
-                  aria-label="Search opportunities"
-                />
-                <button type="submit">
-                  Search <ArrowRight size={17} />
-                </button>
-              </form>
+              <div className="hero-search">
+  <Sparkles size={20} />
 
-              <div className="popular-searches">
-                <span>Popular:</span>
-                {["Scholarships", "Remote jobs", "Grants"].map((item) => (
-                  <button
-                    key={item}
-                    onClick={() => {
-                      setSearchText(item === "Remote jobs" ? "Jobs" : item);
-                      setActiveCategory(item === "Remote jobs" ? "Jobs" : item);
-                      scrollTo("opportunities");
-                    }}
-                  >
-                    {item}
-                  </button>
-                ))}
-              </div>
+  <span>
+    Create your account to explore opportunities
+    and learning resources.
+  </span>
 
-              <div className="hero-trust">
-                <div className="trust-icon">
-                  <ShieldCheck size={18} />
-                </div>
-                <span>
-                  Discover opportunities. Verify details. Apply with confidence.
-                </span>
-              </div>
-            </div>
+  <button
+    type="button"
+    onClick={() => notify("Account registration is coming soon.")}
+  >
+    Get started <ArrowRight size={17} />
+  </button>
+</div>
 
             <div className="hero-visual">
               <div className="hero-photo-frame">
