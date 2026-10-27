@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import AcademyPdfLibrary from "./AcademyPdfLibrary";
+import AcademyContentExport from "./AcademyContentExport";
 import {
   ArrowLeft,
   ArrowRight,
