@@ -1731,6 +1731,28 @@ export default function AcademyPage({ onBack }) {
                 />
               </div>
             </section> 
+          <section>
+              {/* COURSE PROGRESS */}
+              <div
+                style={{
+                  height: 8,
+                  background: "#eeedf7",
+                  borderRadius: 20,
+                  overflow: "hidden",
+                  marginTop: 18,
+                }}
+              >
+                <div
+                  style={{
+                    width: `${courseProgressPercent}%`,
+                    height: "100%",
+                    background: "#7567ec",
+                    borderRadius: 20,
+                    transition: "width 0.25s",
+                  }}
+                />
+              </div>
+            </section>        <AcademyPdfLibrary
           departmentCode={
             selectedCourse.departmentId || selectedCourse.code
           }
