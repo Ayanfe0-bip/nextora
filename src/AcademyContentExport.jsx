@@ -1,6 +1,8 @@
 import React from "react";
 import { allCourses } from "./AcademyPage";
 
+const STORAGE_KEY = "nextora-academy-export-course-ids";
+
 function csvCell(value) {
   const text =
     value == null
@@ -34,142 +36,135 @@ function downloadCsv(filename, headers, rows) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-export default function AcademyContentExport() {
-  const exportCourses = () => {
-    const courseIds = new Map();
+function getCourseIds() {
+  let saved = {};
 
-    const rows = allCourses.map((course) => {
-      const id = crypto.randomUUID();
-      courseIds.set(course.code, id);
-
-      return {
-        id,
-        code: course.code,
-        department_id: course.departmentId,
-        title: course.title,
-        description: course.description,
-        level: course.level,
-        duration: course.duration,
-        content: {
-          sections: course.sections || [],
-          lessons: course.lessons || [],
-        },
-        is_published: true,
-        sort_order: 0,
-      };
-    });
-
-    downloadCsv(
-      "nextora-academy-courses.csv",
-      [
-        "id",
-        "code",
-        "department_id",
-        "title",
-        "description",
-        "level",
-        "duration",
-        "content",
-        "is_published",
-        "sort_order",
-      ],
-      rows
+  try {
+    saved = JSON.parse(
+      localStorage.getItem(STORAGE_KEY) || "{}"
     );
+  } catch {
+    saved = {};
+  }
 
-    return courseIds;
-  };
+  const ids = {};
 
-  const exportLessons = () => {
-    const courseIds = new Map(
-      allCourses.map((course) => [course.code, ""])
-    );
+  allCourses.forEach((course) => {
+    ids[course.code] =
+      saved[course.code] || crypto.randomUUID();
+  });
 
-    const savedIds = window.localStorage.getItem(
-      "nextora-academy-export-course-ids"
-    );
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
 
-    if (savedIds) {
-      Object.entries(JSON.parse(savedIds)).forEach(
-        ([code, id]) => courseIds.set(code, id)
-      );
-    }
+  return ids;
+}
 
-    if ([...courseIds.values()].some((id) => !id)) {
-      alert(
-        "Export the courses first, then save their course IDs before exporting lessons."
-      );
-      return;
-    }
+function exportCourses() {
+  const ids = getCourseIds();
 
-    const rows = [];
+  const rows = allCourses.map((course, index) => ({
+    id: ids[course.code],
+    code: course.code,
+    department_id: course.departmentId,
+    title: course.title,
+    description: course.description,
+    level: course.level,
+    duration: course.duration,
+    content: {},
+    is_published: true,
+    sort_order: index + 1,
+  }));
 
-    allCourses.forEach((course) => {
-      const sections = course.sections || [];
+  downloadCsv(
+    "nextora-academy-courses.csv",
+    [
+      "id",
+      "code",
+      "department_id",
+      "title",
+      "description",
+      "level",
+      "duration",
+      "content",
+      "is_published",
+      "sort_order",
+    ],
+    rows
+  );
+}
 
-      sections.forEach((section, sectionIndex) => {
-        (section.lessons || []).forEach((lesson, lessonIndex) => {
-          rows.push({
-            id: crypto.randomUUID(),
-            course_id: courseIds.get(course.code),
-            section_title: section.title || "",
-            title: lesson.title || "",
-            content: lesson.content || "",
-            example: lesson.example || "",
-            exercise: lesson.exercise || "",
-            questions: lesson.questions || [],
-            sort_order: sectionIndex * 1000 + lessonIndex,
-            is_published: true,
-          });
-        });
-      });
+function exportLessons() {
+  const ids = getCourseIds();
+  const rows = [];
 
-      (course.lessons || []).forEach((lesson, index) => {
+  allCourses.forEach((course) => {
+    (course.sections || []).forEach((section, sectionIndex) => {
+      (section.lessons || []).forEach((lesson, lessonIndex) => {
         rows.push({
           id: crypto.randomUUID(),
-          course_id: courseIds.get(course.code),
-          section_title: "General",
+          course_id: ids[course.code],
+          section_title: section.title || "",
           title: lesson.title || "",
           content: lesson.content || "",
           example: lesson.example || "",
           exercise: lesson.exercise || "",
           questions: lesson.questions || [],
-          sort_order: 100000 + index,
+          sort_order: sectionIndex * 1000 + lessonIndex + 1,
           is_published: true,
         });
       });
     });
 
-    downloadCsv(
-      "nextora-academy-lessons.csv",
-      [
-        "id",
-        "course_id",
-        "section_title",
-        "title",
-        "content",
-        "example",
-        "exercise",
-        "questions",
-        "sort_order",
-        "is_published",
-      ],
-      rows
-    );
-  };
+    (course.lessons || []).forEach((lesson, index) => {
+      rows.push({
+        id: crypto.randomUUID(),
+        course_id: ids[course.code],
+        section_title: "General",
+        title: lesson.title || "",
+        content: lesson.content || "",
+        example: lesson.example || "",
+        exercise: lesson.exercise || "",
+        questions: lesson.questions || [],
+        sort_order: 100000 + index,
+        is_published: true,
+      });
+    });
+  });
 
+  downloadCsv(
+    "nextora-academy-lessons.csv",
+    [
+      "id",
+      "course_id",
+      "section_title",
+      "title",
+      "content",
+      "example",
+      "exercise",
+      "questions",
+      "sort_order",
+      "is_published",
+    ],
+    rows
+  );
+}
+
+export default function AcademyContentExport() {
   return (
-    <main style={{
-      maxWidth: 720,
-      margin: "40px auto",
-      padding: 24,
-      fontFamily: "Arial, sans-serif",
-      color: "#24345B",
-    }}>
+    <main
+      style={{
+        maxWidth: 720,
+        margin: "40px auto",
+        padding: 24,
+        fontFamily: "Arial, sans-serif",
+        color: "#24345B",
+      }}
+    >
       <h1>NEXTORA Academy Export</h1>
 
       <p>
-        Export existing courses and lessons for migration
-        into Supabase.
+        Prepare your existing course and lesson content
+        for migration into Supabase.
       </p>
 
       <button
@@ -187,9 +182,15 @@ export default function AcademyContentExport() {
       </button>
 
       <p>
-        Keep both exported files private. Do not upload
-        credentials or secret API keys.
+        Export both files using the same browser and
+        device. The course IDs are saved locally so the
+        lesson records can reference the exported courses.
+      </p>
+
+      <p>
+        Keep the exported files private. Never include
+        passwords or secret API keys.
       </p>
     </main>
   );
-    }
+      }
