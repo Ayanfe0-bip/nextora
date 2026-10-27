@@ -152,7 +152,12 @@ const [academyOpen, setAcademyOpen] = useState(false);
 
     setMobileMenu(false);
   };
-
+  // Temporary Academy content export page
+  if (
+    new URLSearchParams(window.location.search).get("academy-export") === "1"
+  ) {
+    return <AcademyContentExport />;
+  }
   if (authLoading) {
     return (
       <div
