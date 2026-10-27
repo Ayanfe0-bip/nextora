@@ -1709,52 +1709,33 @@ export default function AcademyPage({ onBack }) {
                   completed
                 </span>
               </div>
+  {/* COURSE PROGRESS */}
+<div
+style={{
+height: 8,
+background: "#eeedf7",
+borderRadius: 20,
+overflow: "hidden",
+marginTop: 18,
+}}
+>
+<div
+style={{
+width: "${courseProgressPercent}%",
+height: "100%",
+background: "#7567ec",
+borderRadius: 20,
+transition: "width 0.25s",
+}}
+/>
+</div>
+</section>
 
-              {/* COURSE PROGRESS */}
-              <div
-                style={{
-                  height: 8,
-                  background: "#eeedf7",
-                  borderRadius: 20,
-                  overflow: "hidden",
-                  marginTop: 18,
-                }}
-              >
-                <div
-                  style={{
-                    width: `${courseProgressPercent}%`,
-                    height: "100%",
-                    background: "#7567ec",
-                    borderRadius: 20,
-                    transition: "width 0.25s",
-                  }}
-                />
-              </div>
-            </section> 
-          <section>
-              {/* COURSE PROGRESS */}
-              <div
-                style={{
-                  height: 8,
-                  background: "#eeedf7",
-                  borderRadius: 20,
-                  overflow: "hidden",
-                  marginTop: 18,
-                }}
-              >
-                <div
-                  style={{
-                    width: `${courseProgressPercent}%`,
-                    height: "100%",
-                    background: "#7567ec",
-                    borderRadius: 20,
-                    transition: "width 0.25s",
-                  }}
-                />
-              </div>
-            </section>        <AcademyPdfLibrary
+        <AcademyPdfLibrary
           departmentCode={
-            selectedCourse.departmentId || selectedCourse.code
+            departments.find(
+              (department) => department.id === selectedCourse.departmentId
+            )?.code || selectedCourse.code.split("-").slice(0, 2).join("-")
           }
         />
 
