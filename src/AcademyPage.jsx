@@ -1358,7 +1358,7 @@ A certificate may document course completion or assessment, but it does not auto
 // Course browsing, lessons, quizzes and saved progress
 // =========================================================
 
-const allCourses = [...initialCourses, ...additionalCourses];
+export const allCourses = [...initialCourses, ...additionalCourses];
 
 const getDepartment = (course) => {
   return departments.find(
