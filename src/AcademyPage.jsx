@@ -1710,17 +1710,17 @@ export default function AcademyPage({ onBack }) {
                 </span>
               </div>
 
+              {/* COURSE PROGRESS */}
               <div
                 style={{
                   height: 8,
-                  background: "#e6e4f7",
+                  background: "#eeedf7",
                   borderRadius: 20,
-                  marginTop: 18,
                   overflow: "hidden",
+                  marginTop: 18,
                 }}
               >
                 <div
-                              <div
                   style={{
                     width: `${courseProgressPercent}%`,
                     height: "100%",
@@ -1730,15 +1730,11 @@ export default function AcademyPage({ onBack }) {
                   }}
                 />
               </div>
-            </section>
-
-            <AcademyPdfLibrary
-              departmentCode={
-                selectedCourse.departmentId || selectedCourse.code
-              }
-            />
-              </div>
-            </section>
+            </section> 
+          departmentCode={
+            selectedCourse.departmentId || selectedCourse.code
+          }
+        />
 
             <div
               style={{
