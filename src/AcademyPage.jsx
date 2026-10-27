@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import AcademyPdfLibrary from "./AcademyPdfLibrary";
 import {
   ArrowLeft,
   ArrowRight,
@@ -1719,6 +1720,7 @@ export default function AcademyPage({ onBack }) {
                 }}
               >
                 <div
+                              <div
                   style={{
                     width: `${courseProgressPercent}%`,
                     height: "100%",
@@ -1726,9 +1728,15 @@ export default function AcademyPage({ onBack }) {
                     borderRadius: 20,
                     transition: "width 0.25s",
                   }}
-                <AcademyPdfLibrary
-  departmentCode={selectedCourse.departmentId || selectedCourse.code}
-/>
+                />
+              </div>
+            </section>
+
+            <AcademyPdfLibrary
+              departmentCode={
+                selectedCourse.departmentId || selectedCourse.code
+              }
+            />
               </div>
             </section>
 
