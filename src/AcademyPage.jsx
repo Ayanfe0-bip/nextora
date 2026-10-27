@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from "react";
-import AcademyPdfLibrary from "./AcademyPdfLibrary";
 import {
   ArrowLeft,
   ArrowRight,
@@ -1727,7 +1726,9 @@ export default function AcademyPage({ onBack }) {
                     borderRadius: 20,
                     transition: "width 0.25s",
                   }}
-                />
+                <AcademyPdfLibrary
+  departmentCode={selectedCourse.departmentId || selectedCourse.code}
+/>
               </div>
             </section>
 
@@ -2188,7 +2189,7 @@ export default function AcademyPage({ onBack }) {
                 })}
               </div>
             </section>
-            <AcademyPdfLibrary />
+            
             {/* SEARCH AND FILTERS */}
             <section style={{ marginTop: 30 }}>
               <h2 style={{ fontSize: 25, marginBottom: 5 }}>
