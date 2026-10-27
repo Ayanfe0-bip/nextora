@@ -4,29 +4,14 @@ import {
   Download,
   ExternalLink,
   RefreshCw,
-  Search,
-  BookOpen,
   AlertCircle,
+  BookOpen,
 } from "lucide-react";
-
 import { supabase } from "./lib/supabaseclient";
 
 const BUCKET = "academy-lessons";
 
-const DEPARTMENTS = [
-  { code: "NAC-ABC", name: "AI for Business & Careers" },
-  { code: "NAC-AIC", name: "AI Image Creation" },
-  { code: "NAC-AIF", name: "AI Fundamentals" },
-  { code: "NAC-AVC", name: "AI Video & Cartoons" },
-  { code: "NAC-DGS", name: "Digital Skills" },
-  { code: "NAC-HEA", name: "Health Education" },
-  { code: "NAC-MHW", name: "Mental Wellness" },
-  { code: "NAC-WAD", name: "Website & App Development" },
-  { code: "NAC-YHK", name: "Yoruba Herbal Knowledge" },
-  { code: "NAC-PAC", name: "Projects & Certificates" },
-];
-
-async function listPdfFiles(folderPath = "") {
+async function listPdfFiles(folderPath) {
   const { data, error } = await supabase.storage
     .from(BUCKET)
     .list(folderPath, {
@@ -40,21 +25,15 @@ async function listPdfFiles(folderPath = "") {
   const files = [];
 
   for (const item of data || []) {
-    const path = folderPath
-      ? `${folderPath}/${item.name}`
-      : item.name;
+    const path = `${folderPath}/${item.name}`;
 
-    const isFolder =
-      item.id === null &&
-      !item.metadata;
+    // Supabase Storage represents folders differently from files.
+    const isFolder = item.id === null && !item.metadata;
 
     if (isFolder) {
       const nestedFiles = await listPdfFiles(path);
       files.push(...nestedFiles);
-      continue;
-    }
-
-    if (item.name.toLowerCase().endsWith(".pdf")) {
+    } else if (item.name.toLowerCase().endsWith(".pdf")) {
       files.push({
         name: item.name,
         path,
@@ -64,53 +43,40 @@ async function listPdfFiles(folderPath = "") {
 
   return files;
 }
-export default function AcademyPdfLibrary() {
+
+export default function AcademyPdfLibrary({ departmentCode }) {
   const [files, setFiles] = useState([]);
-  const [department, setDepartment] = useState("all");
-  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [openingPath, setOpeningPath] = useState("");
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
 
   async function loadFiles() {
+    if (!departmentCode) {
+      setFiles([]);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError("");
     setNotice("");
 
     try {
-      const results = [];
-
-      for (const item of DEPARTMENTS) {
-        try {
-          const departmentFiles = await listPdfFiles(item.code);
-
-          results.push(
-            ...departmentFiles.map((file) => ({
-              ...file,
-              departmentCode: item.code,
-              departmentName: item.name,
-            }))
-          );
-        } catch (err) {
-          console.error(
-            `Could not list PDFs in ${item.code}:`,
-            err
-          );
-        }
-      }
-
+      // Load PDFs from this department only.
+      const results = await listPdfFiles(departmentCode);
       setFiles(results);
 
       if (results.length === 0) {
         setNotice(
-          "No PDFs were found. Check the folder names and Storage permissions."
+          "No PDF materials were found in this department yet."
         );
       }
     } catch (err) {
+      console.error("Unable to load department PDFs:", err);
       setError(
         err?.message ||
-          "Unable to load the Academy PDFs."
+          "Unable to load this department's PDF materials."
       );
     } finally {
       setLoading(false);
@@ -119,7 +85,7 @@ export default function AcademyPdfLibrary() {
 
   useEffect(() => {
     loadFiles();
-  }, []);
+  }, [departmentCode]);
 
   async function openPdf(file, download = false) {
     setOpeningPath(file.path);
@@ -144,37 +110,22 @@ export default function AcademyPdfLibrary() {
         "noopener,noreferrer"
       );
     } catch (err) {
+      console.error("Unable to open PDF:", err);
       setError(
-        err?.message ||
-          "Could not open this PDF. Please try again."
+        err?.message || "Could not open this PDF. Please try again."
       );
     } finally {
       setOpeningPath("");
     }
   }
 
-  const visibleFiles = files.filter((file) => {
-    const matchesDepartment =
-      department === "all" ||
-      file.departmentCode === department;
-
-    const term = search.trim().toLowerCase();
-
-    const matchesSearch =
-      !term ||
-      file.name.toLowerCase().includes(term) ||
-      file.departmentName.toLowerCase().includes(term);
-
-    return matchesDepartment && matchesSearch;
-  });
-
   const styles = {
     panel: {
       background: "#ffffff",
       border: "1px solid #e8e8f4",
-      borderRadius: 20,
-      padding: 20,
-      marginTop: 24,
+      borderRadius: 18,
+      padding: 18,
+      marginTop: 20,
       color: "#252747",
     },
     button: {
@@ -193,6 +144,7 @@ export default function AcademyPdfLibrary() {
     secondary: {
       display: "inline-flex",
       alignItems: "center",
+      justifyContent: "center",
       gap: 7,
       border: "1px solid #e3e3f1",
       borderRadius: 10,
@@ -203,6 +155,7 @@ export default function AcademyPdfLibrary() {
       cursor: "pointer",
     },
   };
+
   return (
     <section style={styles.panel}>
       <div
@@ -215,16 +168,25 @@ export default function AcademyPdfLibrary() {
         }}
       >
         <div>
-          <h2 style={{ margin: "0 0 7px", fontSize: 23 }}>
+          <h2 style={{ margin: "0 0 7px", fontSize: 21 }}>
             <BookOpen
-              size={22}
-              style={{ verticalAlign: "middle", marginRight: 8 }}
+              size={21}
+              style={{
+                verticalAlign: "middle",
+                marginRight: 8,
+              }}
             />
-            Academy PDF Library
+            Department PDF Materials
           </h2>
 
-          <p style={{ margin: 0, color: "#747791", lineHeight: 1.6 }}>
-            Access learning materials for your department.
+          <p
+            style={{
+              margin: 0,
+              color: "#747791",
+              lineHeight: 1.6,
+            }}
+          >
+            Open or download the learning materials for this department.
           </p>
         </div>
 
@@ -239,87 +201,6 @@ export default function AcademyPdfLibrary() {
         </button>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: 12,
-          marginTop: 20,
-        }}
-      >
-        <label>
-          <span
-            style={{
-              display: "block",
-              fontSize: 12,
-              fontWeight: 700,
-              marginBottom: 7,
-            }}
-          >
-            Department
-          </span>
-
-          <select
-            value={department}
-            onChange={(event) => setDepartment(event.target.value)}
-            style={{
-              width: "100%",
-              padding: 12,
-              borderRadius: 10,
-              border: "1px solid #dedfee",
-              background: "#ffffff",
-              color: "#252747",
-            }}
-          >
-            <option value="all">All departments</option>
-
-            {DEPARTMENTS.map((item) => (
-              <option key={item.code} value={item.code}>
-                {item.code} — {item.name}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label>
-          <span
-            style={{
-              display: "block",
-              fontSize: 12,
-              fontWeight: 700,
-              marginBottom: 7,
-            }}
-          >
-            Search PDFs
-          </span>
-
-          <div style={{ position: "relative" }}>
-            <Search
-              size={17}
-              style={{
-                position: "absolute",
-                left: 11,
-                top: 13,
-                color: "#8185a0",
-              }}
-            />
-
-            <input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search file or department..."
-              style={{
-                width: "100%",
-                boxSizing: "border-box",
-                padding: "12px 12px 12px 36px",
-                borderRadius: 10,
-                border: "1px solid #dedfee",
-              }}
-            />
-          </div>
-        </label>
-      </div>
-
       {error && (
         <div
           role="alert"
@@ -329,115 +210,119 @@ export default function AcademyPdfLibrary() {
             background: "#fff0f0",
             color: "#a32e3b",
             borderRadius: 10,
+            overflowWrap: "anywhere",
           }}
         >
           <AlertCircle
             size={16}
-            style={{ verticalAlign: "middle", marginRight: 7 }}
+            style={{
+              verticalAlign: "middle",
+              marginRight: 7,
+            }}
           />
           {error}
         </div>
       )}
 
-      {notice && !loading && (
-        <p style={{ color: "#747791", marginTop: 18 }}>{notice}</p>
-      )}
-
       {loading ? (
         <p style={{ marginTop: 20, color: "#747791" }}>
-          Loading Academy PDFs...
+          Loading this department's PDF materials...
+        </p>
+      ) : notice ? (
+        <p style={{ marginTop: 18, color: "#747791" }}>
+          {notice}
         </p>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
-            gap: 13,
-            marginTop: 20,
-          }}
-        >
-          {visibleFiles.map((file) => (
-            <article
-              key={file.path}
-              style={{
-                border: "1px solid #e8e8f4",
-                borderRadius: 14,
-                padding: 15,
-                minWidth: 0,
-              }}
-            >
-              <FileText size={25} color="#7567ec" />
+        <>
+          <p
+            style={{
+              marginTop: 18,
+              color: "#747791",
+              fontSize: 13,
+            }}
+          >
+            {files.length} PDF{files.length === 1 ? "" : "s"} available
+          </p>
 
-              <h3
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "repeat(auto-fit, minmax(min(100%, 230px), 1fr))",
+              gap: 13,
+              marginTop: 14,
+            }}
+          >
+            {files.map((file) => (
+              <article
+                key={file.path}
                 style={{
-                  fontSize: 14,
-                  lineHeight: 1.6,
-                  overflowWrap: "anywhere",
+                  border: "1px solid #e8e8f4",
+                  borderRadius: 14,
+                  padding: 15,
+                  minWidth: 0,
                 }}
               >
-                {file.name}
-              </h3>
+                <FileText size={26} color="#7567ec" />
 
-              <p
-                style={{
-                  fontSize: 12,
-                  color: "#747791",
-                  lineHeight: 1.6,
-                }}
-              >
-                {file.departmentCode} · {file.departmentName}
-              </p>
-
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: 8,
-                  marginTop: 12,
-                }}
-              >
-                <button
-                  type="button"
-                  style={styles.button}
-                  disabled={openingPath === file.path}
-                  onClick={() => openPdf(file)}
+                <h3
+                  style={{
+                    fontSize: 14,
+                    lineHeight: 1.6,
+                    overflowWrap: "anywhere",
+                  }}
                 >
-                  <ExternalLink size={15} />
-                  {openingPath === file.path ? "Opening..." : "Open PDF"}
-                </button>
+                  {file.name}
+                </h3>
 
-                <button
-                  type="button"
-                  style={styles.secondary}
-                  disabled={openingPath === file.path}
-                  onClick={() => openPdf(file, true)}
-                  aria-label={`Download ${file.name}`}
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 8,
+                    marginTop: 12,
+                  }}
                 >
-                  <Download size={15} />
-                  Download
-                </button>
-              </div>
-            </article>
-          ))}
+                  <button
+                    type="button"
+                    style={styles.button}
+                    disabled={openingPath === file.path}
+                    onClick={() => openPdf(file)}
+                  >
+                    <ExternalLink size={15} />
+                    {openingPath === file.path
+                      ? "Opening..."
+                      : "Open PDF"}
+                  </button>
 
-          {visibleFiles.length === 0 && !notice && (
-            <p style={{ color: "#747791" }}>
-              No PDFs match your search.
-            </p>
-          )}
-        </div>
+                  <button
+                    type="button"
+                    style={styles.secondary}
+                    disabled={openingPath === file.path}
+                    onClick={() => openPdf(file, true)}
+                  >
+                    <Download size={15} />
+                    Download
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        </>
       )}
 
       <p
         style={{
-          marginTop: 20,
+          marginTop: 18,
+          marginBottom: 0,
           fontSize: 12,
           color: "#8589a0",
           lineHeight: 1.7,
         }}
       >
-        PDF links are temporary and generated securely from Supabase Storage.
+        PDF access links are temporary and generated securely from
+        Supabase Storage.
       </p>
     </section>
   );
-}
+              }
