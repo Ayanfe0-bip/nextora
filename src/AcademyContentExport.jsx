@@ -190,7 +190,7 @@ export default function AcademyContentExport() {
       <p>
         Keep the exported files private. Never include
         passwords or secret API keys.
-      </p>
+            </p>
     </main>
   );
-      }
+}
