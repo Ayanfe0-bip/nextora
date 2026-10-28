@@ -139,6 +139,7 @@ const departments = [
     color: "#7C83FD",
     level: "Beginner to Expert",
   },
+  {
     id: "projects-certificates",
     code: "NAC-PAC",
     title: "Projects & Certificates",
