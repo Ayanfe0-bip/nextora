@@ -1528,7 +1528,7 @@ setNotice("This opportunity website is not available yet.");
 }
 }}
 
-«» {isAcademy ? "Open Academy" : "Explore"}
+{isAcademy ? "Open Academy" : "Explore"}
                         <ArrowUpRight size={16} />
                       </button>
                     </div>
