@@ -10,7 +10,9 @@ export default defineConfig({
       registerType: "autoUpdate",
 
       includeAssets: [
-        "images/nextora-logo.png"
+        "images/nextora-logo.png",
+        "images/nextora-192.png",
+        "images/nextora-512.png"
       ],
 
       manifest: {
@@ -21,18 +23,26 @@ export default defineConfig({
         description:
           "Discover jobs, scholarships, grants, internships, training, and competitions. Build valuable skills with Nextora Academy.",
 
-        theme_color: "#ffffff",
-        background_color: "#ffffff",
-
-        display: "standalone",
-        orientation: "portrait",
+        lang: "en",
         start_url: "/",
         scope: "/",
 
+        display: "standalone",
+        orientation: "portrait",
+
+        theme_color: "#ffffff",
+        background_color: "#ffffff",
+
         icons: [
           {
-            src: "/images/nextora-logo.png",
-            sizes: "1024x1024",
+            src: "/images/nextora-192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "any"
+          },
+          {
+            src: "/images/nextora-512.png",
+            sizes: "512x512",
             type: "image/png",
             purpose: "any"
           }
