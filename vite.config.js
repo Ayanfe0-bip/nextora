@@ -20,10 +20,14 @@ start_url: "/",
 scope: "/",
 icons: [
 {
-src: "/nextora-logo.png",
-sizes: "1024x1024",
-type: "image/png"
-}
+includeAssets: ["images/nextora-logo.png"],
+icons: [
+  {
+    src: "/images/nextora-logo.png",
+    sizes: "1024x1024",
+    type: "image/png"
+  }
+
 ]
 }
 })
