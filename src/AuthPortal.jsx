@@ -45,7 +45,7 @@ const opportunities = [
     id: "scholarships",
     title: "Scholarships",
     description:
-      "Explore educational funding opportunities and scholarship resources.",
+      "Explore scholarship opportunities and educational funding resources.",
     category: "Education",
     tag: "Education",
     icon: GraduationCap,
@@ -57,23 +57,73 @@ const opportunities = [
     id: "careers",
     title: "Jobs & Careers",
     description:
-      "Discover career resources and opportunities to grow professionally.",
+      "Discover job opportunities, career resources, and professional growth programs.",
     category: "Careers",
     tag: "Career growth",
     icon: BriefcaseBusiness,
     color: "#fff0e4",
     ink: "#c46b27",
+    url: "https://niya.gov.ng/niya-jobs/",
   },
   {
     id: "funding",
     title: "Grants & Funding",
     description:
-      "Find funding resources that may help you develop your ideas.",
+      "Explore funding resources and programs for businesses and entrepreneurs.",
     category: "Funding",
     tag: "Financial support",
     icon: Wallet,
     color: "#e4f7ed",
     ink: "#20875b",
+    url: "https://funds.smedan.gov.ng/",
+  },
+  {
+    id: "competitions",
+    title: "Competitions",
+    description:
+      "Discover innovation challenges, business competitions, and opportunities to showcase your talents.",
+    category: "Competitions",
+    tag: "Show your talent",
+    icon: Sparkles,
+    color: "#fff4d9",
+    ink: "#9a6b00",
+    url: "https://openings.ng/",
+  },
+  {
+    id: "internships",
+    title: "Internships",
+    description:
+      "Explore internship opportunities to gain practical experience and develop workplace skills.",
+    category: "Internships",
+    tag: "Gain experience",
+    icon: BriefcaseBusiness,
+    color: "#e4f5ff",
+    ink: "#1875a8",
+    url: "https://openings.ng/",
+  },
+  {
+    id: "training",
+    title: "Training & Skills",
+    description:
+      "Find training programs and resources to improve your professional and digital skills.",
+    category: "Training",
+    tag: "Build your skills",
+    icon: BookOpen,
+    color: "#f0e9ff",
+    ink: "#7950c8",
+    url: "https://smedan.gov.ng/our-programs/",
+  },
+   {
+    id: "fellowships",
+    title: "Fellowships",
+    description:
+      "Explore fellowship programs, leadership development opportunities, and professional networks.",
+    category: "Fellowships",
+    tag: "Leadership & growth",
+    icon: GraduationCap,
+    color: "#ffe9ef",
+    ink: "#b83f68",
+    url: "https://openings.ng/",
   },
   {
     id: "academy",
@@ -86,8 +136,7 @@ const opportunities = [
     color: "#f0e9ff",
     ink: "#7950c8",
   },
-];
-
+]; 
 export function AuthPortal({
   initialMode = "signup",
   onBack,
