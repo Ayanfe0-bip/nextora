@@ -28,7 +28,17 @@ import {
 import { supabase } from "./lib/supabaseclient";
 import AcademyPage from "./AcademyPage";
 
-const categories = ["All", "Education", "Careers", "Funding", "Skills"];
+const categories = [
+"All",
+"Education",
+"Careers",
+"Funding",
+"Internships",
+"Training",
+"Competitions",
+"Fellowships",
+"Skills",
+];
 
 const opportunities = [
   {
