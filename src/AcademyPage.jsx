@@ -1299,7 +1299,55 @@ If an account may have been compromised, use the official service to secure it a
       }
     ]
   },
-
+  // =========================================================
+  // CYBERSECURITY & ETHICAL HACKING — PDF COURSE
+  // =========================================================
+  {
+    code: "NAC-CSE-001",
+    departmentId: "cybersecurity-ethical-hacking",
+    title: "Introduction to Cybersecurity & Ethical Hacking",
+    description:
+      "A three-level learning path covering cybersecurity fundamentals, advanced security testing, and expert defensive security.",
+    level: "Beginner to Expert",
+    duration: "Self-paced",
+    sections: [
+      "Lesson 1: Cybersecurity Fundamentals",
+      "Lesson 2: Advanced Cybersecurity & Security Testing",
+      "Lesson 3: Expert Ethical Hacking & Incident Response",
+    ],
+    lessons: [
+      {
+        title: "Lesson 1: Cybersecurity Fundamentals",
+        content:
+          "Learn the foundations of cybersecurity, the CIA triad, common digital threats, phishing, social engineering, password protection, Android and computer safety, networking basics, and ethical hacking principles. Open the full Lesson 1 PDF in the Department PDF Materials section below.",
+        example:
+          "Learn to recognise common threats and protect your own accounts and devices.",
+        exercise:
+          "Identify three ways to improve the security of an account or device you own.",
+        questions: [],
+      },
+      {
+        title: "Lesson 2: Advanced Cybersecurity & Security Testing",
+        content:
+          "Study advanced networking, Python for defensive security, web and API vulnerabilities, security testing tools, authorised penetration-testing methodology, vulnerability assessment, and professional reporting. Open the full Lesson 2 PDF in the Department PDF Materials section below.",
+        example:
+          "Learn to analyse fictional security logs and recommend appropriate defensive fixes.",
+        exercise:
+          "Describe a fictional security vulnerability, its potential impact, and how to fix it.",
+        questions: [],
+      },
+      {
+        title: "Lesson 3: Expert Ethical Hacking & Incident Response",
+        content:
+          "Explore professional security assessments, Android and IoT security, CCTV defence, connected vehicles, financial technology security, digital forensics, threat hunting, incident response, cloud security, and enterprise defence. Open the full Lesson 3 PDF in the Department PDF Materials section below.",
+        example:
+          "Learn to investigate a simulated security incident, preserve evidence, and prepare a professional report.",
+        exercise:
+          "Create an incident-response checklist using a fictional security incident.",
+        questions: [],
+      },
+    ],
+  },
   // =========================================================
   // DEPARTMENT 10: PROJECTS AND CERTIFICATES
   // =========================================================
