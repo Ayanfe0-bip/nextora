@@ -705,80 +705,99 @@ export function Dashboard({ user, onSignOut }) {
           margin: auto;
           padding: 35px 22px 48px;
         }
-        .nx-welcome {
-          position: relative;
-          overflow: hidden;
-          border-radius: 25px;
-          padding: 34px;
-          color: white;
-          background: linear-gradient(115deg,#586fe4 0%,#8171e7 55%,#aa83e9 100%);
-          box-shadow: 0 18px 38px #6976dc26;
-        }
-        .nx-welcome:after {
-          content: "";
-          position: absolute;
-          width: 250px;
-          height: 250px;
-          right: -55px;
-          top: -105px;
-          border-radius: 50%;
-          border: 40px solid #ffffff12;
-          pointer-events: none;
-        }
-        .nx-eyebrow {
-          display: inline-flex;
-          align-items: center;
-          gap: 7px;
-          font-size: 11px;
-          font-weight: 800;
-          letter-spacing: 1.5px;
-          text-transform: uppercase;
-          opacity: .9;
-        }
-        .nx-welcome h1 {
-          position: relative;
-          z-index: 1;
-          margin: 15px 0 9px;
-          max-width: 650px;
-          font-size: clamp(27px,4vw,40px);
-          line-height: 1.13;
-          letter-spacing: -1.4px;
-        }
-        .nx-welcome p {
-          position: relative;
-          z-index: 1;
-          max-width: 580px;
-          margin: 0;
-          font-size: 14px;
-          line-height: 1.7;
-          color: #f0efff;
-        }
-        .nx-stats {
-          display: grid;
-          grid-template-columns: repeat(3,minmax(0,1fr));
-          gap: 16px;
-          margin: 22px 0 36px;
-        }
-        .nx-stat {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          min-width: 0;
-          padding: 19px;
-          border: 1px solid #e9ebf3;
-          border-radius: 18px;
-          background: white;
-        }
-        .nx-stat-icon {
-          width: 45px;
-          height: 45px;
-          flex-shrink: 0;
-          display: grid;
-          place-items: center;
-          border-radius: 14px;
-          background: #eef0ff;
-          color: #6573e2;
-        }
+       .nx-welcome {
+position: relative;
+overflow: hidden;
+border-radius: 28px;
+padding: clamp(26px, 5vw, 46px);
+color: #29234f;
+background:
+radial-gradient(circle at 90% 10%, rgba(151, 126, 255, .15), transparent 32%),
+linear-gradient(135deg, #ffffff 0%, #f3efff 62%, #faf7ff 100%);
+border: 1px solid #e8e0ff;
+box-shadow: 0 14px 38px rgba(76, 56, 151, .07);
+}
+
+    .nx-welcome:after {
+      content: "";
+      position: absolute;
+      width: 230px;
+      height: 230px;
+      right: -95px;
+      bottom: -125px;
+      border-radius: 50%;
+      border: 35px solid rgba(117, 86, 217, .08);
+      pointer-events: none;
+    }
+
+    .nx-eyebrow {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 30px;
+      background: #ebe5ff;
+      color: #6950c8;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .nx-welcome h1 {
+      position: relative;
+      z-index: 1;
+      margin: 22px 0 12px;
+      max-width: 650px;
+      font-size: clamp(30px, 5vw, 46px);
+      line-height: 1.12;
+      letter-spacing: -1.5px;
+      font-weight: 900;
+      color: #282248;
+    }
+
+    .nx-welcome p {
+      position: relative;
+      z-index: 1;
+      max-width: 590px;
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.9;
+      color: #6c6685;
+    }
+
+    .nx-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 15px;
+      margin: 20px 0 38px;
+    }
+
+    .nx-stat {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+      padding: 20px;
+      border: 1px solid #e9e4f8;
+      border-radius: 19px;
+      background: #ffffff;
+      box-shadow: 0 7px 22px rgba(65, 49, 120, .045);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .nx-stat-icon {
+      width: 46px;
+      height: 46px;
+      flex: 0 0 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      background: #eee9ff;
+      color: #7056d9;
+      } 
         .nx-stat strong {
           display: block;
           font-size: 22px;
