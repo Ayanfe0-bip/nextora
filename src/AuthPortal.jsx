@@ -51,6 +51,7 @@ const opportunities = [
     icon: GraduationCap,
     color: "#e9efff",
     ink: "#415edb",
+    url: "https://scholarship.education.gov.ng/",
   },
   {
     id: "careers",
