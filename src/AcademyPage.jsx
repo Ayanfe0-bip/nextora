@@ -30,6 +30,7 @@ import {
   RotateCcw,
   Target,
   Award,
+  ShieldCheck,
 } from "lucide-react";
 
 /* =========================================================
@@ -129,6 +130,15 @@ const departments = [
     level: "Beginner to Advanced",
   },
   {
+    id: "cybersecurity-ethical-hacking",
+    code: "NAC-CSE",
+    title: "Cybersecurity & Ethical Hacking",
+    description:
+      "Learn online safety, network security, ethical hacking, threat detection, and defensive cybersecurity through practical lessons.",
+    icon: ShieldCheck,
+    color: "#7C83FD",
+    level: "Beginner to Expert",
+  },
     id: "projects-certificates",
     code: "NAC-PAC",
     title: "Projects & Certificates",
