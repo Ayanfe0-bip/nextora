@@ -2157,105 +2157,268 @@ transition: "width 0.25s",
           </div>
         ) : (
           <>
-            {/* ACADEMY HERO */}
-            <section
+{/* ACADEMY HERO — PREMIUM PURPLE & WHITE */}
+<section
+style={{
+...cardStyle,
+padding: "clamp(24px, 5vw, 44px)",
+background:
+"linear-gradient(135deg, #ffffff 0%, #f2efff 58%, #faf7ff 100%)",
+border: "1px solid #e5defe",
+borderRadius: 26,
+position: "relative",
+overflow: "hidden",
+}}
+>
+<div
+style={{
+position: "absolute",
+top: -65,
+right: -45,
+width: 190,
+height: 190,
+borderRadius: "50%",
+background: "rgba(139, 119, 255, 0.09)",
+pointerEvents: "none",
+}}
+/>
+
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <div
               style={{
-                ...cardStyle,
-                padding: "clamp(24px, 5vw, 42px)",
-                background:
-                  "linear-gradient(125deg, #fff 0%, #f0edff 65%, #fff5fb 100%)",
+                ...badgeStyle,
+                padding: "8px 12px",
+                letterSpacing: "0.5px",
+                background: "#ebe6ff",
+              }}
+            >
+              <Sparkles size={14} />
+              WELCOME TO NEXTORA ACADEMY
+            </div>
+
+            <h1
+              style={{
+                fontSize: "clamp(32px, 5vw, 50px)",
+                lineHeight: 1.12,
+                letterSpacing: "-1.5px",
+                margin: "22px 0 14px",
+                maxWidth: 680,
+                fontWeight: 900,
+                color: "#222044",
+              }}
+            >
+              Your next skill.
+              <br />
+              Your next <span style={{ color: "#7056d9" }}>opportunity.</span>
+            </h1>
+
+            <p
+              style={{
+                color: "#686580",
+                lineHeight: 1.9,
+                maxWidth: 650,
+                fontSize: 15,
+                margin: "0 0 22px",
+              }}
+            >
+              Learn practical skills in artificial intelligence,
+              technology, business, health education, cybersecurity,
+              and more. Study at your own pace and build your future
+              one lesson at a time.
+            </p>
+
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 9,
+                padding: "11px 15px",
+                borderRadius: 12,
+                background: "#7056d9",
+                color: "#ffffff",
+                fontWeight: 800,
+                fontSize: 13,
+              }}
+            >
+              <GraduationCap size={18} />
+              Learn. Practice. Grow.
+            </div>
+          </div>
+
+          {/* STUDENT LEARNING OVERVIEW */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "repeat(auto-fit, minmax(min(100%, 135px), 1fr))",
+              gap: 12,
+              marginTop: 30,
+              position: "relative",
+              zIndex: 1,
+            }}
+          >
+            {[
+              {
+                label: "Departments",
+                value: departments.length,
+                icon: GraduationCap,
+                detail: "Explore learning areas",
+              },
+              {
+                label: "Courses",
+                value: allCourses.length,
+                icon: BookOpen,
+                detail: "Available courses",
+              },
+              {
+                label: "Total lessons",
+                value: totalLessons,
+                icon: PlayCircle,
+                detail: "Lessons to explore",
+              },
+              {
+                label: "Lessons completed",
+                value: completedLessons,
+                icon: CheckCircle2,
+                detail: `${overallProgress}% overall progress`,
+              },
+            ].map((stat) => {
+              const Icon = stat.icon;
+
+              return (
+                <div
+                  key={stat.label}
+                  style={{
+                    background: "rgba(255, 255, 255, 0.92)",
+                    border: "1px solid #e8e2fc",
+                    borderRadius: 17,
+                    padding: "17px 15px",
+                    minWidth: 0,
+                    boxShadow: "0 5px 18px rgba(74, 56, 145, 0.045)",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 38,
+                      height: 38,
+                      display: "grid",
+                      placeItems: "center",
+                      borderRadius: 12,
+                      background: "#eee9ff",
+                      color: "#7056d9",
+                    }}
+                  >
+                    <Icon size={20} />
+                  </div>
+
+                  <div
+                    style={{
+                      fontSize: 28,
+                      lineHeight: 1.2,
+                      fontWeight: 900,
+                      color: "#28234f",
+                      marginTop: 14,
+                    }}
+                  >
+                    {stat.value}
+                  </div>
+
+                  <div
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 800,
+                      color: "#514a77",
+                      marginTop: 5,
+                    }}
+                  >
+                    {stat.label}
+                  </div>
+
+                  <div
+                    style={{
+                      fontSize: 11,
+                      color: "#85809f",
+                      lineHeight: 1.6,
+                      marginTop: 5,
+                    }}
+                  >
+                    {stat.detail}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* OVERALL LEARNING PROGRESS */}
+          <div style={{ marginTop: 25, position: "relative", zIndex: 1 }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 10,
+                flexWrap: "wrap",
+                marginBottom: 9,
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 13,
+                  fontWeight: 800,
+                  color: "#494268",
+                }}
+              >
+                Your learning journey
+              </span>
+
+              <span
+                style={{
+                  fontSize: 13,
+                  fontWeight: 900,
+                  color: "#7056d9",
+                }}
+              >
+                {overallProgress}%
+              </span>
+            </div>
+
+            <div
+              role="progressbar"
+              aria-label="Overall lesson completion"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={overallProgress}
+              style={{
+                height: 9,
+                borderRadius: 20,
+                background: "#e7e1f8",
                 overflow: "hidden",
               }}
             >
-              <div style={badgeStyle}>
-                <Sparkles size={13} /> YOUR LEARNING JOURNEY
-              </div>
-
-              <h1
-                style={{
-                  fontSize: "clamp(32px, 5vw, 48px)",
-                  lineHeight: 1.13,
-                  letterSpacing: "-1.3px",
-                  margin: "18px 0 12px",
-                }}
-              >
-                Learn skills.
-                <br />
-                Build your <span style={{ color: "#7567ec" }}>future.</span>
-              </h1>
-
-              <p
-                style={{
-                  color: "#656784",
-                  lineHeight: 1.85,
-                  maxWidth: 660,
-                  fontSize: 15,
-                }}
-              >
-                Explore practical courses in artificial intelligence, digital
-                skills, business, health education, and creative technology.
-                Learn at your own pace and track your progress as you go.
-              </p>
-
               <div
                 style={{
-                  display: "grid",
-                  gridTemplateColumns:
-                    "repeat(auto-fit, minmax(125px, 1fr))",
-                  gap: 12,
-                  marginTop: 26,
+                  width: `${overallProgress}%`,
+                  height: "100%",
+                  borderRadius: 20,
+                  background:
+                    "linear-gradient(90deg, #7056d9, #a18bff)",
+                  transition: "width 0.3s ease",
                 }}
-              >
-                {[
-                  {
-                    label: "Departments",
-                    value: departments.length,
-                    icon: GraduationCap,
-                  },
-                  {
-                    label: "Courses",
-                    value: allCourses.length,
-                    icon: BookOpen,
-                  },
-                  {
-                    label: "Lessons",
-                    value: totalLessons,
-                    icon: PlayCircle,
-                  },
-                  {
-                    label: "Completed",
-                    value: `${overallProgress}%`,
-                    icon: Trophy,
-                  },
-                ].map((stat) => {
-                  const Icon = stat.icon;
+              />
+            </div>
 
-                  return (
-                    <div
-                      key={stat.label}
-                      style={{
-                        background: "rgba(255,255,255,0.85)",
-                        border: "1px solid #e8e5fb",
-                        borderRadius: 15,
-                        padding: 16,
-                      }}
-                    >
-                      <Icon size={20} color="#7768e5" />
-                      <div
-                        style={{
-                          fontSize: 25,
-                          fontWeight: 900,
-                          marginTop: 8,
-                        }}
-                      >
-                        {stat.value}
-                      </div>
-                      <div style={mutedStyle}>{stat.label}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
+            <p
+              style={{
+                fontSize: 11,
+                color: "#85809f",
+                margin: "9px 0 0",
+                lineHeight: 1.6,
+              }}
+            >
+              Keep learning and completing lessons to build your progress.
+            </p>
+          </div>
+        </section>
             
             {/* SEARCH AND FILTERS */}
             <section style={{ marginTop: 30 }}>
