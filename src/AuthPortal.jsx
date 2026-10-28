@@ -1514,19 +1514,20 @@ box-shadow: 0 14px 38px rgba(76, 56, 151, .07);
                     <div className="nx-card-foot">
                       <span className="nx-tag">{item.tag}</span>
 
-                      <button
-                        className="nx-open-card"
-                        onClick={() => {
-                          if (isAcademy) {
-                            navigate("Academy");
-                          } else {
-                            setNotice(
-                              `${item.title}: this category is available to explore, but live listings have not yet been connected.`
-                            );
-                          }
-                        }}
-                      >
-                        {isAcademy ? "Open Academy" : "Explore"}
+                      
+             <button
+className="nx-open-card"
+onClick={() => {
+if (isAcademy) {
+navigate("Academy");
+} else if (item.url) {
+window.open(item.url, "_blank", "noopener,noreferrer");
+} else {
+setNotice("This opportunity website is not available yet.");
+}
+}}
+
+«» {isAcademy ? "Open Academy" : "Explore"}
                         <ArrowUpRight size={16} />
                       </button>
                     </div>
