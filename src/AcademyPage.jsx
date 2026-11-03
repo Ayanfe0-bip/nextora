@@ -1690,13 +1690,15 @@ useEffect(() => {
   };
 
   const openCourse = (course) => {
-    setSelectedCourse(course);
-    setSelectedLesson(0);
-    setAnswers({});
-    setShowAnswers(false);
-    setMobileMenuOpen(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  const savedProgress = progress[course.code];
+
+  setSelectedCourse(course);
+  setSelectedLesson(savedProgress?.currentLesson || 0);
+  setAnswers({});
+  setShowAnswers(false);
+  setMobileMenuOpen(false);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
 
   const closeCourse = () => {
     setSelectedCourse(null);
