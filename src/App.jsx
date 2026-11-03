@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { supabase } from "./lib/supabaseclient";
 import { AuthPortal, Dashboard } from "./AuthPortal";
 import AcademyPage from "./AcademyPage";
@@ -61,13 +62,63 @@ const categories = [
   },
 ];
 
+const fadeUp = {
+  hidden: {
+    opacity: 0,
+    y: 35,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.7,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
+const fadeIn = {
+  hidden: {
+    opacity: 0,
+  },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.8,
+    },
+  },
+};
+
+const staggerContainer = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.12,
+    },
+  },
+};
+
 function App() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [toast, setToast] = useState("");
   const [authMode, setAuthMode] = useState(null);
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
-const [academyOpen, setAcademyOpen] = useState(false);
+  const [academyOpen, setAcademyOpen] = useState(false);
+
+  const shouldReduceMotion = useReducedMotion();
+
+  const animationProps = shouldReduceMotion
+    ? {}
+    : {
+        initial: "hidden",
+        whileInView: "visible",
+        viewport: {
+          once: true,
+          amount: 0.15,
+        },
+      };
+
   useEffect(() => {
     let mounted = true;
 
@@ -152,12 +203,16 @@ const [academyOpen, setAcademyOpen] = useState(false);
 
     setMobileMenu(false);
   };
+
   // Temporary Academy content export page
   if (
-    new URLSearchParams(window.location.search).get("academy-export") === "1"
+    new URLSearchParams(window.location.search).get(
+      "academy-export"
+    ) === "1"
   ) {
     return <AcademyContentExport />;
   }
+
   if (authLoading) {
     return (
       <div
@@ -174,9 +229,15 @@ const [academyOpen, setAcademyOpen] = useState(false);
       </div>
     );
   }
-if (academyOpen) {
-  return <AcademyPage onBack={() => setAcademyOpen(false)} />;
-}
+
+  if (academyOpen) {
+    return (
+      <AcademyPage
+        onBack={() => setAcademyOpen(false)}
+      />
+    );
+  }
+
   if (user) {
     return (
       <Dashboard
@@ -197,7 +258,16 @@ if (academyOpen) {
   }
 
   return (
-    <div className="nextora-app">
+    <motion.div
+      className="nextora-app"
+      initial={
+        shouldReduceMotion
+          ? false
+          : { opacity: 0 }
+      }
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+    >
       <div className="announcement">
         <div className="announcement-inner">
           <Sparkles size={15} />
@@ -312,7 +382,20 @@ if (academyOpen) {
           <div className="hero-glow hero-glow-two" />
 
           <div className="hero-container">
-            <div className="hero-content">
+            <motion.div
+              className="hero-content"
+              initial={
+                shouldReduceMotion
+                  ? false
+                  : { opacity: 0, x: -45 }
+              }
+              animate={{ opacity: 1, x: 0 }}
+              transition={{
+                duration: 0.85,
+                delay: 0.15,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            >
               <div className="hero-eyebrow">
                 <span className="eyebrow-dot" />
                 YOUR FUTURE STARTS HERE
@@ -358,9 +441,26 @@ if (academyOpen) {
                   Apply with confidence.
                 </span>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="hero-visual">
+            <motion.div
+              className="hero-visual"
+              initial={
+                shouldReduceMotion
+                  ? false
+                  : { opacity: 0, scale: 0.92, y: 25 }
+              }
+              animate={{
+                opacity: 1,
+                scale: 1,
+                y: 0,
+              }}
+              transition={{
+                duration: 1,
+                delay: 0.3,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            >
               <div className="hero-photo-frame">
                 <img
                   src="/images/nextora-hero.jpg"
@@ -386,7 +486,19 @@ if (academyOpen) {
                 </div>
               </div>
 
-              <div className="floating-card floating-card-top">
+              <motion.div
+                className="floating-card floating-card-top"
+                animate={
+                  shouldReduceMotion
+                    ? {}
+                    : { y: [0, -9, 0] }
+                }
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
                 <div className="floating-icon scholarship-icon">
                   <GraduationCap size={21} />
                 </div>
@@ -400,9 +512,22 @@ if (academyOpen) {
                   size={17}
                   className="floating-arrow"
                 />
-              </div>
+              </motion.div>
 
-              <div className="floating-card floating-card-bottom">
+              <motion.div
+                className="floating-card floating-card-bottom"
+                animate={
+                  shouldReduceMotion
+                    ? {}
+                    : { y: [0, 9, 0] }
+                }
+                transition={{
+                  duration: 4.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.4,
+                }}
+              >
                 <div className="floating-icon skill-icon">
                   <Sparkles size={21} />
                 </div>
@@ -416,11 +541,11 @@ if (academyOpen) {
                   size={19}
                   className="floating-check"
                 />
-              </div>
+              </motion.div>
 
               <div className="hero-orbit orbit-one" />
               <div className="hero-orbit orbit-two" />
-            </div>
+            </motion.div>
           </div>
 
           <div className="hero-bottom">
@@ -449,10 +574,11 @@ if (academyOpen) {
             </div>
           </div>
         </section>
-
-        <section
+                <motion.section
           className="categories-section section-pad"
           id="categories"
+          {...animationProps}
+          variants={fadeUp}
         >
           <div className="section-container">
             <div className="section-heading">
@@ -476,14 +602,44 @@ if (academyOpen) {
               </p>
             </div>
 
-            <div className="category-grid">
+            <motion.div
+              className="category-grid"
+              variants={staggerContainer}
+              initial={
+                shouldReduceMotion ? false : "hidden"
+              }
+              whileInView="visible"
+              viewport={{
+                once: true,
+                amount: 0.15,
+              }}
+            >
               {categories.map((category) => {
                 const Icon = category.icon;
 
                 return (
-                  <button
+                  <motion.button
                     className={`category-card category-${category.color}`}
                     key={category.name}
+                    variants={
+                      shouldReduceMotion ? {} : fadeUp
+                    }
+                    whileHover={
+                      shouldReduceMotion
+                        ? {}
+                        : {
+                            y: -8,
+                            scale: 1.02,
+                          }
+                    }
+                    whileTap={
+                      shouldReduceMotion
+                        ? {}
+                        : { scale: 0.98 }
+                    }
+                    transition={{
+                      duration: 0.25,
+                    }}
                     onClick={() => openAuth("signup")}
                   >
                     <span className="category-icon">
@@ -505,18 +661,40 @@ if (academyOpen) {
                       <span>Explore inside NEXTORA</span>
                       <ArrowUpRight size={18} />
                     </span>
-                  </button>
+                  </motion.button>
                 );
               })}
-            </div>
+            </motion.div>
           </div>
-        </section>
-                <section
+        </motion.section>
+
+        <motion.section
           className="academy-section section-pad"
           id="academy"
+          {...animationProps}
+          variants={fadeUp}
         >
           <div className="section-container">
-            <div className="academy-panel">
+            <motion.div
+              className="academy-panel"
+              initial={
+                shouldReduceMotion
+                  ? false
+                  : { opacity: 0, y: 45 }
+              }
+              whileInView={{
+                opacity: 1,
+                y: 0,
+              }}
+              viewport={{
+                once: true,
+                amount: 0.15,
+              }}
+              transition={{
+                duration: 0.8,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            >
               <div className="academy-content">
                 <span className="section-kicker light-kicker">
                   NEXTORA ACADEMY
@@ -535,15 +713,28 @@ if (academyOpen) {
                   prepare for new possibilities.
                 </p>
 
-                <button
+                <motion.button
+                  whileHover={
+                    shouldReduceMotion
+                      ? {}
+                      : { scale: 1.04 }
+                  }
+                  whileTap={
+                    shouldReduceMotion
+                      ? {}
+                      : { scale: 0.97 }
+                  }
                   onClick={() => {
-  setAcademyOpen(true);
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}}
+                    setAcademyOpen(true);
+                    window.scrollTo({
+                      top: 0,
+                      behavior: "smooth",
+                    });
+                  }}
                 >
                   Explore the Academy{" "}
                   <ArrowRight size={17} />
-                </button>
+                </motion.button>
 
                 <div className="academy-benefits">
                   <span>
@@ -563,7 +754,26 @@ if (academyOpen) {
                 </div>
               </div>
 
-              <div className="academy-visual">
+              <motion.div
+                className="academy-visual"
+                initial={
+                  shouldReduceMotion
+                    ? false
+                    : { opacity: 0, x: 35 }
+                }
+                whileInView={{
+                  opacity: 1,
+                  x: 0,
+                }}
+                viewport={{
+                  once: true,
+                  amount: 0.2,
+                }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.15,
+                }}
+              >
                 <div className="academy-photo-frame">
                   <img
                     src="/images/nextora-cta.jpg"
@@ -572,24 +782,46 @@ if (academyOpen) {
                   />
                 </div>
 
-                <div className="academy-sticker">
+                <motion.div
+                  className="academy-sticker"
+                  animate={
+                    shouldReduceMotion
+                      ? {}
+                      : {
+                          y: [0, -7, 0],
+                          rotate: [0, 2, 0],
+                        }
+                  }
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                >
                   <Sparkles size={20} />
                   <span>Learn today.</span>
                   <strong>Grow tomorrow.</strong>
-                </div>
+                </motion.div>
 
                 <div className="academy-dots" />
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
-        </section>
+        </motion.section>
 
-        <section
+        <motion.section
           className="about-section section-pad"
           id="about"
+          {...animationProps}
+          variants={fadeUp}
         >
           <div className="section-container about-grid">
-            <div className="about-copy">
+            <motion.div
+              className="about-copy"
+              variants={
+                shouldReduceMotion ? {} : fadeUp
+              }
+            >
               <span className="section-kicker">
                 WHY NEXTORA EXISTS
               </span>
@@ -635,16 +867,51 @@ if (academyOpen) {
                 </p>
               </div>
 
-              <button
+              <motion.button
                 className="dark-outline-button"
+                whileHover={
+                  shouldReduceMotion
+                    ? {}
+                    : { x: 5 }
+                }
+                whileTap={
+                  shouldReduceMotion
+                    ? {}
+                    : { scale: 0.97 }
+                }
                 onClick={() => openAuth("signup")}
               >
                 Join NEXTORA <ArrowRight size={17} />
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
 
-            <div className="about-features">
-              <div className="about-feature">
+            <motion.div
+              className="about-features"
+              variants={
+                shouldReduceMotion
+                  ? {}
+                  : staggerContainer
+              }
+              initial={
+                shouldReduceMotion ? false : "hidden"
+              }
+              whileInView="visible"
+              viewport={{
+                once: true,
+                amount: 0.2,
+              }}
+            >
+              <motion.div
+                className="about-feature"
+                variants={
+                  shouldReduceMotion ? {} : fadeUp
+                }
+                whileHover={
+                  shouldReduceMotion
+                    ? {}
+                    : { x: 7 }
+                }
+              >
                 <span className="feature-number">01</span>
 
                 <div>
@@ -656,9 +923,19 @@ if (academyOpen) {
                 </div>
 
                 <Globe2 size={22} />
-              </div>
+              </motion.div>
 
-              <div className="about-feature">
+              <motion.div
+                className="about-feature"
+                variants={
+                  shouldReduceMotion ? {} : fadeUp
+                }
+                whileHover={
+                  shouldReduceMotion
+                    ? {}
+                    : { x: 7 }
+                }
+              >
                 <span className="feature-number">02</span>
 
                 <div>
@@ -670,9 +947,19 @@ if (academyOpen) {
                 </div>
 
                 <BookOpen size={22} />
-              </div>
+              </motion.div>
 
-              <div className="about-feature">
+              <motion.div
+                className="about-feature"
+                variants={
+                  shouldReduceMotion ? {} : fadeUp
+                }
+                whileHover={
+                  shouldReduceMotion
+                    ? {}
+                    : { x: 7 }
+                }
+              >
                 <span className="feature-number">03</span>
 
                 <div>
@@ -684,16 +971,48 @@ if (academyOpen) {
                 </div>
 
                 <ShieldCheck size={22} />
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
-        </section>
-
-        <section className="final-cta-section">
+        </motion.section>
+                <motion.section
+          className="final-cta-section"
+          initial={
+            shouldReduceMotion
+              ? false
+              : { opacity: 0, y: 35 }
+          }
+          whileInView={{
+            opacity: 1,
+            y: 0,
+          }}
+          viewport={{
+            once: true,
+            amount: 0.2,
+          }}
+          transition={{
+            duration: 0.8,
+          }}
+        >
           <div className="final-cta-container">
-            <div className="final-cta-icon">
+            <motion.div
+              className="final-cta-icon"
+              animate={
+                shouldReduceMotion
+                  ? {}
+                  : {
+                      scale: [1, 1.1, 1],
+                      rotate: [0, -5, 5, 0],
+                    }
+              }
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            >
               <Heart size={25} />
-            </div>
+            </motion.div>
 
             <span className="section-kicker light-kicker">
               YOUR JOURNEY STARTS HERE
@@ -711,17 +1030,30 @@ if (academyOpen) {
               in, one step at a time.
             </p>
 
-            <button
+            <motion.button
               className="final-cta-button"
+              whileHover={
+                shouldReduceMotion
+                  ? {}
+                  : {
+                      scale: 1.06,
+                      y: -3,
+                    }
+              }
+              whileTap={
+                shouldReduceMotion
+                  ? {}
+                  : { scale: 0.96 }
+              }
               onClick={() => openAuth("signup")}
             >
               Get started <ArrowUpRight size={18} />
-            </button>
+            </motion.button>
 
             <div className="final-cta-decoration decoration-one" />
             <div className="final-cta-decoration decoration-two" />
           </div>
-        </section>
+        </motion.section>
       </main>
 
       <footer className="site-footer">
@@ -854,8 +1186,33 @@ if (academyOpen) {
       </footer>
 
       {toast && (
-        <div className="toast-message" role="status">
+        <motion.div
+          className="toast-message"
+          role="status"
+          initial={
+            shouldReduceMotion
+              ? false
+              : {
+                  opacity: 0,
+                  y: 20,
+                  scale: 0.95,
+                }
+          }
+          animate={{
+            opacity: 1,
+            y: 0,
+            scale: 1,
+          }}
+          exit={{
+            opacity: 0,
+            y: 10,
+          }}
+          transition={{
+            duration: 0.25,
+          }}
+        >
           <CheckCircle2 size={19} />
+
           <span>{toast}</span>
 
           <button
@@ -864,9 +1221,9 @@ if (academyOpen) {
           >
             <X size={16} />
           </button>
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }
 
