@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import AcademyPdfLibrary from "./AcademyPdfLibrary";
 import AcademyContentExport from "./AcademyContentExport";
+import { supabase } from "./lib/supabaseclient";
 import {
   ArrowLeft,
   ArrowRight,
@@ -1470,7 +1471,89 @@ export default function AcademyPage({ onBack }) {
   const [answers, setAnswers] = useState({});
   const [showAnswers, setShowAnswers] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [studentId, setStudentId] = useState(null);
+const [progressLoading, setProgressLoading] = useState(true);
+useEffect(() => {
+  let active = true;
 
+  const loadStudentProgress = async () => {
+    try {
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (!active) return;
+
+      if (userError || !user) {
+        setStudentId(null);
+        setProgressLoading(false);
+        return;
+      }
+
+      setStudentId(user.id);
+
+      const { data, error } = await supabase
+        .from("academy_student_progress")
+        .select("*")
+        .eq("user_id", user.id);
+
+      if (!active) return;
+
+      if (error) {
+        console.error(
+          "Academy progress loading failed:",
+          error.message
+        );
+
+        setProgressLoading(false);
+        return;
+      }
+
+      const remoteProgress = {};
+
+      (data || []).forEach((row) => {
+        remoteProgress[row.course_code] = {
+          completed: row.completed_lessons || [],
+          currentLesson: row.current_lesson || 0,
+          quizScores: row.quiz_scores || {},
+        };
+      });
+
+      setProgress((previous) => {
+        const merged = { ...previous };
+
+        Object.entries(remoteProgress).forEach(
+          ([courseCode, remote]) => {
+            merged[courseCode] = {
+              ...(merged[courseCode] || {}),
+              ...remote,
+            };
+          }
+        );
+
+        saveStorage(STORAGE_KEY, merged);
+
+        return merged;
+      });
+    } catch (error) {
+      console.error(
+        "Academy progress error:",
+        error
+      );
+    } finally {
+      if (active) {
+        setProgressLoading(false);
+      }
+    }
+  };
+
+  loadStudentProgress();
+
+  return () => {
+    active = false;
+  };
+}, []);
   const filteredCourses = useMemo(() => {
     const term = search.trim().toLowerCase();
 
