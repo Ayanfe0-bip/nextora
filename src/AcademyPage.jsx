@@ -1762,27 +1762,44 @@ useEffect(() => {
   }
 };
 
-  const resetCourseProgress = () => {
-    if (!selectedCourse) return;
+  const resetCourseProgress = async () => {
+  if (!selectedCourse) return;
 
-    if (
-      !window.confirm(
-        "Are you sure you want to reset this course progress?"
-      )
-    ) {
-      return;
+  if (
+    !window.confirm(
+      "Are you sure you want to reset this course progress?"
+    )
+  ) {
+    return;
+  }
+
+  const courseCode = selectedCourse.code;
+
+  const next = { ...progress };
+  delete next[courseCode];
+
+  setProgress(next);
+  saveStorage(STORAGE_KEY, next);
+
+  setSelectedLesson(0);
+  setAnswers({});
+  setShowAnswers(false);
+
+  if (studentId) {
+    const { error } = await supabase
+      .from("academy_student_progress")
+      .delete()
+      .eq("user_id", studentId)
+      .eq("course_code", courseCode);
+
+    if (error) {
+      console.error(
+        "Could not reset online progress:",
+        error.message
+      );
     }
-
-    setProgress((previous) => {
-      const next = { ...previous };
-      delete next[selectedCourse.code];
-      saveStorage(STORAGE_KEY, next);
-      return next;
-    });
-
-    setAnswers({});
-    setShowAnswers(false);
-  };
+  }
+};
 
   const pageStyle = {
     minHeight: "100vh",
