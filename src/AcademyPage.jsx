@@ -1624,30 +1624,59 @@ useEffect(() => {
     );
   });
 
-  const saveProgress = (courseCode, lessonIndex, completed) => {
-    setProgress((previous) => {
-      const current = previous[courseCode] || {
-        completed: [],
-      };
-
-      const existing = current.completed || [];
-
-      const nextCompleted = completed
-        ? [...new Set([...existing, lessonIndex])]
-        : existing.filter((index) => index !== lessonIndex);
-
-      const next = {
-        ...previous,
-        [courseCode]: {
-          ...current,
-          completed: nextCompleted,
-        },
-      };
-
-      saveStorage(STORAGE_KEY, next);
-      return next;
-    });
+  const saveProgress = async (courseCode, lessonIndex, completed) => {
+  const current = progress[courseCode] || {
+    completed: [],
+    currentLesson: selectedLesson,
+    quizScores: {},
   };
+
+  const existing = current.completed || [];
+
+  const nextCompleted = completed
+    ? [...new Set([...existing, lessonIndex])]
+    : existing.filter((index) => index !== lessonIndex);
+
+  const updatedCourse = {
+    ...current,
+    completed: nextCompleted,
+    currentLesson: selectedLesson,
+    quizScores: current.quizScores || {},
+  };
+
+  const next = {
+    ...progress,
+    [courseCode]: updatedCourse,
+  };
+
+  setProgress(next);
+  saveStorage(STORAGE_KEY, next);
+
+  if (!studentId) return;
+
+  const { error } = await supabase
+    .from("academy_student_progress")
+    .upsert(
+      {
+        user_id: studentId,
+        course_code: courseCode,
+        completed_lessons: nextCompleted,
+        current_lesson: selectedLesson,
+        quiz_scores: updatedCourse.quizScores,
+        updated_at: new Date().toISOString(),
+      },
+      {
+        onConflict: "user_id,course_code",
+      }
+    );
+
+  if (error) {
+    console.error(
+      "Could not save student progress:",
+      error.message
+    );
+  }
+};
 
   const toggleSavedCourse = (courseCode) => {
     setSavedCourses((previous) => {
