@@ -394,58 +394,46 @@ export function AuthPortal({
           .nx-auth-card { padding: 24px 20px; }
           .nx-auth-card h1 { font-size: 26px; }
         }
-      `}/* NEXTORA PREMIUM AUTH ANIMATIONS */
-
-.nx-auth-page {
+      `}.nx-auth-page {
   animation: nxAuthBackground 1s ease both;
 }
-
 .nx-auth-card {
   animation: nxAuthEnter .85s cubic-bezier(.2,.8,.2,1) both;
   transition: transform .3s ease, box-shadow .3s ease;
 }
-
 .nx-auth-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 25px 75px rgba(40,48,90,.13);
 }
-
 .nx-brand-mark {
   animation: nxBrandPulse 3s ease-in-out infinite;
 }
-
 .nx-auth-card h1 {
   animation: nxAuthText .7s ease both;
   animation-delay: .15s;
 }
-
 .nx-auth-subtitle {
   animation: nxAuthText .7s ease both;
   animation-delay: .25s;
 }
-
 .nx-auth-field {
   animation: nxAuthText .65s ease both;
   animation-delay: .2s;
 }
-
 .nx-auth-field input {
   transition: border-color .25s ease,
               box-shadow .25s ease,
               transform .25s ease;
 }
-
 .nx-auth-field input:focus {
   transform: translateY(-1px);
 }
-
 .nx-auth-submit {
   transition: transform .25s ease,
               box-shadow .25s ease,
               opacity .25s ease;
   box-shadow: 0 8px 20px rgba(91,112,233,.18);
 }
-
 .nx-auth-submit:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 13px 28px rgba(91,112,233,.28);
@@ -454,7 +442,6 @@ export function AuthPortal({
 .nx-auth-submit:active:not(:disabled) {
   transform: scale(.98);
 }
-
 .nx-auth-switch button {
   transition: color .2s ease, transform .2s ease;
 }
