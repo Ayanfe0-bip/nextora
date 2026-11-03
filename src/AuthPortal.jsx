@@ -394,7 +394,109 @@ export function AuthPortal({
           .nx-auth-card { padding: 24px 20px; }
           .nx-auth-card h1 { font-size: 26px; }
         }
-      `}</style>
+      `}
+        /* NEXTORA PREMIUM AUTH ANIMATIONS */
+
+.nx-auth-page {
+  animation: nxAuthBackground 1s ease both;
+}
+
+.nx-auth-card {
+  animation: nxAuthEnter .85s cubic-bezier(.2,.8,.2,1) both;
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.nx-auth-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 25px 75px rgba(40,48,90,.13);
+}
+
+.nx-brand-mark {
+  animation: nxBrandPulse 3s ease-in-out infinite;
+}
+
+.nx-auth-card h1 {
+  animation: nxAuthText .7s ease both;
+  animation-delay: .15s;
+}
+
+.nx-auth-subtitle {
+  animation: nxAuthText .7s ease both;
+  animation-delay: .25s;
+}
+
+.nx-auth-field {
+  animation: nxAuthText .65s ease both;
+  animation-delay: .2s;
+}
+
+.nx-auth-field input {
+  transition: border-color .25s ease,
+              box-shadow .25s ease,
+              transform .25s ease;
+}
+
+.nx-auth-field input:focus {
+  transform: translateY(-1px);
+}
+
+.nx-auth-submit {
+  transition: transform .25s ease,
+              box-shadow .25s ease,
+              opacity .25s ease;
+  box-shadow: 0 8px 20px rgba(91,112,233,.18);
+}
+
+.nx-auth-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 13px 28px rgba(91,112,233,.28);
+}
+
+.nx-auth-submit:active:not(:disabled) {
+  transform: scale(.98);
+}
+
+.nx-auth-switch button {
+  transition: color .2s ease, transform .2s ease;
+}
+
+.nx-auth-switch button:hover {
+  color: #9271e9;
+  transform: translateY(-1px);
+}
+
+@keyframes nxAuthEnter {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes nxAuthText {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes nxAuthBackground {
+  from { opacity: .5; }
+  to { opacity: 1; }
+}
+
+@keyframes nxBrandPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+      </style>
 
       <div className="nx-auth-shell">
         {onBack && (
@@ -1150,7 +1252,335 @@ box-shadow: 0 14px 38px rgba(76, 56, 151, .07);
           .nx-welcome h1 { font-size: 29px; }
           .nx-section-heading h2 { font-size: 21px; }
         }
-      `}</style>
+      `}
+        /* NEXTORA PREMIUM DASHBOARD ANIMATIONS */
+
+.nx-dashboard {
+  animation: nxDashboardEnter .65s ease both;
+}
+
+.nx-topbar {
+  animation: nxTopbarEnter .7s ease both;
+}
+
+.nx-brand-mark {
+  transition: transform .3s ease;
+}
+
+.nx-brand-mark:hover {
+  transform: rotate(-8deg) scale(1.08);
+}
+
+.nx-welcome {
+  animation: nxWelcomeEnter .8s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.nx-welcome:after {
+  animation: nxWelcomeCircle 8s ease-in-out infinite;
+}
+
+.nx-eyebrow {
+  animation: nxBadgeEnter .8s ease both;
+  animation-delay: .15s;
+}
+
+.nx-welcome h1 {
+  animation: nxWelcomeText .8s ease both;
+  animation-delay: .2s;
+}
+
+.nx-welcome p {
+  animation: nxWelcomeText .8s ease both;
+  animation-delay: .3s;
+}
+
+.nx-stat {
+  animation: nxCardEnter .7s cubic-bezier(.2,.8,.2,1) both;
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.nx-stat:nth-child(2) {
+  animation-delay: .12s;
+}
+
+.nx-stat:nth-child(3) {
+  animation-delay: .24s;
+}
+
+.nx-stat:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 35px rgba(65,49,120,.1);
+}
+
+.nx-stat-icon {
+  transition: transform .3s ease;
+}
+
+.nx-stat:hover .nx-stat-icon {
+  transform: rotate(-7deg) scale(1.08);
+}
+
+.nx-dropdown {
+  animation: nxDropdownEnter .2s ease both;
+  transform-origin: top right;
+}
+
+.nx-dropdown button {
+  transition: background .2s ease,
+              transform .2s ease;
+}
+
+.nx-dropdown button:hover {
+  transform: translateX(3px);
+}
+
+.nx-section-heading {
+  animation: nxWelcomeText .65s ease both;
+}
+
+.nx-filter {
+  transition: transform .2s ease,
+              background .2s ease,
+              box-shadow .2s ease;
+}
+
+.nx-filter:hover {
+  transform: translateY(-2px);
+}
+
+.nx-filter.active {
+  box-shadow: 0 5px 15px rgba(100,118,230,.2);
+}
+
+@keyframes nxDashboardEnter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes nxTopbarEnter {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes nxWelcomeEnter {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes nxWelcomeText {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes nxBadgeEnter {
+  from { opacity: 0; transform: scale(.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes nxCardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes nxDropdownEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-7px) scale(.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes nxWelcomeCircle {
+  0%, 100% { transform: translate(0,0); }
+  50% { transform: translate(-12px,-10px); }
+}
+        /* NEXTORA OPPORTUNITY CARD ANIMATIONS */
+
+.nx-card {
+  animation: nxOpportunityEnter .7s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.nx-card:nth-child(2) {
+  animation-delay: .08s;
+}
+
+.nx-card:nth-child(3) {
+  animation-delay: .16s;
+}
+
+.nx-card:nth-child(4) {
+  animation-delay: .24s;
+}
+
+.nx-card:nth-child(5) {
+  animation-delay: .32s;
+}
+
+.nx-card:nth-child(6) {
+  animation-delay: .40s;
+}
+
+.nx-card:nth-child(7) {
+  animation-delay: .48s;
+}
+
+.nx-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(52,60,107,.12);
+  border-color: #dedafa;
+}
+
+.nx-card-icon {
+  transition: transform .3s ease;
+}
+
+.nx-card:hover .nx-card-icon {
+  transform: rotate(-6deg) scale(1.08);
+}
+
+.nx-save {
+  transition: transform .2s ease,
+              background .2s ease,
+              color .2s ease;
+}
+
+.nx-save:hover {
+  transform: scale(1.1);
+}
+
+.nx-save.saved {
+  animation: nxSavePop .3s ease;
+}
+
+.nx-open-card {
+  transition: gap .2s ease,
+              color .2s ease;
+}
+
+.nx-open-card:hover {
+  gap: 11px;
+  color: #9271e9;
+}
+
+.nx-lower-card {
+  animation: nxOpportunityEnter .8s ease both;
+  transition: transform .3s ease,
+              box-shadow .3s ease;
+}
+
+.nx-lower-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 32px rgba(52,60,107,.08);
+}
+
+.nx-notice {
+  animation: nxWelcomeEnter .35s ease both;
+}
+
+.nx-empty {
+  animation: nxWelcomeEnter .4s ease both;
+}
+
+.nx-icon-button {
+  transition: transform .2s ease,
+              background .2s ease;
+}
+
+.nx-icon-button:hover {
+  transform: translateY(-2px);
+  background: #f4f2ff;
+}
+
+.nx-avatar {
+  transition: transform .25s ease;
+}
+
+.nx-avatar:hover {
+  transform: scale(1.08);
+}
+
+@keyframes nxOpportunityEnter {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes nxSavePop {
+  0% { transform: scale(.8); }
+  65% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+/* MOBILE PERFORMANCE AND ACCESSIBILITY */
+
+@media (max-width: 600px) {
+  .nx-card,
+  .nx-stat,
+  .nx-lower-card {
+    animation-duration: .45s;
+  }
+
+  .nx-welcome:after {
+    animation-duration: 12s;
+  }
+
+  .nx-card:hover,
+  .nx-stat:hover,
+  .nx-lower-card:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-auth-page,
+  .nx-auth-card,
+  .nx-brand-mark,
+  .nx-auth-card h1,
+  .nx-auth-subtitle,
+  .nx-auth-field,
+  .nx-dashboard,
+  .nx-topbar,
+  .nx-welcome,
+  .nx-eyebrow,
+  .nx-welcome h1,
+  .nx-welcome p,
+  .nx-stat,
+  .nx-card,
+  .nx-lower-card,
+  .nx-dropdown,
+  .nx-notice,
+  .nx-empty {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+      </style>
 
       <header className="nx-topbar">
         <div className="nx-topbar-inner">
