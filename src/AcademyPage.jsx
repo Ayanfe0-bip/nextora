@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import AcademyPdfLibrary from "./AcademyPdfLibrary";
 import AcademyContentExport from "./AcademyContentExport";
 import { supabase } from "./lib/supabaseclient";
