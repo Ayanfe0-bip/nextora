@@ -1414,41 +1414,59 @@ A certificate may document course completion or assessment, but it does not auto
   }
 ];
  // =========================================================
-// PART 3: NEXTORA ACADEMY INTERFACE
-// Course browsing, lessons, quizzes and saved progress
+// NEXTORA ACADEMY — PREMIUM STUDENT LEARNING EXPERIENCE
 // =========================================================
 
-export const allCourses = [...initialCourses, ...additionalCourses];
+export const allCourses = [
+  ...initialCourses,
+  ...additionalCourses,
+];
 
-const getDepartment = (course) => {
-  return departments.find(
+const getDepartment = (course) =>
+  departments.find(
     (department) =>
       department.id === course.departmentId ||
       department.code === course.departmentId
   );
-};
 
-const getCourseLessons = (course) => {
-  return course?.lessons || [];
-};
+const getCourseLessons = (course) => course?.lessons || [];
 
-const getStorageKey = () => "nextora-academy-progress-v1";
+const STORAGE_KEY = "nextora-academy-progress-v2";
+const SAVED_KEY = "nextora-academy-saved-courses";
 
-const readProgress = () => {
+const readStorage = (key, fallback = {}) => {
   try {
-    const saved = localStorage.getItem(getStorageKey());
-    return saved ? JSON.parse(saved) : {};
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
   } catch {
-    return {};
+    return fallback;
+  }
+};
+
+const saveStorage = (key, value) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    console.error("Academy storage error:", error);
   }
 };
 
 export default function AcademyPage({ onBack }) {
   const [search, setSearch] = useState("");
-  const [selectedDepartment, setSelectedDepartment] = useState("all");
+  const [selectedDepartment, setSelectedDepartment] =
+    useState("all");
+
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedLesson, setSelectedLesson] = useState(0);
-  const [progress, setProgress] = useState(readProgress);
+
+  const [progress, setProgress] = useState(() =>
+    readStorage(STORAGE_KEY)
+  );
+
+  const [savedCourses, setSavedCourses] = useState(() =>
+    readStorage(SAVED_KEY, [])
+  );
+
   const [answers, setAnswers] = useState({});
   const [showAnswers, setShowAnswers] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -1475,21 +1493,25 @@ export default function AcademyPage({ onBack }) {
   }, [search, selectedDepartment]);
 
   const totalLessons = allCourses.reduce(
-    (total, course) => total + getCourseLessons(course).length,
+    (total, course) =>
+      total + getCourseLessons(course).length,
     0
   );
 
   const completedLessons = Object.values(progress).reduce(
-    (total, courseProgress) =>
+    (total, item) =>
       total +
-      (Array.isArray(courseProgress?.completed)
-        ? courseProgress.completed.length
+      (Array.isArray(item?.completed)
+        ? item.completed.length
         : 0),
     0
   );
 
   const overallProgress = totalLessons
-    ? Math.min(100, Math.round((completedLessons / totalLessons) * 100))
+    ? Math.min(
+        100,
+        Math.round((completedLessons / totalLessons) * 100)
+      )
     : 0;
 
   const currentLessons = getCourseLessons(selectedCourse);
@@ -1509,9 +1531,22 @@ export default function AcademyPage({ onBack }) {
       )
     : 0;
 
+  const inProgressCourses = allCourses.filter((course) => {
+    const completed =
+      progress[course.code]?.completed || [];
+
+    return (
+      completed.length > 0 &&
+      completed.length < getCourseLessons(course).length
+    );
+  });
+
   const saveProgress = (courseCode, lessonIndex, completed) => {
     setProgress((previous) => {
-      const current = previous[courseCode] || { completed: [] };
+      const current = previous[courseCode] || {
+        completed: [],
+      };
+
       const existing = current.completed || [];
 
       const nextCompleted = completed
@@ -1526,12 +1561,18 @@ export default function AcademyPage({ onBack }) {
         },
       };
 
-      try {
-        localStorage.setItem(getStorageKey(), JSON.stringify(next));
-      } catch {
-        // The current session still works if storage is unavailable.
-      }
+      saveStorage(STORAGE_KEY, next);
+      return next;
+    });
+  };
 
+  const toggleSavedCourse = (courseCode) => {
+    setSavedCourses((previous) => {
+      const next = previous.includes(courseCode)
+        ? previous.filter((item) => item !== courseCode)
+        : [...previous, courseCode];
+
+      saveStorage(SAVED_KEY, next);
       return next;
     });
   };
@@ -1542,6 +1583,7 @@ export default function AcademyPage({ onBack }) {
     setAnswers({});
     setShowAnswers(false);
     setMobileMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const closeCourse = () => {
@@ -1549,37 +1591,38 @@ export default function AcademyPage({ onBack }) {
     setSelectedLesson(0);
     setAnswers({});
     setShowAnswers(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const moveLesson = (direction) => {
     const nextIndex = selectedLesson + direction;
 
-    if (nextIndex >= 0 && nextIndex < currentLessons.length) {
+    if (
+      nextIndex >= 0 &&
+      nextIndex < currentLessons.length
+    ) {
       setSelectedLesson(nextIndex);
       setAnswers({});
       setShowAnswers(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const resetCourseProgress = () => {
     if (!selectedCourse) return;
 
-    const confirmed = window.confirm(
-      "Reset completed lessons for this course?"
-    );
-
-    if (!confirmed) return;
+    if (
+      !window.confirm(
+        "Are you sure you want to reset this course progress?"
+      )
+    ) {
+      return;
+    }
 
     setProgress((previous) => {
       const next = { ...previous };
       delete next[selectedCourse.code];
-
-      try {
-        localStorage.setItem(getStorageKey(), JSON.stringify(next));
-      } catch {
-        // Continue without persistent storage.
-      }
-
+      saveStorage(STORAGE_KEY, next);
       return next;
     });
 
@@ -1590,44 +1633,49 @@ export default function AcademyPage({ onBack }) {
   const pageStyle = {
     minHeight: "100vh",
     background:
-      "linear-gradient(145deg, #f7f7ff 0%, #f3f5ff 50%, #fff8fc 100%)",
-    color: "#202344",
+      "linear-gradient(145deg,#f8f7ff 0%,#f5f6ff 55%,#fffaff 100%)",
+    color: "#242342",
     fontFamily:
-      "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
-    paddingBottom: 40,
+      "Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif",
+    paddingBottom: 35,
+  };
+
+  const cardStyle = {
+    background: "#ffffff",
+    border: "1px solid #e9e6f7",
+    borderRadius: 20,
+    padding: 20,
+    boxShadow: "0 8px 28px rgba(65,49,130,.055)",
   };
 
   const buttonStyle = {
     border: "none",
     borderRadius: 12,
-    padding: "11px 16px",
-    fontWeight: 700,
+    padding: "12px 16px",
+    fontWeight: 800,
     cursor: "pointer",
-    fontSize: 14,
+    fontSize: 13,
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 7,
   };
 
   const primaryButton = {
     ...buttonStyle,
-    background: "#6657d9",
-    color: "#fff",
+    background: "linear-gradient(135deg,#7056d9,#9479ee)",
+    color: "#ffffff",
   };
 
   const secondaryButton = {
     ...buttonStyle,
-    background: "#eeecff",
-    color: "#5143bd",
-  };
-
-  const cardStyle = {
-    background: "#fff",
-    border: "1px solid #e7e7f5",
-    borderRadius: 20,
-    padding: 20,
-    boxShadow: "0 8px 28px rgba(53, 48, 110, 0.055)",
+    background: "#f0edff",
+    color: "#5d4bc3",
+    border: "1px solid #e5dfff",
   };
 
   const mutedStyle = {
-    color: "#70738f",
+    color: "#77758f",
     fontSize: 13,
     lineHeight: 1.7,
   };
@@ -1635,59 +1683,151 @@ export default function AcademyPage({ onBack }) {
   const badgeStyle = {
     display: "inline-flex",
     alignItems: "center",
-    gap: 5,
-    padding: "5px 9px",
-    background: "#f0efff",
-    color: "#6253ca",
-    borderRadius: 20,
+    gap: 6,
+    padding: "6px 10px",
+    borderRadius: 30,
+    background: "#f0edff",
+    color: "#6652ce",
     fontSize: 11,
-    fontWeight: 800,
+    fontWeight: 900,
   };
 
   return (
     <div style={pageStyle}>
-      {/* HEADER */}
-      <header
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 20,
-          background: "rgba(255,255,255,0.94)",
-          backdropFilter: "blur(14px)",
-          borderBottom: "1px solid #e7e7f5",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: 1180,
-            margin: "auto",
-            padding: "14px 20px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: 12,
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
-            <div
-              style={{
-                width: 42,
-                height: 42,
-                borderRadius: 14,
-                display: "grid",
-                placeItems: "center",
-                color: "#fff",
-                background: "linear-gradient(135deg, #7567ec, #a88bf5)",
-              }}
-            >
-              <GraduationCap size={23} />
+      <style>{`
+        .na-header {
+          position: sticky;
+          top: 0;
+          z-index: 30;
+          background: rgba(255,255,255,.94);
+          backdrop-filter: blur(16px);
+          border-bottom: 1px solid #ebe8f7;
+        }
+
+        .na-header-inner {
+          max-width: 1200px;
+          margin: auto;
+          padding: 13px 20px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .na-brand {
+          display: flex;
+          align-items: center;
+          gap: 11px;
+          font-size: 19px;
+          font-weight: 950;
+          letter-spacing: -.6px;
+        }
+
+        .na-brand-icon {
+          width: 43px;
+          height: 43px;
+          display: grid;
+          place-items: center;
+          color: white;
+          border-radius: 14px;
+          background: linear-gradient(135deg,#7056d9,#a18aff);
+        }
+
+        .na-main {
+          max-width: 1200px;
+          margin: auto;
+          padding: 28px 20px;
+        }
+
+        .na-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit,minmax(min(100%,260px),1fr));
+          gap: 16px;
+        }
+
+        .na-course-card {
+          transition: transform .2s ease,box-shadow .2s ease;
+        }
+
+        .na-course-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 14px 35px rgba(65,49,130,.11);
+        }
+
+        .na-input {
+          width: 100%;
+          min-width: 0;
+          border: none;
+          outline: none;
+          background: transparent;
+          color: #282442;
+          font-size: 14px;
+          padding: 15px 0;
+        }
+
+        .na-progress {
+          height: 9px;
+          border-radius: 30px;
+          overflow: hidden;
+          background: #e9e5f7;
+        }
+
+        .na-progress-fill {
+          height: 100%;
+          border-radius: 30px;
+          background: linear-gradient(90deg,#7056d9,#a18aff);
+          transition: width .3s ease;
+        }
+
+        .na-footer {
+          max-width: 1200px;
+          margin: auto;
+          padding: 25px 20px;
+          text-align: center;
+          border-top: 1px solid #e9e6f5;
+          color: #85829a;
+          font-size: 12px;
+          line-height: 1.9;
+        }
+
+        @media(max-width:600px) {
+          .na-main {
+            padding: 20px 13px;
+          }
+
+          .na-header-inner {
+            padding: 11px 13px;
+          }
+
+          .na-brand {
+            font-size: 16px;
+          }
+
+          .na-course-card:hover {
+            transform: none;
+          }
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+          .na-course-card,
+          .na-progress-fill {
+            transition: none;
+          }
+        }
+      `}</style>
+
+      <header className="na-header">
+        <div className="na-header-inner">
+          <div className="na-brand">
+            <div className="na-brand-icon">
+              <GraduationCap size={24} />
             </div>
 
             <div>
-              <div style={{ fontSize: 19, fontWeight: 900 }}>
-                NEXTORA <span style={{ color: "#7567ec" }}>Academy</span>
-              </div>
-              <div style={{ ...mutedStyle, fontSize: 11 }}>
+              NEXTORA
+              <span style={{ color: "#7056d9" }}> Academy</span>
+
+              <div style={{ ...mutedStyle, fontSize: 10 }}>
                 Learn. Practice. Build your future.
               </div>
             </div>
@@ -1698,57 +1838,62 @@ export default function AcademyPage({ onBack }) {
               <button
                 style={secondaryButton}
                 onClick={onBack}
-                aria-label="Return to dashboard"
               >
-                <ArrowLeft size={15} style={{ verticalAlign: "middle" }} />{" "}
-                <span className="nextora-back-label">Dashboard</span>
+                <ArrowLeft size={15} />
+                <span className="na-back-label">Dashboard</span>
               </button>
             )}
 
             <button
-              style={{ ...secondaryButton, padding: 11 }}
-              onClick={() => setMobileMenuOpen((value) => !value)}
-              aria-label="Toggle department menu"
+              style={{
+                ...secondaryButton,
+                padding: 12,
+              }}
+              onClick={() =>
+                setMobileMenuOpen((value) => !value)
+              }
+              aria-label="Open department menu"
             >
-              <Menu size={18} />
+              {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
           </div>
         </div>
       </header>
 
-      <main style={{ maxWidth: 1180, margin: "auto", padding: "26px 20px" }}>
-        {/* COURSE LESSON VIEW */}
+      <main className="na-main">
         {selectedCourse ? (
-          <div>
+          <>
             <button
               style={{ ...secondaryButton, marginBottom: 18 }}
               onClick={closeCourse}
             >
-              <ArrowLeft size={15} style={{ verticalAlign: "middle" }} />{" "}
-              All courses
+              <ArrowLeft size={15} />
+              Back to Academy
             </button>
 
             <section
               style={{
                 ...cardStyle,
                 background:
-                  "linear-gradient(120deg, #fff 0%, #f1efff 100%)",
+                  "linear-gradient(125deg,#ffffff,#f0edff)",
                 marginBottom: 20,
               }}
             >
-              <div style={badgeStyle}>{selectedCourse.code}</div>
+              <span style={badgeStyle}>
+                {selectedCourse.code}
+              </span>
 
               <h1
                 style={{
-                  fontSize: "clamp(25px, 4vw, 36px)",
+                  fontSize: "clamp(25px,5vw,38px)",
                   lineHeight: 1.2,
-                  margin: "14px 0 8px",
+                  margin: "15px 0 9px",
                 }}
               >
                 {selectedCourse.title}
               </h1>
 
-              <p style={{ color: "#626582", lineHeight: 1.8 }}>
+              <p style={{ ...mutedStyle, fontSize: 14 }}>
                 {selectedCourse.description}
               </p>
 
@@ -1756,60 +1901,60 @@ export default function AcademyPage({ onBack }) {
                 style={{
                   display: "flex",
                   flexWrap: "wrap",
-                  gap: 10,
+                  gap: 9,
                   marginTop: 16,
                 }}
               >
                 <span style={badgeStyle}>
-                  <Clock3 size={13} /> {selectedCourse.duration}
+                  <Clock3 size={13} />
+                  {selectedCourse.duration}
                 </span>
-                <span style={badgeStyle}>{selectedCourse.level}</span>
+
                 <span style={badgeStyle}>
-                  {completedInCourse.length}/{currentLessons.length} lessons
-                  completed
+                  {selectedCourse.level}
+                </span>
+
+                <span style={badgeStyle}>
+                  {completedInCourse.length}/{currentLessons.length}
+                  {" "}lessons completed
                 </span>
               </div>
-  {/* COURSE PROGRESS */}
-<div
-style={{
-height: 8,
-background: "#eeedf7",
-borderRadius: 20,
-overflow: "hidden",
-marginTop: 18,
-}}
->
-<div
-style={{
-width: "${courseProgressPercent}%",
-height: "100%",
-background: "#7567ec",
-borderRadius: 20,
-transition: "width 0.25s",
-}}
-/>
-</div>
-</section>
 
-        <AcademyPdfLibrary
-          departmentCode={
-            departments.find(
-              (department) => department.id === selectedCourse.departmentId
-            )?.code || selectedCourse.code.split("-").slice(0, 2).join("-")
-          }
-        />
+              <div className="na-progress" style={{ marginTop: 19 }}>
+                <div
+                  className="na-progress-fill"
+                  style={{
+                    width: `${courseProgressPercent}%`,
+                  }}
+                />
+              </div>
+
+              <p style={{ ...mutedStyle, marginBottom: 0 }}>
+                Course completion: {courseProgressPercent}%
+              </p>
+            </section>
+                        <AcademyPdfLibrary
+              departmentCode={
+                departments.find(
+                  (department) =>
+                    department.id === selectedCourse.departmentId
+                )?.code ||
+                selectedCourse.code.split("-").slice(0, 2).join("-")
+              }
+            />
 
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 260px), 1fr))",
-                gap: 20,
+                gridTemplateColumns:
+                  "repeat(auto-fit,minmax(min(100%,260px),1fr))",
+                gap: 18,
                 alignItems: "start",
+                marginTop: 20,
               }}
             >
-              {/* LESSON NAVIGATION */}
               <aside style={cardStyle}>
-                <h2 style={{ fontSize: 17, marginTop: 0 }}>
+                <h2 style={{ fontSize: 18, marginTop: 0 }}>
                   <BookOpen
                     size={18}
                     style={{ verticalAlign: "middle", marginRight: 7 }}
@@ -1817,8 +1962,19 @@ transition: "width 0.25s",
                   Course lessons
                 </h2>
 
+                <div
+                  style={{
+                    ...mutedStyle,
+                    marginBottom: 14,
+                  }}
+                >
+                  Select a lesson to begin learning.
+                </div>
+
                 {currentLessons.map((item, index) => {
-                  const isComplete = completedInCourse.includes(index);
+                  const isComplete =
+                    completedInCourse.includes(index);
+
                   const active = selectedLesson === index;
 
                   return (
@@ -1830,29 +1986,41 @@ transition: "width 0.25s",
                         setShowAnswers(false);
                       }}
                       style={{
-                        display: "flex",
                         width: "100%",
-                        textAlign: "left",
-                        gap: 10,
+                        display: "flex",
                         alignItems: "flex-start",
+                        gap: 10,
+                        textAlign: "left",
                         padding: 12,
-                        marginBottom: 7,
+                        marginBottom: 8,
                         borderRadius: 12,
                         border: active
-                          ? "1px solid #8e82ed"
-                          : "1px solid #ececf6",
-                        background: active ? "#f1efff" : "#fff",
-                        color: "#292a4a",
+                          ? "1px solid #8674e9"
+                          : "1px solid #eceaf5",
+                        background: active ? "#f2efff" : "#ffffff",
+                        color: "#302b4d",
                         cursor: "pointer",
                       }}
                     >
                       {isComplete ? (
-                        <CheckCircle2 size={17} color="#299b77" />
+                        <CheckCircle2
+                          size={17}
+                          color="#269b75"
+                        />
                       ) : (
-                        <PlayCircle size={17} color="#8274df" />
+                        <PlayCircle
+                          size={17}
+                          color="#8170df"
+                        />
                       )}
 
-                      <span style={{ fontSize: 13, lineHeight: 1.5 }}>
+                      <span
+                        style={{
+                          fontSize: 13,
+                          lineHeight: 1.6,
+                          fontWeight: active ? 800 : 600,
+                        }}
+                      >
                         {index + 1}. {item.title}
                       </span>
                     </button>
@@ -1867,26 +2035,24 @@ transition: "width 0.25s",
                   }}
                   onClick={resetCourseProgress}
                 >
-                  <RotateCcw
-                    size={14}
-                    style={{ verticalAlign: "middle", marginRight: 5 }}
-                  />
+                  <RotateCcw size={15} />
                   Reset course progress
                 </button>
               </aside>
 
-              {/* LESSON CONTENT */}
               <section style={cardStyle}>
                 {lesson ? (
                   <>
-                    <div style={badgeStyle}>
-                      Lesson {selectedLesson + 1} of {currentLessons.length}
-                    </div>
+                    <span style={badgeStyle}>
+                      Lesson {selectedLesson + 1} of{" "}
+                      {currentLessons.length}
+                    </span>
 
                     <h2
                       style={{
-                        fontSize: "clamp(22px, 3vw, 29px)",
-                        lineHeight: 1.3,
+                        fontSize: "clamp(22px,4vw,30px)",
+                        lineHeight: 1.35,
+                        marginTop: 17,
                       }}
                     >
                       {lesson.title}
@@ -1896,7 +2062,7 @@ transition: "width 0.25s",
                       style={{
                         whiteSpace: "pre-line",
                         lineHeight: 1.95,
-                        color: "#454765",
+                        color: "#49465f",
                         fontSize: 15,
                       }}
                     >
@@ -1906,14 +2072,14 @@ transition: "width 0.25s",
                     {lesson.example && (
                       <div
                         style={{
-                          background: "#f5f3ff",
-                          borderLeft: "4px solid #8172e7",
-                          borderRadius: "0 12px 12px 0",
-                          padding: 16,
-                          marginTop: 22,
+                          marginTop: 23,
+                          padding: 17,
+                          borderRadius: 14,
+                          background: "#f4f1ff",
+                          borderLeft: "4px solid #806de0",
                         }}
                       >
-                        <h3 style={{ margin: "0 0 8px", fontSize: 15 }}>
+                        <h3 style={{ marginTop: 0 }}>
                           <Lightbulb
                             size={17}
                             style={{
@@ -1923,23 +2089,30 @@ transition: "width 0.25s",
                           />
                           Practical example
                         </h3>
-                        <div style={{ lineHeight: 1.8, fontSize: 14 }}>
+
+                        <p
+                          style={{
+                            lineHeight: 1.8,
+                            marginBottom: 0,
+                            fontSize: 14,
+                          }}
+                        >
                           {lesson.example}
-                        </div>
+                        </p>
                       </div>
                     )}
 
                     {lesson.exercise && (
                       <div
                         style={{
-                          background: "#eefaf6",
-                          border: "1px solid #d8f1e8",
-                          borderRadius: 14,
-                          padding: 16,
                           marginTop: 16,
+                          padding: 17,
+                          borderRadius: 14,
+                          background: "#eefaf5",
+                          border: "1px solid #d8f0e5",
                         }}
                       >
-                        <h3 style={{ margin: "0 0 8px", fontSize: 15 }}>
+                        <h3 style={{ marginTop: 0 }}>
                           <Target
                             size={17}
                             style={{
@@ -1949,16 +2122,22 @@ transition: "width 0.25s",
                           />
                           Your practice task
                         </h3>
-                        <p style={{ lineHeight: 1.8, margin: 0 }}>
+
+                        <p
+                          style={{
+                            lineHeight: 1.8,
+                            marginBottom: 0,
+                            fontSize: 14,
+                          }}
+                        >
                           {lesson.exercise}
                         </p>
                       </div>
                     )}
 
-                    {/* REVISION QUESTIONS */}
                     {lesson.questions?.length > 0 && (
-                      <div style={{ marginTop: 26 }}>
-                        <h3 style={{ fontSize: 19 }}>
+                      <section style={{ marginTop: 28 }}>
+                        <h3>
                           <ClipboardCheck
                             size={19}
                             style={{
@@ -1966,136 +2145,160 @@ transition: "width 0.25s",
                               marginRight: 7,
                             }}
                           />
-                          Check your understanding
+                          Test your understanding
                         </h3>
 
-                        {lesson.questions.map((question, questionIndex) => {
-                          const selectedAnswer =
-                            answers[questionIndex] ?? null;
-                          const answered = selectedAnswer !== null;
-                          const correct =
-                            selectedAnswer === question.answer;
+                        {lesson.questions.map(
+                          (question, questionIndex) => {
+                            const selectedAnswer =
+                              answers[questionIndex] ?? null;
 
-                          return (
-                            <div
-                              key={`${selectedCourse.code}-${selectedLesson}-${questionIndex}`}
-                              style={{
-                                border: "1px solid #e8e8f4",
-                                borderRadius: 14,
-                                padding: 15,
-                                marginTop: 13,
-                              }}
-                            >
-                              <p
-                                style={{
-                                  fontWeight: 800,
-                                  lineHeight: 1.7,
-                                  marginTop: 0,
-                                }}
-                              >
-                                {questionIndex + 1}. {question.question}
-                              </p>
+                            const answered =
+                              selectedAnswer !== null;
 
+                            const correct =
+                              selectedAnswer === question.answer;
+
+                            return (
                               <div
+                                key={`${selectedCourse.code}-${selectedLesson}-${questionIndex}`}
                                 style={{
-                                  display: "grid",
-                                  gap: 8,
+                                  border: "1px solid #e9e6f4",
+                                  borderRadius: 14,
+                                  padding: 15,
+                                  marginTop: 13,
                                 }}
                               >
-                                {question.options.map((option, optionIndex) => {
-                                  const isSelected =
-                                    selectedAnswer === optionIndex;
-                                  const isCorrect =
-                                    optionIndex === question.answer;
-
-                                  return (
-                                    <button
-                                      key={optionIndex}
-                                      onClick={() => {
-                                        setAnswers((previous) => ({
-                                          ...previous,
-                                          [questionIndex]: optionIndex,
-                                        }));
-                                        setShowAnswers(false);
-                                      }}
-                                      style={{
-                                        textAlign: "left",
-                                        padding: 12,
-                                        borderRadius: 10,
-                                        cursor: "pointer",
-                                        border:
-                                          showAnswers && isCorrect
-                                            ? "1px solid #46ae87"
-                                            : isSelected
-                                              ? "1px solid #8172e7"
-                                              : "1px solid #e7e7f2",
-                                        background:
-                                          showAnswers && isCorrect
-                                            ? "#eaf9f2"
-                                            : isSelected
-                                              ? "#f1efff"
-                                              : "#fff",
-                                        color: "#30314f",
-                                      }}
-                                    >
-                                 {String.fromCharCode(65 + optionIndex)}.{" "}
-                                      {option}
-                                    </button>
-                                  );
-                                })}
-                              </div>
-
-                              {showAnswers && answered && (
-                                <div
+                                <p
                                   style={{
-                                    marginTop: 12,
-                                    color: correct ? "#16815f" : "#b44a59",
+                                    fontWeight: 800,
                                     lineHeight: 1.7,
-                                    fontSize: 13,
+                                    marginTop: 0,
                                   }}
                                 >
-                                  <strong>
-                                    {correct ? "Correct!" : "Not quite."}
-                                  </strong>{" "}
-                                  {question.explanation}
+                                  {questionIndex + 1}.{" "}
+                                  {question.question}
+                                </p>
+
+                                <div
+                                  style={{
+                                    display: "grid",
+                                    gap: 9,
+                                  }}
+                                >
+                                  {question.options.map(
+                                    (option, optionIndex) => {
+                                      const isSelected =
+                                        selectedAnswer === optionIndex;
+
+                                      const isCorrect =
+                                        optionIndex === question.answer;
+
+                                      return (
+                                        <button
+                                          key={optionIndex}
+                                          onClick={() => {
+                                            setAnswers((previous) => ({
+                                              ...previous,
+                                              [questionIndex]: optionIndex,
+                                            }));
+
+                                            setShowAnswers(false);
+                                          }}
+                                          style={{
+                                            textAlign: "left",
+                                            padding: 13,
+                                            borderRadius: 11,
+                                            cursor: "pointer",
+                                            border:
+                                              showAnswers && isCorrect
+                                                ? "1px solid #39a77c"
+                                                : isSelected
+                                                  ? "1px solid #8170df"
+                                                  : "1px solid #e9e7f2",
+                                            background:
+                                              showAnswers && isCorrect
+                                                ? "#eaf9f2"
+                                                : isSelected
+                                                  ? "#f2efff"
+                                                  : "#ffffff",
+                                            color: "#33304d",
+                                          }}
+                                        >
+                                          {String.fromCharCode(
+                                            65 + optionIndex
+                                          )}. {option}
+                                        </button>
+                                      );
+                                    }
+                                  )}
                                 </div>
-                              )}
-                            </div>
-                          );
-                        })}
+
+                                {showAnswers && answered && (
+                                  <div
+                                    style={{
+                                      marginTop: 12,
+                                      color: correct
+                                        ? "#16815f"
+                                        : "#b44a59",
+                                      fontSize: 13,
+                                      lineHeight: 1.7,
+                                    }}
+                                  >
+                                    <strong>
+                                      {correct
+                                        ? "Correct!"
+                                        : "Not quite."}
+                                    </strong>{" "}
+                                    {question.explanation}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          }
+                        )}
 
                         <button
-                          style={{ ...primaryButton, marginTop: 15 }}
+                          style={{
+                            ...primaryButton,
+                            marginTop: 16,
+                          }}
                           onClick={() => setShowAnswers(true)}
                         >
-                          Check answers
+                          Check my answers
                         </button>
 
                         {showAnswers && (
-                          <div style={{ ...mutedStyle, marginTop: 12 }}>
-                            Score:{" "}
+                          <div
+                            style={{
+                              ...mutedStyle,
+                              marginTop: 12,
+                              padding: 13,
+                              borderRadius: 10,
+                              background: "#f5f3ff",
+                            }}
+                          >
+                            Your score:{" "}
                             {
                               lesson.questions.filter(
                                 (question, index) =>
                                   answers[index] === question.answer
                               ).length
                             }{" "}
-                            / {lesson.questions.length}. You can change an
-                            answer and check again.
+                            / {lesson.questions.length}
                           </div>
                         )}
-                      </div>
+                      </section>
                     )}
 
-                    {/* LESSON ACTIONS */}
                     <div
                       style={{
                         display: "flex",
                         flexWrap: "wrap",
-                        gap: 10,
+                        gap: 9,
                         marginTop: 28,
                         paddingTop: 20,
-                        borderTop: "1px solid #ededf6",
+                        borderTop: "1px solid #eceaf5",
                       }}
                     >
                       <button
@@ -2103,19 +2306,18 @@ transition: "width 0.25s",
                         disabled={selectedLesson === 0}
                         onClick={() => moveLesson(-1)}
                       >
-                        <ArrowLeft
-                          size={15}
-                          style={{ verticalAlign: "middle" }}
-                        />{" "}
+                        <ArrowLeft size={15} />
                         Previous
                       </button>
 
                       <button
                         style={{
                           ...primaryButton,
-                          background: completedInCourse.includes(selectedLesson)
-                            ? "#248568"
-                            : "#6657d9",
+                          background: completedInCourse.includes(
+                            selectedLesson
+                          )
+                            ? "#23876b"
+                            : "linear-gradient(135deg,#7056d9,#9479ee)",
                         }}
                         onClick={() =>
                           saveProgress(
@@ -2125,13 +2327,11 @@ transition: "width 0.25s",
                           )
                         }
                       >
-                        <CheckCircle2
-                          size={15}
-                          style={{ verticalAlign: "middle" }}
-                        />{" "}
+                        <CheckCircle2 size={15} />
+
                         {completedInCourse.includes(selectedLesson)
                           ? "Mark incomplete"
-                          : "Mark lesson complete"}
+                          : "Complete lesson"}
                       </button>
 
                       <button
@@ -2141,600 +2341,139 @@ transition: "width 0.25s",
                         }
                         onClick={() => moveLesson(1)}
                       >
-                        Next{" "}
-                        <ArrowRight
-                          size={15}
-                          style={{ verticalAlign: "middle" }}
-                        />
+                        Next
+                        <ArrowRight size={15} />
                       </button>
                     </div>
                   </>
                 ) : (
-                  <p>No lessons are available in this course yet.</p>
+                  <div style={{ textAlign: "center", padding: 25 }}>
+                    <BookOpen
+                      size={35}
+                      color="#806de0"
+                    />
+
+                    <h3>No lessons available</h3>
+
+                    <p style={mutedStyle}>
+                      This course does not have lessons available yet.
+                    </p>
+                  </div>
                 )}
               </section>
             </div>
-          </div>
+          </>
         ) : (
           <>
-{/* ACADEMY HERO — PREMIUM PURPLE & WHITE */}
-<section
-style={{
-...cardStyle,
-padding: "clamp(24px, 5vw, 44px)",
-background:
-"linear-gradient(135deg, #ffffff 0%, #f2efff 58%, #faf7ff 100%)",
-border: "1px solid #e5defe",
-borderRadius: 26,
-position: "relative",
-overflow: "hidden",
-}}
->
-<div
-style={{
-position: "absolute",
-top: -65,
-right: -45,
-width: 190,
-height: 190,
-borderRadius: "50%",
-background: "rgba(139, 119, 255, 0.09)",
-pointerEvents: "none",
-}}
-/>
-
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <div
+            <section
               style={{
-                ...badgeStyle,
-                padding: "8px 12px",
-                letterSpacing: "0.5px",
-                background: "#ebe6ff",
-              }}
-            >
-              <Sparkles size={14} />
-              WELCOME TO NEXTORA ACADEMY
-            </div>
-
-            <h1
-              style={{
-                fontSize: "clamp(32px, 5vw, 50px)",
-                lineHeight: 1.12,
-                letterSpacing: "-1.5px",
-                margin: "22px 0 14px",
-                maxWidth: 680,
-                fontWeight: 900,
-                color: "#222044",
-              }}
-            >
-              Your next skill.
-              <br />
-              Your next <span style={{ color: "#7056d9" }}>opportunity.</span>
-            </h1>
-
-            <p
-              style={{
-                color: "#686580",
-                lineHeight: 1.9,
-                maxWidth: 650,
-                fontSize: 15,
-                margin: "0 0 22px",
-              }}
-            >
-              Learn practical skills in artificial intelligence,
-              technology, business, health education, cybersecurity,
-              and more. Study at your own pace and build your future
-              one lesson at a time.
-            </p>
-
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 9,
-                padding: "11px 15px",
-                borderRadius: 12,
-                background: "#7056d9",
-                color: "#ffffff",
-                fontWeight: 800,
-                fontSize: 13,
-              }}
-            >
-              <GraduationCap size={18} />
-              Learn. Practice. Grow.
-            </div>
-          </div>
-
-          {/* STUDENT LEARNING OVERVIEW */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns:
-                "repeat(auto-fit, minmax(min(100%, 135px), 1fr))",
-              gap: 12,
-              marginTop: 30,
-              position: "relative",
-              zIndex: 1,
-            }}
-          >
-            {[
-              {
-                label: "Departments",
-                value: departments.length,
-                icon: GraduationCap,
-                detail: "Explore learning areas",
-              },
-              {
-                label: "Courses",
-                value: allCourses.length,
-                icon: BookOpen,
-                detail: "Available courses",
-              },
-              {
-                label: "Total lessons",
-                value: totalLessons,
-                icon: PlayCircle,
-                detail: "Lessons to explore",
-              },
-              {
-                label: "Lessons completed",
-                value: completedLessons,
-                icon: CheckCircle2,
-                detail: `${overallProgress}% overall progress`,
-              },
-            ].map((stat) => {
-              const Icon = stat.icon;
-
-              return (
-                <div
-                  key={stat.label}
-                  style={{
-                    background: "rgba(255, 255, 255, 0.92)",
-                    border: "1px solid #e8e2fc",
-                    borderRadius: 17,
-                    padding: "17px 15px",
-                    minWidth: 0,
-                    boxShadow: "0 5px 18px rgba(74, 56, 145, 0.045)",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 38,
-                      height: 38,
-                      display: "grid",
-                      placeItems: "center",
-                      borderRadius: 12,
-                      background: "#eee9ff",
-                      color: "#7056d9",
-                    }}
-                  >
-                    <Icon size={20} />
-                  </div>
-
-                  <div
-                    style={{
-                      fontSize: 28,
-                      lineHeight: 1.2,
-                      fontWeight: 900,
-                      color: "#28234f",
-                      marginTop: 14,
-                    }}
-                  >
-                    {stat.value}
-                  </div>
-
-                  <div
-                    style={{
-                      fontSize: 12,
-                      fontWeight: 800,
-                      color: "#514a77",
-                      marginTop: 5,
-                    }}
-                  >
-                    {stat.label}
-                  </div>
-
-                  <div
-                    style={{
-                      fontSize: 11,
-                      color: "#85809f",
-                      lineHeight: 1.6,
-                      marginTop: 5,
-                    }}
-                  >
-                    {stat.detail}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* OVERALL LEARNING PROGRESS */}
-          <div style={{ marginTop: 25, position: "relative", zIndex: 1 }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: 10,
-                flexWrap: "wrap",
-                marginBottom: 9,
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 13,
-                  fontWeight: 800,
-                  color: "#494268",
-                }}
-              >
-                Your learning journey
-              </span>
-
-              <span
-                style={{
-                  fontSize: 13,
-                  fontWeight: 900,
-                  color: "#7056d9",
-                }}
-              >
-                {overallProgress}%
-              </span>
-            </div>
-
-            <div
-              role="progressbar"
-              aria-label="Overall lesson completion"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={overallProgress}
-              style={{
-                height: 9,
-                borderRadius: 20,
-                background: "#e7e1f8",
+                ...cardStyle,
+                padding: "clamp(24px,5vw,45px)",
+                borderRadius: 26,
+                background:
+                  "linear-gradient(130deg,#ffffff 0%,#f0edff 58%,#faf7ff 100%)",
+                position: "relative",
                 overflow: "hidden",
               }}
             >
               <div
                 style={{
-                  width: `${overallProgress}%`,
-                  height: "100%",
-                  borderRadius: 20,
-                  background:
-                    "linear-gradient(90deg, #7056d9, #a18bff)",
-                  transition: "width 0.3s ease",
+                  position: "absolute",
+                  width: 210,
+                  height: 210,
+                  right: -65,
+                  top: -80,
+                  borderRadius: "50%",
+                  background: "rgba(133,110,231,.10)",
                 }}
               />
-            </div>
 
-            <p
-              style={{
-                fontSize: 11,
-                color: "#85809f",
-                margin: "9px 0 0",
-                lineHeight: 1.6,
-              }}
-            >
-              Keep learning and completing lessons to build your progress.
-            </p>
-          </div>
-        </section>
-            
-            {/* SEARCH AND FILTERS */}
-            <section style={{ marginTop: 30 }}>
-              <h2 style={{ fontSize: 25, marginBottom: 5 }}>
-                Explore the Academy
-              </h2>
-              <p style={{ ...mutedStyle, marginTop: 0 }}>
-                Find a course that matches your goals.
-              </p>
+              <div style={{ position: "relative", zIndex: 1 }}>
+                <span style={badgeStyle}>
+                  <Sparkles size={14} />
+                  WELCOME TO NEXTORA ACADEMY
+                </span>
 
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns:
-                    "repeat(auto-fit, minmax(min(100%, 250px), 1fr))",
-                  gap: 12,
-                  margin: "20px 0",
-                }}
-              >
-                <label
+                <h1
                   style={{
-                    ...cardStyle,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 10,
-                    padding: "0 14px",
+                    fontSize: "clamp(33px,6vw,54px)",
+                    lineHeight: 1.1,
+                    letterSpacing: "-1.7px",
+                    margin: "22px 0 14px",
+                    maxWidth: 700,
+                    color: "#262044",
+                    fontWeight: 950,
                   }}
                 >
-                  <Search size={19} color="#8075ce" />
-                  <input
-                    value={search}
-                    onChange={(event) => setSearch(event.target.value)}
-                    placeholder="Search courses or departments..."
-                    aria-label="Search courses"
-                    style={{
-                      width: "100%",
-                      minWidth: 0,
-                      border: "none",
-                      outline: "none",
-                      padding: "17px 0",
-                      fontSize: 14,
-                      background: "transparent",
-                      color: "#292a4a",
-                    }}
-                  />
-                </label>
+                  Your next skill.
+                  <br />
+                  Your next{" "}
+                  <span style={{ color: "#7056d9" }}>
+                    opportunity.
+                  </span>
+                </h1>
 
-                <label
+                <p
                   style={{
-                    ...cardStyle,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 10,
-                    padding: "0 14px",
+                    ...mutedStyle,
+                    fontSize: 15,
+                    maxWidth: 650,
                   }}
                 >
-                  <BookOpen size={19} color="#8075ce" />
-                  <select
-                    value={selectedDepartment}
-                    onChange={(event) =>
-                      setSelectedDepartment(event.target.value)
-                    }
-                    aria-label="Filter by department"
-                    style={{
-                      width: "100%",
-                      border: "none",
-                      outline: "none",
-                      padding: "17px 0",
-                      fontSize: 14,
-                      background: "transparent",
-                      color: "#292a4a",
-                    }}
-                  >
-                    <option value="all">All departments</option>
-                    {departments.map((department) => (
-                      <option key={department.id} value={department.id}>
-                        {department.title}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-            </section>
-
-            {/* DEPARTMENT QUICK FILTERS */}
-            {mobileMenuOpen && (
-              <section style={{ ...cardStyle, marginBottom: 20 }}>
-                <h3 style={{ marginTop: 0 }}>Browse departments</h3>
+                  Learn practical skills in artificial intelligence,
+                  technology, business, health education, cybersecurity
+                  and more. Study at your own pace and build your future
+                  one lesson at a time.
+                </p>
 
                 <div
                   style={{
-                    display: "grid",
-                    gridTemplateColumns:
-                      "repeat(auto-fit, minmax(min(100%, 190px), 1fr))",
+                    display: "inline-flex",
+                    alignItems: "center",
                     gap: 9,
+                    padding: "12px 17px",
+                    borderRadius: 12,
+                    background: "#7056d9",
+                    color: "#ffffff",
+                    fontWeight: 900,
+                    fontSize: 13,
+                    marginTop: 12,
                   }}
                 >
-                  {departments.map((department) => {
-                    const Icon = department.icon;
-
-                    return (
-                      <button
-                        key={department.id}
-                        onClick={() => {
-                          setSelectedDepartment(department.id);
-                          setMobileMenuOpen(false);
-                        }}
-                        style={{
-                          ...secondaryButton,
-                          textAlign: "left",
-                          background: "#faf9ff",
-                          border: "1px solid #e8e5fb",
-                        }}
-                      >
-                        <Icon
-                          size={16}
-                          style={{
-                            verticalAlign: "middle",
-                            marginRight: 7,
-                          }}
-                        />
-                        {department.title}
-                      </button>
-                    );
-                  })}
+                  <GraduationCap size={18} />
+                  Learn. Practice. Grow.
                 </div>
-              </section>
-            )}
+              </div>
 
-            {/* COURSE CARDS */}
-            <section
-              style={{
-                display: "grid",
-                gridTemplateColumns:
-                  "repeat(auto-fit, minmax(min(100%, 270px), 1fr))",
-                gap: 16,
-              }}
-            >
-              {filteredCourses.map((course) => {
-                const department = getDepartment(course);
-                const Icon = department?.icon || BookOpen;
-                const courseDone = progress[course.code]?.completed || [];
-                const percent = Math.round(
-                  (courseDone.length /
-                    Math.max(1, getCourseLessons(course).length)) *
-                    100
-                );
-
-                return (
-                  <article
-                    key={course.code}
-                    style={{
-                      ...cardStyle,
-                      display: "flex",
-                      flexDirection: "column",
-                      minWidth: 0,
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "flex-start",
-                        gap: 10,
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: 46,
-                          height: 46,
-                          borderRadius: 15,
-                          background: department?.color || "#eeecff",
-                          color: "#fff",
-                          display: "grid",
-                          placeItems: "center",
-                        }}
-                      >
-                        <Icon size={22} />
-                      </div>
-                      <span style={badgeStyle}>{course.level}</span>
-                    </div>
-
-                    <div
-                      style={{
-                        ...mutedStyle,
-                        marginTop: 16,
-                        fontWeight: 800,
-                      }}
-                    >
-                      {course.code}
-                    </div>
-
-                    <h3
-                      style={{
-                        fontSize: 19,
-                        lineHeight: 1.4,
-                        margin: "7px 0",
-                      }}
-                    >
-                      {course.title}
-                    </h3>
-
-                    <p
-                      style={{
-                        ...mutedStyle,
-                        flexGrow: 1,
-                        margin: "0 0 15px",
-                      }}
-                    >
-                      {course.description}
-                    </p>
-
-                    <div
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: 8,
-                        marginBottom: 14,
-                      }}
-                    >
-                      <span style={badgeStyle}>
-                        <Clock3 size={12} /> {course.duration}
-                      </span>
-                      <span style={badgeStyle}>
-                        {getCourseLessons(course).length} lessons
-                      </span>
-                    </div>
-
-                    <div
-                      style={{
-                        height: 6,
-                        borderRadius: 10,
-                        background: "#eeedf7",
-                        overflow: "hidden",
-                        marginBottom: 15,
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: `${percent}%`,
-                          height: "100%",
-                          background: "#7b6be7",
-                        }}
-                      />
-                    </div>
-
-                    <button
-                      style={{ ...primaryButton, width: "100%" }}
-                      onClick={() => openCourse(course)}
-                    >
-                      {percent === 100 ? "Review course" : "Start learning"}{" "}
-                      <ArrowRight
-                        size={15}
-                        style={{ verticalAlign: "middle" }}
-                      />
-                    </button>
-                  </article>
-                );
-              })}
-            </section>
-
-            {filteredCourses.length === 0 && (
               <div
+                className="na-grid"
                 style={{
-                  ...cardStyle,
-                  marginTop: 20,
-                  textAlign: "center",
+                  gridTemplateColumns:
+                    "repeat(auto-fit,minmax(min(100%,135px),1fr))",
+                  gap: 12,
+                  marginTop: 30,
+                  position: "relative",
+                  zIndex: 1,
                 }}
               >
-                <Search
-                  size={30}
-                  color="#8172e7"
-                  style={{ margin: "0 auto" }}
-                />
-                <h3>No matching courses</h3>
-                <p style={mutedStyle}>
-                  Try another search or select a different department.
-                </p>
-                <button
-                  style={secondaryButton}
-                  onClick={() => {
-                    setSearch("");
-                    setSelectedDepartment("all");
-                  }}
-                >
-                  Clear filters
-                </button>
-              </div>
-            )}
-          </>
-        )}
-      </main>
-
-      {/* FOOTER */}
-      <footer
-        style={{
-          maxWidth: 1180,
-          margin: "20px auto 0",
-          padding: "24px 20px",
-          borderTop: "1px solid #e5e5f2",
-          textAlign: "center",
-          color: "#777993",
-          fontSize: 12,
-          lineHeight: 1.9,
-        }}
-      >
-        <div style={{ fontWeight: 900, color: "#5d51c3", fontSize: 14 }}>
-          NEXTORA Academy
-        </div>
-        Learn at your own pace. Build skills through practice.
-        <br />
-        Educational content is for learning purposes and does not replace
-        qualified professional advice.
-        <br />
-        © {new Date().getFullYear()} Ayanfe Innovation Labs Limited.
-      </footer>
-    </div>
-  );
-                      }
+                {[
+                  {
+                    label: "Departments",
+                    value: departments.length,
+                    icon: GraduationCap,
+                  },
+                  {
+                    label: "Courses",
+                    value: allCourses.length,
+                    icon: BookOpen,
+                  },
+                  {
+                    label: "Total lessons",
+                    value: totalLessons,
+                    icon: PlayCircle,
+                  },
+                  {
+                    label: "Completed",
+                    value: completedLessons,
+                    icon: CheckCircle2,
+           
