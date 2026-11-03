@@ -1706,19 +1706,61 @@ useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const moveLesson = (direction) => {
-    const nextIndex = selectedLesson + direction;
+  const moveLesson = async (direction) => {
+  const nextIndex = selectedLesson + direction;
 
-    if (
-      nextIndex >= 0 &&
-      nextIndex < currentLessons.length
-    ) {
-      setSelectedLesson(nextIndex);
-      setAnswers({});
-      setShowAnswers(false);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+  if (
+    nextIndex >= 0 &&
+    nextIndex < currentLessons.length
+  ) {
+    setSelectedLesson(nextIndex);
+    setAnswers({});
+    setShowAnswers(false);
+
+    if (selectedCourse && studentId) {
+      const current = progress[selectedCourse.code] || {
+        completed: [],
+        quizScores: {},
+      };
+
+      const updatedCourse = {
+        ...current,
+        currentLesson: nextIndex,
+        quizScores: current.quizScores || {},
+      };
+
+      const nextProgress = {
+        ...progress,
+        [selectedCourse.code]: updatedCourse,
+      };
+
+      setProgress(nextProgress);
+      saveStorage(STORAGE_KEY, nextProgress);
+
+      const { error } = await supabase
+        .from("academy_student_progress")
+        .upsert(
+          {
+            user_id: studentId,
+            course_code: selectedCourse.code,
+            completed_lessons: updatedCourse.completed || [],
+            current_lesson: nextIndex,
+            quiz_scores: updatedCourse.quizScores,
+            updated_at: new Date().toISOString(),
+          },
+          {
+            onConflict: "user_id,course_code",
+          }
+        );
+
+      if (error) {
+        console.error("Lesson position saving failed:", error.message);
+      }
     }
-  };
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+};
 
   const resetCourseProgress = () => {
     if (!selectedCourse) return;
@@ -2375,7 +2417,63 @@ useEffect(() => {
                             ...primaryButton,
                             marginTop: 16,
                           }}
-                          onClick={() => setShowAnswers(true)}
+                          onClick={async () => {
+  setShowAnswers(true);
+
+  if (!selectedCourse || !studentId || !lesson.questions?.length) {
+    return;
+  }
+
+  const score = lesson.questions.filter(
+    (question, index) =>
+      answers[index] === question.answer
+  ).length;
+
+  const current = progress[selectedCourse.code] || {
+    completed: [],
+    currentLesson: selectedLesson,
+    quizScores: {},
+  };
+
+  const updatedCourse = {
+    ...current,
+    quizScores: {
+      ...(current.quizScores || {}),
+      [selectedLesson]: {
+        score,
+        total: lesson.questions.length,
+      },
+    },
+  };
+
+  const nextProgress = {
+    ...progress,
+    [selectedCourse.code]: updatedCourse,
+  };
+
+  setProgress(nextProgress);
+  saveStorage(STORAGE_KEY, nextProgress);
+
+  const { error } = await supabase
+    .from("academy_student_progress")
+    .upsert(
+      {
+        user_id: studentId,
+        course_code: selectedCourse.code,
+        completed_lessons: updatedCourse.completed || [],
+        current_lesson: updatedCourse.currentLesson ?? selectedLesson,
+        quiz_scores: updatedCourse.quizScores,
+        updated_at: new Date().toISOString(),
+      },
+      {
+        onConflict: "user_id,course_code",
+      }
+    );
+
+  if (error) {
+    console.error("Quiz score saving failed:", error.message);
+  }
+}}
                         >
                           Check my answers
                         </button>
