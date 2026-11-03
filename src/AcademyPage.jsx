@@ -2476,4 +2476,522 @@ export default function AcademyPage({ onBack }) {
                     label: "Completed",
                     value: completedLessons,
                     icon: CheckCircle2,
+                    },
+                ].map((stat) => {
+                  const Icon = stat.icon;
+
+                  return (
+                    <div
+                      key={stat.label}
+                      style={{
+                        background: "rgba(255,255,255,.94)",
+                        border: "1px solid #e8e2fc",
+                        borderRadius: 16,
+                        padding: 16,
+                      }}
+                    >
+                      <Icon
+                        size={22}
+                        color="#7056d9"
+                      />
+
+                      <div
+                        style={{
+                          fontSize: 27,
+                          fontWeight: 950,
+                          marginTop: 10,
+                          color: "#29234e",
+                        }}
+                      >
+                        {stat.value}
+                      </div>
+
+                      <div
+                        style={{
+                          fontSize: 12,
+                          fontWeight: 800,
+                          color: "#696481",
+                        }}
+                      >
+                        {stat.label}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+                        <section style={{ marginTop: 28 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                  gap: 10,
+                  marginBottom: 10,
+                }}
+              >
+                <div>
+                  <h2 style={{ fontSize: 23, margin: 0 }}>
+                    Your learning progress
+                  </h2>
+
+                  <p style={mutedStyle}>
+                    Every completed lesson takes you forward.
+                  </p>
+                </div>
+
+                <span style={badgeStyle}>
+                  {overallProgress}% completed
+                </span>
+              </div>
+
+              <div className="na-progress">
+                <div
+                  className="na-progress-fill"
+                  style={{
+                    width: `${overallProgress}%`,
+                  }}
+                />
+              </div>
+
+              <p style={mutedStyle}>
+                {completedLessons} of {totalLessons} lessons completed.
+              </p>
+            </section>
+
+            {inProgressCourses.length > 0 && (
+              <section style={{ marginTop: 32 }}>
+                <h2 style={{ fontSize: 22 }}>
+                  <PlayCircle
+                    size={21}
+                    style={{
+                      verticalAlign: "middle",
+                      marginRight: 7,
+                    }}
+                  />
+                  Continue learning
+                </h2>
+
+                <div className="na-grid">
+                  {inProgressCourses.map((course) => {
+                    const done =
+                      progress[course.code]?.completed || [];
+
+                    const total =
+                      getCourseLessons(course).length;
+
+                    const percent = Math.round(
+                      (done.length / Math.max(1, total)) * 100
+                    );
+
+                    return (
+                      <article
+                        key={course.code}
+                        style={cardStyle}
+                      >
+                        <span style={badgeStyle}>
+                          {course.code}
+                        </span>
+
+                        <h3>{course.title}</h3>
+
+                        <div className="na-progress">
+                          <div
+                            className="na-progress-fill"
+                            style={{ width: `${percent}%` }}
+                          />
+                        </div>
+
+                        <p style={mutedStyle}>
+                          {percent}% complete
+                        </p>
+
+                        <button
+                          style={primaryButton}
+                          onClick={() => openCourse(course)}
+                        >
+                          Continue course
+                          <ArrowRight size={15} />
+                        </button>
+                      </article>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+
+            <section style={{ marginTop: 34 }}>
+              <h2 style={{ fontSize: 23, marginBottom: 5 }}>
+                Explore learning departments
+              </h2>
+
+              <p style={mutedStyle}>
+                Choose an area you want to develop.
+              </p>
+
+              {mobileMenuOpen && (
+                <div
+                  className="na-grid"
+                  style={{ marginTop: 16 }}
+                >
+                  {departments.map((department) => {
+                    const Icon = department.icon;
+
+                    return (
+                      <button
+                        key={department.id}
+                        onClick={() => {
+                          setSelectedDepartment(department.id);
+                          setMobileMenuOpen(false);
+                        }}
+                        style={{
+                          ...secondaryButton,
+                          justifyContent: "flex-start",
+                          textAlign: "left",
+                        }}
+                      >
+                        <Icon size={17} />
+                        {department.title}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+
+            <section style={{ marginTop: 30 }}>
+              <h2 style={{ fontSize: 23, marginBottom: 5 }}>
+                Discover your next course
+              </h2>
+
+              <p style={mutedStyle}>
+                Search our available courses and begin learning.
+              </p>
+
+              <div
+                className="na-grid"
+                style={{
+                  gridTemplateColumns:
+                    "repeat(auto-fit,minmax(min(100%,250px),1fr))",
+                  marginTop: 18,
+                }}
+              >
+                <label
+                  style={{
+                    ...cardStyle,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    padding: "0 15px",
+                  }}
+                >
+                  <Search size={19} color="#806de0" />
+
+                  <input
+                    className="na-input"
+                    value={search}
+                    onChange={(event) =>
+                      setSearch(event.target.value)
+                    }
+                    placeholder="Search courses or departments..."
+                    aria-label="Search courses"
+                  />
+                </label>
+
+                <label
+                  style={{
+                    ...cardStyle,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    padding: "0 15px",
+                  }}
+                >
+                  <BookOpen size={19} color="#806de0" />
+
+                  <select
+                    className="na-input"
+                    value={selectedDepartment}
+                    onChange={(event) =>
+                      setSelectedDepartment(event.target.value)
+                    }
+                    aria-label="Filter courses by department"
+                  >
+                    <option value="all">All departments</option>
+
+                    {departments.map((department) => (
+                      <option
+                        key={department.id}
+                        value={department.id}
+                      >
+                        {department.title}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            </section>
+
+            <section
+              className="na-grid"
+              style={{ marginTop: 22 }}
+            >
+              {filteredCourses.map((course) => {
+                const department = getDepartment(course);
+                const Icon = department?.icon || BookOpen;
+
+                const done =
+                  progress[course.code]?.completed || [];
+
+                const total =
+                  getCourseLessons(course).length;
+
+                const percent = Math.round(
+                  (done.length / Math.max(1, total)) * 100
+                );
+
+                const isSaved =
+                  savedCourses.includes(course.code);
+
+                return (
+                  <article
+                    key={course.code}
+                    className="na-course-card"
+                    style={{
+                      ...cardStyle,
+                      display: "flex",
+                      flexDirection: "column",
+                      minWidth: 0,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                        gap: 10,
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 48,
+                          height: 48,
+                          borderRadius: 15,
+                          background:
+                            department?.color || "#806de0",
+                          color: "#ffffff",
+                          display: "grid",
+                          placeItems: "center",
+                        }}
+                      >
+                        <Icon size={23} />
+                      </div>
+
+                      <button
+                        onClick={() =>
+                          toggleSavedCourse(course.code)
+                        }
+                        aria-label={
+                          isSaved
+                            ? "Remove saved course"
+                            : "Save course"
+                        }
+                        style={{
+                          border: "1px solid #e9e5f5",
+                          background: isSaved
+                            ? "#f0edff"
+                            : "#ffffff",
+                          color: "#7056d9",
+                          borderRadius: 10,
+                          padding: 9,
+                          cursor: "pointer",
+                        }}
+                      >
+                        {isSaved ? (
+                          <CheckCircle2 size={17} />
+                        ) : (
+                          <Award size={17} />
+                        )}
+                      </button>
+                    </div>
+
+                    <div
+                      style={{
+                        ...mutedStyle,
+                        fontWeight: 900,
+                        marginTop: 16,
+                      }}
+                    >
+                      {course.code}
+                    </div>
+
+                    <h3
+                      style={{
+                        fontSize: 19,
+                        lineHeight: 1.4,
+                        margin: "8px 0",
+                      }}
+                    >
+                      {course.title}
+                    </h3>
+
+                    <p
+                      style={{
+                        ...mutedStyle,
+                        flexGrow: 1,
+                        marginTop: 0,
+                      }}
+                    >
+                      {course.description}
+                    </p>
+
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: 8,
+                        marginBottom: 14,
+                      }}
+                    >
+                      <span style={badgeStyle}>
+                        {course.level}
+                      </span>
+
+                      <span style={badgeStyle}>
+                        <Clock3 size={12} />
+                        {course.duration}
+                      </span>
+
+                      <span style={badgeStyle}>
+                        {total} lessons
+                      </span>
+                    </div>
+
+                    <div className="na-progress">
+                      <div
+                        className="na-progress-fill"
+                        style={{
+                          width: `${percent}%`,
+                        }}
+                      />
+                    </div>
+
+                    <p style={mutedStyle}>
+                      {percent}% course progress
+                    </p>
+
+                    <button
+                      style={{
+                        ...primaryButton,
+                        width: "100%",
+                      }}
+                      onClick={() => openCourse(course)}
+                    >
+                      {percent === 100
+                        ? "Review course"
+                        : percent > 0
+                          ? "Continue learning"
+                          : "Start learning"}
+
+                      <ArrowRight size={15} />
+                    </button>
+                  </article>
+                );
+              })}
+            </section>
+
+            {filteredCourses.length === 0 && (
+              <div
+                style={{
+                  ...cardStyle,
+                  textAlign: "center",
+                  marginTop: 20,
+                  padding: 35,
+                }}
+              >
+                <Search
+                  size={35}
+                  color="#806de0"
+                />
+
+                <h3>No matching courses found</h3>
+
+                <p style={mutedStyle}>
+                  Try another search or choose a different department.
+                </p>
+
+                <button
+                  style={secondaryButton}
+                  onClick={() => {
+                    setSearch("");
+                    setSelectedDepartment("all");
+                  }}
+                >
+                  Clear filters
+                </button>
+              </div>
+            )}
+
+            {savedCourses.length > 0 && (
+              <section style={{ marginTop: 35 }}>
+                <h2 style={{ fontSize: 22 }}>
+                  Your saved courses
+                </h2>
+
+                <div className="na-grid">
+                  {allCourses
+                    .filter((course) =>
+                      savedCourses.includes(course.code)
+                    )
+                    .map((course) => (
+                      <article
+                        key={course.code}
+                        style={cardStyle}
+                      >
+                        <span style={badgeStyle}>
+                          {course.code}
+                        </span>
+
+                        <h3>{course.title}</h3>
+
+                        <button
+                          style={primaryButton}
+                          onClick={() => openCourse(course)}
+                        >
+                          Open course
+                          <ArrowRight size={15} />
+                        </button>
+                      </article>
+                    ))}
+                </div>
+              </section>
+            )}
+          </>
+        )}
+      </main>
+
+      <footer className="na-footer">
+        <div
+          style={{
+            fontWeight: 950,
+            color: "#6653ca",
+            fontSize: 15,
+          }}
+        >
+          NEXTORA ACADEMY
+        </div>
+
+        Learn at your own pace. Build skills through practice.
+        <br />
+
+        Educational content is for learning purposes and does not
+        replace qualified professional advice.
+        <br />
+
+        © {new Date().getFullYear()} Ayanfe Innovation Labs Limited.
+      </footer>
+    </div>
+  );
+                  }
            
