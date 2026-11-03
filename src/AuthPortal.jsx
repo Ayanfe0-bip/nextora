@@ -29,15 +29,15 @@ import { supabase } from "./lib/supabaseclient";
 import AcademyPage from "./AcademyPage";
 
 const categories = [
-"All",
-"Education",
-"Careers",
-"Funding",
-"Internships",
-"Training",
-"Competitions",
-"Fellowships",
-"Skills",
+  "All",
+  "Education",
+  "Careers",
+  "Funding",
+  "Internships",
+  "Training",
+  "Competitions",
+  "Fellowships",
+  "Skills",
 ];
 
 const opportunities = [
@@ -113,7 +113,7 @@ const opportunities = [
     ink: "#7950c8",
     url: "https://smedan.gov.ng/our-programs/",
   },
-   {
+  {
     id: "fellowships",
     title: "Fellowships",
     description:
@@ -136,7 +136,8 @@ const opportunities = [
     color: "#f0e9ff",
     ink: "#7950c8",
   },
-]; 
+];
+
 export function AuthPortal({
   initialMode = "signup",
   onBack,
@@ -394,7 +395,7 @@ export function AuthPortal({
           .nx-auth-card { padding: 24px 20px; }
           .nx-auth-card h1 { font-size: 26px; }
         }
-      `}.nx-auth-page {
+        .nx-auth-page {
   animation: nxAuthBackground 1s ease both;
 }
 .nx-auth-card {
@@ -482,7 +483,7 @@ export function AuthPortal({
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.06); }
 }
-      </style>
+      `}</style>
 
       <div className="nx-auth-shell">
         {onBack && (
@@ -695,10 +696,7 @@ export function Dashboard({ user, onSignOut }) {
       />
     );
   }
-    const menuItems = [
-    {
-      label: "Dashboard",
-      icon: LayoutDashboard,
+        icon: LayoutDashboard,
     },
     {
       label: "Saved Categories",
@@ -1238,7 +1236,6 @@ box-shadow: 0 14px 38px rgba(76, 56, 151, .07);
           .nx-welcome h1 { font-size: 29px; }
           .nx-section-heading h2 { font-size: 21px; }
         }
-      `}
         /* NEXTORA PREMIUM DASHBOARD ANIMATIONS */
 
 .nx-dashboard {
@@ -1399,7 +1396,7 @@ box-shadow: 0 14px 38px rgba(76, 56, 151, .07);
 
 @keyframes nxWelcomeCircle {
   0%, 100% { transform: translate(0,0); }
-  50% { transform: translate(-12px,-10px); }
+    50% { transform: translate(-12px,-10px); }
 }
         /* NEXTORA OPPORTUNITY CARD ANIMATIONS */
 
@@ -1566,7 +1563,7 @@ box-shadow: 0 14px 38px rgba(76, 56, 151, .07);
     transition: none !important;
   }
 }
-      </style>
+      `}</style>
 
       <header className="nx-topbar">
         <div className="nx-topbar-inner">
@@ -2076,4 +2073,4 @@ box-shadow: 0 14px 38px rgba(76, 56, 151, .07);
       </footer>
     </div>
   );
-              }
+                      }
