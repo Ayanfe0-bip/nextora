@@ -696,6 +696,9 @@ export function Dashboard({ user, onSignOut }) {
       />
     );
   }
+    const menuItems = [
+    {
+      label: "Dashboard",
         icon: LayoutDashboard,
     },
     {
