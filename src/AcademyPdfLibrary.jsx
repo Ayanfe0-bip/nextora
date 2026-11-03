@@ -6,10 +6,14 @@ import {
   RefreshCw,
   AlertCircle,
   BookOpen,
+  CheckCircle,
+  Award,
+  ArrowLeft,
 } from "lucide-react";
 import { supabase } from "./lib/supabaseclient";
 
 const BUCKET = "academy-lessons";
+const PASS_MARK = 70;
 
 async function listPdfFiles(folderPath) {
   const { data, error } = await supabase.storage
@@ -26,18 +30,12 @@ async function listPdfFiles(folderPath) {
 
   for (const item of data || []) {
     const path = `${folderPath}/${item.name}`;
-
-    // Supabase Storage represents folders differently from files.
     const isFolder = item.id === null && !item.metadata;
 
     if (isFolder) {
-      const nestedFiles = await listPdfFiles(path);
-      files.push(...nestedFiles);
+      files.push(...await listPdfFiles(path));
     } else if (item.name.toLowerCase().endsWith(".pdf")) {
-      files.push({
-        name: item.name,
-        path,
-      });
+      files.push({ name: item.name, path });
     }
   }
 
@@ -47,9 +45,19 @@ async function listPdfFiles(folderPath) {
 export default function AcademyPdfLibrary({ departmentCode }) {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openingPath, setOpeningPath] = useState("");
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+
+  const [activeFile, setActiveFile] = useState(null);
+  const [pdfUrl, setPdfUrl] = useState("");
+  const [readerLoading, setReaderLoading] = useState(false);
+
+  const [stage, setStage] = useState("reading");
+  const [questions, setQuestions] = useState([]);
+  const [answers, setAnswers] = useState({});
+  const [result, setResult] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [completedFiles, setCompletedFiles] = useState([]);
 
   async function loadFiles() {
     if (!departmentCode) {
@@ -63,60 +71,174 @@ export default function AcademyPdfLibrary({ departmentCode }) {
     setNotice("");
 
     try {
-      // Load PDFs from this department only.
       const results = await listPdfFiles(departmentCode);
       setFiles(results);
 
-      if (results.length === 0) {
-        setNotice(
-          "No PDF materials were found in this department yet."
-        );
+      if (!results.length) {
+        setNotice("No PDF materials were found in this department yet.");
       }
     } catch (err) {
-      console.error("Unable to load department PDFs:", err);
-      setError(
-        err?.message ||
-          "Unable to load this department's PDF materials."
-      );
+      setError(err.message || "Unable to load PDF materials.");
     } finally {
       setLoading(false);
     }
   }
 
+  async function loadCompletedFiles() {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from("academy_pdf_student_progress")
+      .select("file_path")
+      .eq("user_id", user.id)
+      .eq("completed", true);
+
+    if (!error) {
+      setCompletedFiles((data || []).map((row) => row.file_path));
+    }
+  }
+
   useEffect(() => {
     loadFiles();
+    loadCompletedFiles();
   }, [departmentCode]);
 
-  async function openPdf(file, download = false) {
-    setOpeningPath(file.path);
+  async function openPdf(file) {
+    setReaderLoading(true);
+    setError("");
+    setActiveFile(file);
+    setStage("reading");
+    setQuestions([]);
+    setAnswers({});
+    setResult(null);
+    setPdfUrl("");
+
+    try {
+      const { data, error } = await supabase.storage
+        .from(BUCKET)
+        .createSignedUrl(file.path, 3600);
+
+      if (error) throw error;
+
+      setPdfUrl(data.signedUrl);
+    } catch (err) {
+      setError(err.message || "Unable to open this PDF.");
+      setActiveFile(null);
+    } finally {
+      setReaderLoading(false);
+    }
+  }
+
+  async function startAssessment() {
+    setReaderLoading(true);
     setError("");
 
     try {
-      const { data, error: urlError } = await supabase.storage
-        .from(BUCKET)
-        .createSignedUrl(file.path, 300, {
-          download: download ? file.name : undefined,
-        });
+      const { data, error } = await supabase
+        .from("academy_pdf_assessments")
+        .select("questions")
+        .eq("file_path", activeFile.path)
+        .maybeSingle();
 
-      if (urlError) throw urlError;
+      if (error) throw error;
 
-      if (!data?.signedUrl) {
-        throw new Error("Supabase did not return a PDF link.");
+      if (!data || !Array.isArray(data.questions) || !data.questions.length) {
+        setError(
+          "An assessment has not yet been added for this PDF. Please check back later."
+        );
+        return;
       }
 
-      window.open(
-        data.signedUrl,
-        "_blank",
-        "noopener,noreferrer"
-      );
+      setQuestions(data.questions);
+      setAnswers({});
+      setResult(null);
+      setStage("quiz");
     } catch (err) {
-      console.error("Unable to open PDF:", err);
+      setError(err.message || "Could not load the assessment.");
+    } finally {
+      setReaderLoading(false);
+    }
+  }
+
+  async function submitAssessment() {
+    if (questions.some((question, index) => answers[index] === undefined)) {
+      setError("Please answer every question before submitting.");
+      return;
+    }
+
+    setSaving(true);
+    setError("");
+
+    const score = questions.filter(
+      (question, index) =>
+        Number(answers[index]) === Number(question.answer)
+    ).length;
+
+    const percentage = Math.round(
+      (score / questions.length) * 100
+    );
+
+    const passed = percentage >= PASS_MARK;
+
+    setResult({
+      score,
+      total: questions.length,
+      percentage,
+      passed,
+    });
+
+    if (!passed) {
+      setSaving(false);
+      return;
+    }
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        throw new Error("Please log in to save your progress.");
+      }
+
+      const { error } = await supabase
+        .from("academy_pdf_student_progress")
+        .upsert(
+          {
+            user_id: user.id,
+            file_path: activeFile.path,
+            score: percentage,
+            total_questions: questions.length,
+            completed: true,
+            completed_at: new Date().toISOString(),
+          },
+          {
+            onConflict: "user_id,file_path",
+          }
+        );
+
+      if (error) throw error;
+
+      setCompletedFiles((previous) => [
+        ...new Set([...previous, activeFile.path]),
+      ]);
+    } catch (err) {
       setError(
-        err?.message || "Could not open this PDF. Please try again."
+        err.message || "Your result could not be saved. Please try again."
       );
     } finally {
-      setOpeningPath("");
+      setSaving(false);
     }
+  }
+
+  function closeReader() {
+    setActiveFile(null);
+    setPdfUrl("");
+    setQuestions([]);
+    setAnswers({});
+    setResult(null);
+    setStage("reading");
+    setError("");
   }
 
   const styles = {
@@ -132,20 +254,20 @@ export default function AcademyPdfLibrary({ departmentCode }) {
       display: "inline-flex",
       alignItems: "center",
       justifyContent: "center",
-      gap: 7,
+      gap: 8,
       border: 0,
       borderRadius: 10,
-      padding: "10px 13px",
+      padding: "11px 15px",
       background: "#6657d9",
       color: "#ffffff",
-      fontWeight: 700,
+      fontWeight: 800,
       cursor: "pointer",
     },
     secondary: {
       display: "inline-flex",
       alignItems: "center",
       justifyContent: "center",
-      gap: 7,
+      gap: 8,
       border: "1px solid #e3e3f1",
       borderRadius: 10,
       padding: "10px 13px",
@@ -158,48 +280,291 @@ export default function AcademyPdfLibrary({ departmentCode }) {
 
   return (
     <section style={styles.panel}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: 12,
-        }}
-      >
-        <div>
-          <h2 style={{ margin: "0 0 7px", fontSize: 21 }}>
-            <BookOpen
-              size={21}
-              style={{
-                verticalAlign: "middle",
-                marginRight: 8,
-              }}
-            />
-            Department PDF Materials
-          </h2>
-
-          <p
+      {!activeFile ? (
+        <>
+          <div
             style={{
-              margin: 0,
-              color: "#747791",
-              lineHeight: 1.6,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 12,
             }}
           >
-            Open or download the learning materials for this department.
-          </p>
-        </div>
+            <div>
+              <h2 style={{ margin: "0 0 7px", fontSize: 21 }}>
+                <BookOpen
+                  size={21}
+                  style={{ verticalAlign: "middle", marginRight: 8 }}
+                />
+                Department PDF Materials
+              </h2>
 
-        <button
-          type="button"
-          style={styles.secondary}
-          onClick={loadFiles}
-          disabled={loading}
-        >
-          <RefreshCw size={16} />
-          {loading ? "Refreshing..." : "Refresh"}
-        </button>
-      </div>
+              <p style={{ margin: 0, color: "#747791", lineHeight: 1.6 }}>
+                Read your materials and complete their assessments.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              style={styles.secondary}
+              onClick={() => {
+                loadFiles();
+                loadCompletedFiles();
+              }}
+              disabled={loading}
+            >
+              <RefreshCw size={16} />
+              Refresh
+            </button>
+          </div>
+
+          {loading ? (
+            <p>Loading PDF materials...</p>
+          ) : notice ? (
+            <p>{notice}</p>
+          ) : (
+            <>
+              <p style={{ color: "#747791", fontSize: 13, marginTop: 18 }}>
+                {files.length} PDF materials available
+              </p>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,230px),1fr))",
+                  gap: 13,
+                  marginTop: 14,
+                }}
+              >
+                {files.map((file) => {
+                  const completed = completedFiles.includes(file.path);
+
+                  return (
+                    <article
+                      key={file.path}
+                      style={{
+                        border: "1px solid #e8e8f4",
+                        borderRadius: 14,
+                        padding: 15,
+                      }}
+                    >
+                      <FileText size={27} color="#7567ec" />
+
+                      <h3 style={{ fontSize: 14, overflowWrap: "anywhere" }}>
+                        {file.name}
+                      </h3>
+
+                      {completed && (
+                        <p style={{ color: "#16865d", fontWeight: 800 }}>
+                          <CheckCircle
+                            size={15}
+                            style={{ verticalAlign: "middle" }}
+                          />{" "}
+                          Assessment completed
+                        </p>
+                      )}
+
+                      <button
+                        type="button"
+                        style={styles.button}
+                        onClick={() => openPdf(file)}
+                      >
+                        <ExternalLink size={15} />
+                        Read PDF
+                      </button>
+                    </article>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </>
+      ) : (
+        <div>
+          <button
+            type="button"
+            style={styles.secondary}
+            onClick={closeReader}
+          >
+            <ArrowLeft size={16} />
+            Back to materials
+          </button>
+
+          <h2 style={{ overflowWrap: "anywhere" }}>
+            {activeFile.name}
+          </h2>
+
+          {readerLoading ? (
+            <p>Loading...</p>
+          ) : stage === "reading" ? (
+            <>
+              {pdfUrl && (
+                <iframe
+                  title={activeFile.name}
+                  src={pdfUrl}
+                  style={{
+                    width: "100%",
+                    height: "70vh",
+                    minHeight: 450,
+                    border: "1px solid #e5e2f2",
+                    borderRadius: 12,
+                    background: "#f5f5f5",
+                  }}
+                />
+              )}
+
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 10,
+                  marginTop: 16,
+                }}
+              >
+                <a
+                  href={pdfUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    ...styles.secondary,
+                    textDecoration: "none",
+                  }}
+                >
+                  <Download size={16} />
+                  Open / Download PDF
+                </a>
+
+                <button
+                  type="button"
+                  style={styles.button}
+                  onClick={startAssessment}
+                  disabled={!pdfUrl}
+                >
+                  I've Finished Reading
+                </button>
+              </div>
+            </>
+          ) : stage === "quiz" ? (
+            <>
+              <h3>Knowledge Assessment</h3>
+
+              <p style={{ color: "#747791" }}>
+                Answer every question. You need at least {PASS_MARK}% to pass.
+              </p>
+
+              {questions.map((question, index) => (
+                <article
+                  key={index}
+                  style={{
+                    border: "1px solid #e8e8f4",
+                    borderRadius: 13,
+                    padding: 15,
+                    marginTop: 13,
+                  }}
+                >
+                  <h4>
+                    {index + 1}. {question.question}
+                  </h4>
+
+                  {(question.options || []).map((option, optionIndex) => (
+                    <label
+                      key={optionIndex}
+                      style={{
+                        display: "flex",
+                        gap: 10,
+                        padding: 10,
+                        marginTop: 7,
+                        borderRadius: 9,
+                        background:
+                          answers[index] === optionIndex
+                            ? "#f0edff"
+                            : "#fafaff",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <input
+                        type="radio"
+                        name={`pdf-question-${index}`}
+                        checked={answers[index] === optionIndex}
+                        onChange={() =>
+                          setAnswers((previous) => ({
+                            ...previous,
+                            [index]: optionIndex,
+                          }))
+                        }
+                      />
+                      {option}
+                    </label>
+                  ))}
+                </article>
+              ))}
+
+              <button
+                type="button"
+                style={{ ...styles.button, marginTop: 18 }}
+                onClick={submitAssessment}
+                disabled={saving}
+              >
+                {saving ? "Saving result..." : "Submit Assessment"}
+              </button>
+
+              {result && (
+                <div
+                  style={{
+                    marginTop: 18,
+                    padding: 18,
+                    borderRadius: 13,
+                    background: result.passed ? "#eafaf2" : "#fff3e9",
+                  }}
+                >
+                  <h3>
+                    {result.passed ? "Congratulations!" : "Not quite there yet"}
+                  </h3>
+
+                  <p>
+                    Your score: {result.score}/{result.total} (
+                    {result.percentage}%)
+                  </p>
+
+                  {result.passed ? (
+                    <>
+                      <Award size={35} color="#16865d" />
+                      <p>
+                        You passed! Your PDF lesson completion has been saved.
+                      </p>
+                      <button
+                        type="button"
+                        style={styles.button}
+                        onClick={closeReader}
+                      >
+                        Return to materials
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <p>
+                        You need at least {PASS_MARK}% to complete this lesson.
+                        Review the PDF and try again.
+                      </p>
+                      <button
+                        type="button"
+                        style={styles.button}
+                        onClick={() => {
+                          setAnswers({});
+                          setResult(null);
+                        }}
+                      >
+                        Try Again
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+            </>
+          ) : null}
+        </div>
+      )}
 
       {error && (
         <div
@@ -215,114 +580,11 @@ export default function AcademyPdfLibrary({ departmentCode }) {
         >
           <AlertCircle
             size={16}
-            style={{
-              verticalAlign: "middle",
-              marginRight: 7,
-            }}
+            style={{ verticalAlign: "middle", marginRight: 7 }}
           />
           {error}
         </div>
       )}
-
-      {loading ? (
-        <p style={{ marginTop: 20, color: "#747791" }}>
-          Loading this department's PDF materials...
-        </p>
-      ) : notice ? (
-        <p style={{ marginTop: 18, color: "#747791" }}>
-          {notice}
-        </p>
-      ) : (
-        <>
-          <p
-            style={{
-              marginTop: 18,
-              color: "#747791",
-              fontSize: 13,
-            }}
-          >
-            {files.length} PDF{files.length === 1 ? "" : "s"} available
-          </p>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns:
-                "repeat(auto-fit, minmax(min(100%, 230px), 1fr))",
-              gap: 13,
-              marginTop: 14,
-            }}
-          >
-            {files.map((file) => (
-              <article
-                key={file.path}
-                style={{
-                  border: "1px solid #e8e8f4",
-                  borderRadius: 14,
-                  padding: 15,
-                  minWidth: 0,
-                }}
-              >
-                <FileText size={26} color="#7567ec" />
-
-                <h3
-                  style={{
-                    fontSize: 14,
-                    lineHeight: 1.6,
-                    overflowWrap: "anywhere",
-                  }}
-                >
-                  {file.name}
-                </h3>
-
-                <div
-                  style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: 8,
-                    marginTop: 12,
-                  }}
-                >
-                  <button
-                    type="button"
-                    style={styles.button}
-                    disabled={openingPath === file.path}
-                    onClick={() => openPdf(file)}
-                  >
-                    <ExternalLink size={15} />
-                    {openingPath === file.path
-                      ? "Opening..."
-                      : "Open PDF"}
-                  </button>
-
-                  <button
-                    type="button"
-                    style={styles.secondary}
-                    disabled={openingPath === file.path}
-                    onClick={() => openPdf(file, true)}
-                  >
-                    <Download size={15} />
-                    Download
-                  </button>
-                </div>
-              </article>
-            ))}
-          </div>
-        </>
-      )}
-
-      <p
-        style={{
-          marginTop: 18,
-          marginBottom: 0,
-          fontSize: 12,
-          color: "#8589a0",
-          lineHeight: 1.7,
-        }}
-      >
-        PDF access links are temporary and generated securely from
-        Supabase Storage.
-      </p>
     </section>
   );
-              }
+          }
