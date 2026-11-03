@@ -394,8 +394,7 @@ export function AuthPortal({
           .nx-auth-card { padding: 24px 20px; }
           .nx-auth-card h1 { font-size: 26px; }
         }
-      `}
-        /* NEXTORA PREMIUM AUTH ANIMATIONS */
+      `}/* NEXTORA PREMIUM AUTH ANIMATIONS */
 
 .nx-auth-page {
   animation: nxAuthBackground 1s ease both;
