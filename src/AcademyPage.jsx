@@ -1865,6 +1865,66 @@ useEffect(() => {
 
   return (
     <div style={pageStyle}>
+      {progressLoading && (
+  <div
+    style={{
+      position: "fixed",
+      inset: 0,
+      zIndex: 9999,
+      background: "rgba(248,247,255,0.96)",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      gap: 18,
+      padding: 20,
+    }}
+  >
+    <div
+      style={{
+        width: 54,
+        height: 54,
+        border: "5px solid #e5e0fb",
+        borderTop: "5px solid #7056d9",
+        borderRadius: "50%",
+        animation: "academySpin 0.8s linear infinite",
+      }}
+    />
+
+    <div style={{ textAlign: "center" }}>
+      <h3
+        style={{
+          margin: 0,
+          color: "#29234e",
+          fontSize: 19,
+          fontWeight: 900,
+        }}
+      >
+        Loading Your Learning Progress
+      </h3>
+
+      <p
+        style={{
+          color: "#77718f",
+          marginTop: 8,
+          fontSize: 13,
+        }}
+      >
+        Please wait while we synchronise your Academy data.
+      </p>
+    </div>
+
+    <style>
+      {`
+        @keyframes academySpin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      `}
+    </style>
+  </div>
+)}
       <style>{`
         .na-header {
           position: sticky;
