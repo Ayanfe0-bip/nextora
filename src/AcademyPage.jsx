@@ -1492,7 +1492,13 @@ const [progressLoading, setProgressLoading] = useState(true);
   const [completedPdfPaths, setCompletedPdfPaths] = useState([]);
 
 const PDF_COURSE_CODE = "NAC-AIF-001";
-
+const COURSE_PDF_PATHS = {
+  "NAC-AIF-001": [
+    "NAC-AIF/lesson-01-understanding-ai.pdf",
+    "NAC-AIF/lesson-02-history-and-evolution-of-ai.pdf",
+    "NAC-AIF/lesson-03-ai-vs-traditional-software.pdf",
+  ],
+};
 const PDF_FILE_PATHS = [
   "NAC-AIF/lesson-01-understanding-ai.pdf",
   "NAC-AIF/lesson-02-history-and-evolution-of-ai.pdf",
