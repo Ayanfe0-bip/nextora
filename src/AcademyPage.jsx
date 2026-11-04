@@ -2264,24 +2264,20 @@ return courseDone > 0 && courseDone < courseTotal;
                 Course completion: {courseProgressPercent}%
               </p>
             </section>
-                        <AcademyPdfLibrary
-  departmentCode={
-    departments.find(
-      (department) =>
-        department.id === selectedCourse.departmentId
-    )?.code ||
-    selectedCourse.code.split("-").slice(0, 2).join("-")
-  }
-  courseCode={selectedCourse.code}
-  onPdfCompleted={(filePath) => {
-    setCompletedPdfPaths((previous) =>
-      previous.includes(filePath)
-        ? previous
-        : [...previous, filePath]
-    );
-  }}
-/>
-
+                        
+{selectedCourse.code === PDF_COURSE_CODE && (
+  <AcademyPdfLibrary
+    departmentCode="NAC-AIF"
+    courseCode={selectedCourse.code}
+    onPdfCompleted={(filePath) => {
+      setCompletedPdfPaths((previous) =>
+        previous.includes(filePath)
+          ? previous
+          : [...previous, filePath]
+      );
+    }}
+  />
+)}w
             <div
               style={{
                 display: "grid",
@@ -2305,7 +2301,7 @@ return courseDone > 0 && courseDone < courseTotal;
                   style={{
                     ...mutedStyle,
                     marginBottom: 14,
-                  }}
+                  }}1
                 >
                   Select a lesson to begin learning.
                 </div>
@@ -2971,14 +2967,27 @@ return courseDone > 0 && courseDone < courseTotal;
                 <div className="na-grid">
                   {inProgressCourses.map((course) => {
                     const done =
-                      progress[course.code]?.completed || [];
+  progress[course.code]?.completed || [];
 
-                    const total =
-                      getCourseLessons(course).length;
+const pdfDone =
+  course.code === PDF_COURSE_CODE
+    ? PDF_FILE_PATHS.filter((path) =>
+        completedPdfPaths.includes(path)
+      ).length
+    : 0;
 
-                    const percent = Math.round(
-                      (done.length / Math.max(1, total)) * 100
-                    );
+const total =
+  getCourseLessons(course).length +
+  (course.code === PDF_COURSE_CODE
+    ? PDF_FILE_PATHS.length
+    : 0);
+
+const percent = Math.min(
+  100,
+  Math.round(
+    ((done.length + pdfDone) / Math.max(1, total)) * 100
+  )
+);
 
                     return (
                       <article
