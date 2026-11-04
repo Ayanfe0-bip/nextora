@@ -1697,27 +1697,28 @@ Math.max(1, totalCourseItems)) * 100
 : 0;
 
 const inProgressCourses = allCourses.filter((course) => {
-const completed =
-progress[course.code]?.completed || [];
+  const completed =
+    progress[course.code]?.completed || [];
 
-const pdfCompleted =
-  course.code === PDF_COURSE_CODE
-    ? completedPdfsInCourse
-    : 0;
+  const pdfCompleted =
+    course.code === PDF_COURSE_CODE
+      ? PDF_FILE_PATHS.filter((path) =>
+          completedPdfPaths.includes(path)
+        ).length
+      : 0;
 
-const courseTotal =
-  getCourseLessons(course).length +
-  (course.code === PDF_COURSE_CODE
-    ? PDF_FILE_PATHS.length
-    : 0);
+  const courseTotal =
+    getCourseLessons(course).length +
+    (course.code === PDF_COURSE_CODE
+      ? PDF_FILE_PATHS.length
+      : 0);
 
-const courseDone =
-  completed.length + pdfCompleted;
+  const courseDone =
+    completed.length + pdfCompleted;
 
-return courseDone > 0 && courseDone < courseTotal;
-
+  return courseDone > 0 && courseDone < courseTotal;
 });
-
+  
   const saveProgress = async (courseCode, lessonIndex, completed) => {
   const current = progress[courseCode] || {
     completed: [],
