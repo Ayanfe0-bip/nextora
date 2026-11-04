@@ -14,6 +14,7 @@ import { supabase } from "./lib/supabaseclient";
 
 const BUCKET = "academy-lessons";
 const PASS_MARK = 70;
+const PDF_COURSE_CODE = "NAC-AIF-001";
 
 async function listPdfFiles(folderPath) {
   const { data, error } = await supabase.storage
@@ -42,7 +43,11 @@ async function listPdfFiles(folderPath) {
   return files;
 }
 
-export default function AcademyPdfLibrary({ departmentCode }) {
+export default function AcademyPdfLibrary({
+  departmentCode,
+  courseCode,
+  onPdfCompleted,
+}) {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -75,19 +80,26 @@ export default function AcademyPdfLibrary({ departmentCode }) {
       setFiles(results);
 
       if (!results.length) {
-        setNotice("No PDF materials were found in this department yet.");
+        setNotice(
+          "No PDF materials were found in this department yet."
+        );
       }
     } catch (err) {
-      setError(err.message || "Unable to load PDF materials.");
+      setError(
+        err.message || "Unable to load PDF materials."
+      );
     } finally {
       setLoading(false);
     }
   }
 
   async function loadCompletedFiles() {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-    if (!user) return;
+    if (userError || !user) return;
 
     const { data, error } = await supabase
       .from("academy_pdf_student_progress")
@@ -96,7 +108,9 @@ export default function AcademyPdfLibrary({ departmentCode }) {
       .eq("completed", true);
 
     if (!error) {
-      setCompletedFiles((data || []).map((row) => row.file_path));
+      setCompletedFiles(
+        (data || []).map((row) => row.file_path)
+      );
     }
   }
 
@@ -124,14 +138,15 @@ export default function AcademyPdfLibrary({ departmentCode }) {
 
       setPdfUrl(data.signedUrl);
     } catch (err) {
-      setError(err.message || "Unable to open this PDF.");
+      setError(
+        err.message || "Unable to open this PDF."
+      );
       setActiveFile(null);
     } finally {
       setReaderLoading(false);
     }
   }
-
-  async function startAssessment() {
+    async function startAssessment() {
     setReaderLoading(true);
     setError("");
 
@@ -144,7 +159,11 @@ export default function AcademyPdfLibrary({ departmentCode }) {
 
       if (error) throw error;
 
-      if (!data || !Array.isArray(data.questions) || !data.questions.length) {
+      if (
+        !data ||
+        !Array.isArray(data.questions) ||
+        !data.questions.length
+      ) {
         setError(
           "An assessment has not yet been added for this PDF. Please check back later."
         );
@@ -156,14 +175,20 @@ export default function AcademyPdfLibrary({ departmentCode }) {
       setResult(null);
       setStage("quiz");
     } catch (err) {
-      setError(err.message || "Could not load the assessment.");
+      setError(
+        err.message || "Could not load the assessment."
+      );
     } finally {
       setReaderLoading(false);
     }
   }
 
   async function submitAssessment() {
-    if (questions.some((question, index) => answers[index] === undefined)) {
+    if (
+      questions.some(
+        (question, index) => answers[index] === undefined
+      )
+    ) {
       setError("Please answer every question before submitting.");
       return;
     }
@@ -195,7 +220,12 @@ export default function AcademyPdfLibrary({ departmentCode }) {
     }
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError) throw userError;
 
       if (!user) {
         throw new Error("Please log in to save your progress.");
@@ -219,12 +249,22 @@ export default function AcademyPdfLibrary({ departmentCode }) {
 
       if (error) throw error;
 
-      setCompletedFiles((previous) => [
-        ...new Set([...previous, activeFile.path]),
-      ]);
+      setCompletedFiles((previous) =>
+        previous.includes(activeFile.path)
+          ? previous
+          : [...previous, activeFile.path]
+      );
+
+      if (
+        courseCode === PDF_COURSE_CODE &&
+        typeof onPdfCompleted === "function"
+      ) {
+        onPdfCompleted(activeFile.path);
+      }
     } catch (err) {
       setError(
-        err.message || "Your result could not be saved. Please try again."
+        err.message ||
+          "Your result could not be saved. Please try again."
       );
     } finally {
       setSaving(false);
@@ -242,251 +282,353 @@ export default function AcademyPdfLibrary({ departmentCode }) {
   }
 
   const styles = {
-    panel: {
+    container: {
+      marginTop: "24px",
+      padding: "20px",
+      borderRadius: "18px",
       background: "#ffffff",
-      border: "1px solid #e8e8f4",
-      borderRadius: 18,
-      padding: 18,
-      marginTop: 20,
-      color: "#252747",
+      border: "1px solid #e5e7eb",
+      color: "#111827",
+    },
+    heading: {
+      fontSize: "20px",
+      fontWeight: "800",
+      margin: "0 0 8px",
+    },
+    muted: {
+      color: "#6b7280",
+      fontSize: "13px",
+      lineHeight: 1.6,
+    },
+    fileCard: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: "12px",
+      padding: "14px",
+      border: "1px solid #e5e7eb",
+      borderRadius: "12px",
+      marginTop: "12px",
+      flexWrap: "wrap",
     },
     button: {
-      display: "inline-flex",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 8,
-      border: 0,
-      borderRadius: 10,
-      padding: "11px 15px",
-      background: "#6657d9",
+      border: "none",
+      borderRadius: "9px",
+      padding: "10px 14px",
+      background: "#2563eb",
       color: "#ffffff",
-      fontWeight: 800,
+      fontWeight: "700",
       cursor: "pointer",
-    },
-    secondary: {
       display: "inline-flex",
       alignItems: "center",
       justifyContent: "center",
-      gap: 8,
-      border: "1px solid #e3e3f1",
-      borderRadius: 10,
-      padding: "10px 13px",
-      background: "#f6f5ff",
-      color: "#5143bd",
-      fontWeight: 700,
+      gap: "7px",
+    },
+    secondaryButton: {
+      border: "1px solid #d1d5db",
+      borderRadius: "9px",
+      padding: "10px 14px",
+      background: "#ffffff",
+      color: "#374151",
+      fontWeight: "700",
       cursor: "pointer",
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: "7px",
+    },
+    alert: {
+      padding: "12px",
+      borderRadius: "10px",
+      background: "#fef2f2",
+      color: "#991b1b",
+      fontSize: "13px",
+      marginTop: "12px",
+    },
+    questionCard: {
+      padding: "15px",
+      border: "1px solid #e5e7eb",
+      borderRadius: "12px",
+      marginTop: "14px",
+    },
+    option: {
+      display: "flex",
+      alignItems: "flex-start",
+      gap: "9px",
+      padding: "9px",
+      marginTop: "7px",
+      borderRadius: "8px",
+      background: "#f9fafb",
+      cursor: "pointer",
+      fontSize: "14px",
     },
   };
-
-  return (
-    <section style={styles.panel}>
+    return (
+    <div style={styles.container}>
       {!activeFile ? (
+        <>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <BookOpen size={22} color="#2563eb" />
+            <div>
+              <h3 style={styles.heading}>PDF Learning Materials</h3>
+              <p style={styles.muted}>
+                Read each material and pass its assessment to earn
+                course progress.
+              </p>
+            </div>
+          </div>
+
+          {loading && (
+            <p style={styles.muted}>Loading learning materials...</p>
+          )}
+
+          {error && <div style={styles.alert}>{error}</div>}
+
+          {notice && <p style={styles.muted}>{notice}</p>}
+
+          {!loading &&
+            files.map((file) => {
+              const completed = completedFiles.includes(file.path);
+
+              return (
+                <div key={file.path} style={styles.fileCard}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      flex: 1,
+                      minWidth: "180px",
+                    }}
+                  >
+                    <FileText size={23} color="#2563eb" />
+                    <div>
+                      <div style={{ fontWeight: "700", fontSize: "14px" }}>
+                        {file.name.replace(/\.pdf$/i, "").replace(/-/g, " ")}
+                      </div>
+                      <div style={styles.muted}>
+                        {completed
+                          ? "Assessment passed"
+                          : "PDF learning material"}
+                      </div>
+                    </div>
+                  </div>
+
+                  {completed && (
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "5px",
+                        color: "#15803d",
+                        fontSize: "12px",
+                        fontWeight: "800",
+                      }}
+                    >
+                      <CheckCircle size={15} />
+                      Completed
+                    </span>
+                  )}
+
+                  <button
+                    type="button"
+                    style={styles.button}
+                    onClick={() => openPdf(file)}
+                  >
+                    <BookOpen size={16} />
+                    {completed ? "Review" : "Open PDF"}
+                  </button>
+                </div>
+              );
+            })}
+
+          {!loading && files.length > 0 && (
+            <p style={{ ...styles.muted, marginTop: "14px" }}>
+              {completedFiles.filter((path) =>
+                files.some((file) => file.path === path)
+              ).length}{" "}
+              of {files.length} PDF assessments completed.
+            </p>
+          )}
+        </>
+      ) : (
         <>
           <div
             style={{
               display: "flex",
-              justifyContent: "space-between",
               alignItems: "center",
+              justifyContent: "space-between",
+              gap: "10px",
               flexWrap: "wrap",
-              gap: 12,
             }}
           >
-            <div>
-              <h2 style={{ margin: "0 0 7px", fontSize: 21 }}>
-                <BookOpen
-                  size={21}
-                  style={{ verticalAlign: "middle", marginRight: 8 }}
-                />
-                Department PDF Materials
-              </h2>
-
-              <p style={{ margin: 0, color: "#747791", lineHeight: 1.6 }}>
-                Read your materials and complete their assessments.
-              </p>
-            </div>
-
             <button
               type="button"
-              style={styles.secondary}
-              onClick={() => {
-                loadFiles();
-                loadCompletedFiles();
-              }}
-              disabled={loading}
+              style={styles.secondaryButton}
+              onClick={closeReader}
             >
-              <RefreshCw size={16} />
-              Refresh
+              <ArrowLeft size={16} />
+              Back to materials
             </button>
+
+            <span style={styles.muted}>
+              {stage === "reading" ? "Reading stage" : "Assessment stage"}
+            </span>
           </div>
 
-          {loading ? (
-            <p>Loading PDF materials...</p>
-          ) : notice ? (
-            <p>{notice}</p>
-          ) : (
-            <>
-              <p style={{ color: "#747791", fontSize: 13, marginTop: 18 }}>
-                {files.length} PDF materials available
-              </p>
+          <h3 style={{ ...styles.heading, marginTop: "18px" }}>
+            {activeFile.name.replace(/\.pdf$/i, "").replace(/-/g, " ")}
+          </h3>
 
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,230px),1fr))",
-                  gap: 13,
-                  marginTop: 14,
-                }}
-              >
-                {files.map((file) => {
-                  const completed = completedFiles.includes(file.path);
+          {error && <div style={styles.alert}>{error}</div>}
 
-                  return (
-                    <article
-                      key={file.path}
-                      style={{
-                        border: "1px solid #e8e8f4",
-                        borderRadius: 14,
-                        padding: 15,
-                      }}
-                    >
-                      <FileText size={27} color="#7567ec" />
-
-                      <h3 style={{ fontSize: 14, overflowWrap: "anywhere" }}>
-                        {file.name}
-                      </h3>
-
-                      {completed && (
-                        <p style={{ color: "#16865d", fontWeight: 800 }}>
-                          <CheckCircle
-                            size={15}
-                            style={{ verticalAlign: "middle" }}
-                          />{" "}
-                          Assessment completed
-                        </p>
-                      )}
-
-                      <button
-                        type="button"
-                        style={styles.button}
-                        onClick={() => openPdf(file)}
-                      >
-                        <ExternalLink size={15} />
-                        Read PDF
-                      </button>
-                    </article>
-                  );
-                })}
-              </div>
-            </>
+          {readerLoading && (
+            <p style={styles.muted}>Please wait...</p>
           )}
-        </>
-      ) : (
-        <div>
-          <button
-            type="button"
-            style={styles.secondary}
-            onClick={closeReader}
-          >
-            <ArrowLeft size={16} />
-            Back to materials
-          </button>
 
-          <h2 style={{ overflowWrap: "anywhere" }}>
-            {activeFile.name}
-          </h2>
-
-          {readerLoading ? (
-            <p>Loading...</p>
-          ) : stage === "reading" ? (
+          {stage === "reading" && (
             <>
               {pdfUrl && (
-                <iframe
-                  title={activeFile.name}
-                  src={pdfUrl}
+                <div
                   style={{
-                    width: "100%",
-                    height: "70vh",
-                    minHeight: 450,
-                    border: "1px solid #e5e2f2",
-                    borderRadius: 12,
-                    background: "#f5f5f5",
+                    marginTop: "14px",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "12px",
+                    overflow: "hidden",
                   }}
-                />
+                >
+                  <iframe
+                    title="PDF learning material"
+                    src={pdfUrl}
+                    style={{
+                      width: "100%",
+                      height: "520px",
+                      border: "0",
+                      display: "block",
+                    }}
+                  />
+                </div>
+              )}
+
+              {pdfUrl && (
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "9px",
+                    flexWrap: "wrap",
+                    marginTop: "12px",
+                  }}
+                >
+                  <a
+                    href={pdfUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      ...styles.secondaryButton,
+                      textDecoration: "none",
+                    }}
+                  >
+                    <ExternalLink size={16} />
+                    Open in new tab
+                  </a>
+
+                  <a
+                    href={pdfUrl}
+                    download
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      ...styles.secondaryButton,
+                      textDecoration: "none",
+                    }}
+                  >
+                    <Download size={16} />
+                    Download PDF
+                  </a>
+                </div>
               )}
 
               <div
                 style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: 10,
-                  marginTop: 16,
+                  marginTop: "18px",
+                  padding: "14px",
+                  background: "#eff6ff",
+                  borderRadius: "12px",
                 }}
               >
-                <a
-                  href={pdfUrl}
-                  target="_blank"
-                  rel="noreferrer"
+                <p
                   style={{
-                    ...styles.secondary,
-                    textDecoration: "none",
+                    margin: "0 0 10px",
+                    fontSize: "14px",
+                    lineHeight: 1.6,
+                    color: "#1e40af",
                   }}
                 >
-                  <Download size={16} />
-                  Open / Download PDF
-                </a>
+                  Read the learning material carefully. When you finish,
+                  take the assessment. You need at least {PASS_MARK}% to
+                  pass and receive progress credit.
+                </p>
 
                 <button
                   type="button"
                   style={styles.button}
                   onClick={startAssessment}
-                  disabled={!pdfUrl}
+                  disabled={readerLoading || !pdfUrl}
                 >
+                  <CheckCircle size={16} />
                   I've Finished Reading
                 </button>
               </div>
             </>
-          ) : stage === "quiz" ? (
-            <>
-              <h3>Knowledge Assessment</h3>
+          )}
 
-              <p style={{ color: "#747791" }}>
-                Answer every question. You need at least {PASS_MARK}% to pass.
-              </p>
+          {stage === "quiz" && (
+            <>
+              <div
+                style={{
+                  marginTop: "14px",
+                  padding: "13px",
+                  background: "#eff6ff",
+                  borderRadius: "10px",
+                  color: "#1e40af",
+                  fontSize: "13px",
+                  lineHeight: 1.6,
+                }}
+              >
+                Answer all {questions.length} questions. You need at least{" "}
+                {PASS_MARK}% to pass this assessment.
+              </div>
 
               {questions.map((question, index) => (
-                <article
-                  key={index}
-                  style={{
-                    border: "1px solid #e8e8f4",
-                    borderRadius: 13,
-                    padding: 15,
-                    marginTop: 13,
-                  }}
-                >
-                  <h4>
+                <div key={index} style={styles.questionCard}>
+                  <p
+                    style={{
+                      fontWeight: "800",
+                      fontSize: "14px",
+                      margin: "0 0 10px",
+                    }}
+                  >
                     {index + 1}. {question.question}
-                  </h4>
+                  </p>
 
                   {(question.options || []).map((option, optionIndex) => (
                     <label
                       key={optionIndex}
                       style={{
-                        display: "flex",
-                        gap: 10,
-                        padding: 10,
-                        marginTop: 7,
-                        borderRadius: 9,
-                        background:
-                          answers[index] === optionIndex
-                            ? "#f0edff"
-                            : "#fafaff",
-                        cursor: "pointer",
+                        ...styles.option,
+                        border:
+                          Number(answers[index]) === optionIndex
+                            ? "1px solid #2563eb"
+                            : "1px solid transparent",
                       }}
                     >
                       <input
                         type="radio"
-                        name={`pdf-question-${index}`}
-                        checked={answers[index] === optionIndex}
+                        name={`question-${index}`}
+                        value={optionIndex}
+                        checked={
+                          Number(answers[index]) === optionIndex
+                        }
                         onChange={() =>
                           setAnswers((previous) => ({
                             ...previous,
@@ -494,15 +636,19 @@ export default function AcademyPdfLibrary({ departmentCode }) {
                           }))
                         }
                       />
-                      {option}
+                      <span>{option}</span>
                     </label>
                   ))}
-                </article>
+                </div>
               ))}
 
               <button
                 type="button"
-                style={{ ...styles.button, marginTop: 18 }}
+                style={{
+                  ...styles.button,
+                  marginTop: "18px",
+                  opacity: saving ? 0.7 : 1,
+                }}
                 onClick={submitAssessment}
                 disabled={saving}
               >
@@ -512,49 +658,79 @@ export default function AcademyPdfLibrary({ departmentCode }) {
               {result && (
                 <div
                   style={{
-                    marginTop: 18,
-                    padding: 18,
-                    borderRadius: 13,
-                    background: result.passed ? "#eafaf2" : "#fff3e9",
+                    marginTop: "18px",
+                    padding: "16px",
+                    borderRadius: "12px",
+                    background: result.passed ? "#f0fdf4" : "#fff7ed",
+                    border: `1px solid ${
+                      result.passed ? "#86efac" : "#fdba74"
+                    }`,
                   }}
                 >
-                  <h3>
-                    {result.passed ? "Congratulations!" : "Not quite there yet"}
-                  </h3>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "9px",
+                      color: result.passed ? "#166534" : "#9a3412",
+                      fontWeight: "800",
+                    }}
+                  >
+                    {result.passed ? (
+                      <Award size={22} />
+                    ) : (
+                      <AlertCircle size={22} />
+                    )}
 
-                  <p>
+                    {result.passed ? "Assessment Passed!" : "Not Passed Yet"}
+                  </div>
+
+                  <p
+                    style={{
+                      margin: "9px 0",
+                      fontSize: "14px",
+                      color: "#374151",
+                    }}
+                  >
                     Your score: {result.score}/{result.total} (
                     {result.percentage}%)
                   </p>
 
                   {result.passed ? (
-                    <>
-                      <Award size={35} color="#16865d" />
-                      <p>
-                        You passed! Your PDF lesson completion has been saved.
-                      </p>
-                      <button
-                        type="button"
-                        style={styles.button}
-                        onClick={closeReader}
-                      >
-                        Return to materials
-                      </button>
-                    </>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: "13px",
+                        color: "#166534",
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      Your PDF assessment has been saved. This learning
+                      item will count towards your course progress.
+                    </p>
                   ) : (
                     <>
-                      <p>
-                        You need at least {PASS_MARK}% to complete this lesson.
-                        Review the PDF and try again.
+                      <p
+                        style={{
+                          margin: "0 0 12px",
+                          fontSize: "13px",
+                          color: "#9a3412",
+                        }}
+                      >
+                        You need at least {PASS_MARK}% to pass. Review the
+                        material and try again.
                       </p>
+
                       <button
                         type="button"
-                        style={styles.button}
+                        style={styles.secondaryButton}
                         onClick={() => {
                           setAnswers({});
                           setResult(null);
+                          setError("");
                         }}
                       >
+                        <RefreshCw size={15} />
                         Try Again
                       </button>
                     </>
@@ -562,29 +738,9 @@ export default function AcademyPdfLibrary({ departmentCode }) {
                 </div>
               )}
             </>
-          ) : null}
-        </div>
+          )}
+        </>
       )}
-
-      {error && (
-        <div
-          role="alert"
-          style={{
-            marginTop: 16,
-            padding: 13,
-            background: "#fff0f0",
-            color: "#a32e3b",
-            borderRadius: 10,
-            overflowWrap: "anywhere",
-          }}
-        >
-          <AlertCircle
-            size={16}
-            style={{ verticalAlign: "middle", marginRight: 7 }}
-          />
-          {error}
-        </div>
-      )}
-    </section>
+    </div>
   );
-          }
+                  }
