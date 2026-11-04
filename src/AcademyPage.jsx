@@ -2977,7 +2977,7 @@ window.alert("Course progress has been reset.");
               </div>
 
               <p style={mutedStyle}>
-                {completedLessons} of {totalLessons} lessons completed.
+                {overallCompletedItems} of {overallTotalItems} learning items completed.
               </p>
             </section>
 
@@ -3176,7 +3176,27 @@ const percent = Math.min(
                 const Icon = department?.icon || BookOpen;
 
                 const done =
-                  progress[course.code]?.completed || [];
+  progress[course.code]?.completed || [];
+
+const pdfDone =
+  course.code === PDF_COURSE_CODE
+    ? PDF_FILE_PATHS.filter((path) =>
+        completedPdfPaths.includes(path)
+      ).length
+    : 0;
+
+const total =
+  getCourseLessons(course).length +
+  (course.code === PDF_COURSE_CODE
+    ? PDF_FILE_PATHS.length
+    : 0);
+
+const percent = Math.min(
+  100,
+  Math.round(
+    ((done.length + pdfDone) / Math.max(1, total)) * 100
+  )
+);
 
                 const total =
                   getCourseLessons(course).length;
