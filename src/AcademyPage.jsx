@@ -1501,7 +1501,26 @@ useEffect(() => {
       }
 
       setStudentId(user.id);
+const {
+  data: completedPdfs,
+  error: pdfProgressError,
+} = await supabase
+  .from("academy_pdf_student_progress")
+  .select("file_path")
+  .eq("user_id", user.id)
+  .eq("completed", true)
+  .in("file_path", PDF_FILE_PATHS);
 
+if (pdfProgressError) {
+  console.error(
+    "PDF progress loading failed:",
+    pdfProgressError.message
+  );
+} else {
+  setCompletedPdfPaths(
+    (completedPdfs || []).map((item) => item.file_path)
+  );
+}
       const { data, error } = await supabase
         .from("academy_student_progress")
         .select("*")
