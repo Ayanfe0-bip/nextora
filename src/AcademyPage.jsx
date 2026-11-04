@@ -1620,53 +1620,97 @@ if (pdfProgressError) {
   }, [search, selectedDepartment]);
 
   const totalLessons = allCourses.reduce(
-    (total, course) =>
-      total + getCourseLessons(course).length,
-    0
-  );
+(total, course) =>
+total + getCourseLessons(course).length,
+0
+);
 
-  const completedLessons = Object.values(progress).reduce(
-    (total, item) =>
-      total +
-      (Array.isArray(item?.completed)
-        ? item.completed.length
-        : 0),
-    0
-  );
+const completedLessons = Object.values(progress).reduce(
+(total, item) =>
+total +
+(Array.isArray(item?.completed)
+? item.completed.length
+: 0),
+0
+);
 
-  const overallProgress = totalLessons
-    ? Math.min(
-        100,
-        Math.round((completedLessons / totalLessons) * 100)
-      )
+const completedPdfCount = completedPdfPaths.filter(
+(path) => PDF_FILE_PATHS.includes(path)
+).length;
+
+const overallTotalItems =
+totalLessons + PDF_FILE_PATHS.length;
+
+const overallCompletedItems =
+completedLessons + completedPdfCount;
+
+const overallProgress = overallTotalItems
+? Math.min(
+100,
+Math.round(
+(overallCompletedItems / overallTotalItems) * 100
+)
+)
+: 0;
+
+const currentLessons = getCourseLessons(selectedCourse);
+const lesson = currentLessons[selectedLesson];
+
+const currentProgress = selectedCourse
+? progress[selectedCourse.code] || { completed: [] }
+: { completed: [] };
+
+const completedInCourse = currentProgress.completed || [];
+
+const coursePdfCount =
+selectedCourse?.code === PDF_COURSE_CODE
+? PDF_FILE_PATHS.length
+: 0;
+
+const completedPdfsInCourse =
+selectedCourse?.code === PDF_COURSE_CODE
+? PDF_FILE_PATHS.filter((path) =>
+completedPdfPaths.includes(path)
+).length
+: 0;
+
+const totalCourseItems =
+currentLessons.length + coursePdfCount;
+
+const completedCourseItems =
+completedInCourse.length + completedPdfsInCourse;
+
+const courseProgressPercent = selectedCourse
+? Math.min(
+100,
+Math.round(
+(completedCourseItems /
+Math.max(1, totalCourseItems)) * 100
+)
+)
+: 0;
+
+const inProgressCourses = allCourses.filter((course) => {
+const completed =
+progress[course.code]?.completed || [];
+
+const pdfCompleted =
+  course.code === PDF_COURSE_CODE
+    ? completedPdfsInCourse
     : 0;
 
-  const currentLessons = getCourseLessons(selectedCourse);
-  const lesson = currentLessons[selectedLesson];
+const courseTotal =
+  getCourseLessons(course).length +
+  (course.code === PDF_COURSE_CODE
+    ? PDF_FILE_PATHS.length
+    : 0);
 
-  const currentProgress = selectedCourse
-    ? progress[selectedCourse.code] || { completed: [] }
-    : { completed: [] };
+const courseDone =
+  completed.length + pdfCompleted;
 
-  const completedInCourse = currentProgress.completed || [];
+return courseDone > 0 && courseDone < courseTotal;
 
-  const courseProgressPercent = selectedCourse
-    ? Math.round(
-        (completedInCourse.length /
-          Math.max(1, currentLessons.length)) *
-          100
-      )
-    : 0;
-
-  const inProgressCourses = allCourses.filter((course) => {
-    const completed =
-      progress[course.code]?.completed || [];
-
-    return (
-      completed.length > 0 &&
-      completed.length < getCourseLessons(course).length
-    );
-  });
+});
 
   const saveProgress = async (courseCode, lessonIndex, completed) => {
   const current = progress[courseCode] || {
