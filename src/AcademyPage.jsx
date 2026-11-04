@@ -2176,9 +2176,13 @@ if (pdfProgressError) {
                 </span>
 
                 <span style={badgeStyle}>
-                  {completedInCourse.length}/{currentLessons.length}
-                  {" "}lessons completed
-                </span>
+  {completedCourseItems}/{totalCourseItems}
+  {" "}learning items completed
+</span>
+
+<span style={badgeStyle}>
+  {completedPdfsInCourse}/{coursePdfCount} PDF assessments passed
+</span>
               </div>
 
               <div className="na-progress" style={{ marginTop: 19 }}>
@@ -2195,14 +2199,22 @@ if (pdfProgressError) {
               </p>
             </section>
                         <AcademyPdfLibrary
-              departmentCode={
-                departments.find(
-                  (department) =>
-                    department.id === selectedCourse.departmentId
-                )?.code ||
-                selectedCourse.code.split("-").slice(0, 2).join("-")
-              }
-            />
+  departmentCode={
+    departments.find(
+      (department) =>
+        department.id === selectedCourse.departmentId
+    )?.code ||
+    selectedCourse.code.split("-").slice(0, 2).join("-")
+  }
+  courseCode={selectedCourse.code}
+  onPdfCompleted={(filePath) => {
+    setCompletedPdfPaths((previous) =>
+      previous.includes(filePath)
+        ? previous
+        : [...previous, filePath]
+    );
+  }}
+/>
 
             <div
               style={{
