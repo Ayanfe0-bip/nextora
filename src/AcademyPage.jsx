@@ -1430,8 +1430,24 @@ const getDepartment = (course) =>
       department.code === course.departmentId
   );
 
-const getCourseLessons = (course) => course?.lessons || [];
 
+const getCourseLessons = (course) => {
+  if (!course) return [];
+
+  if (Array.isArray(course.lessons)) {
+    return course.lessons;
+  }
+
+  if (Array.isArray(course.sections)) {
+    return course.sections.flatMap((section) =>
+      Array.isArray(section.lessons)
+        ? section.lessons
+        : []
+    );
+  }
+
+  return [];
+};
 const STORAGE_KEY = "nextora-academy-progress-v2";
 const SAVED_KEY = "nextora-academy-saved-courses";
 
