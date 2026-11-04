@@ -1473,6 +1473,15 @@ export default function AcademyPage({ onBack }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [studentId, setStudentId] = useState(null);
 const [progressLoading, setProgressLoading] = useState(true);
+  const [completedPdfPaths, setCompletedPdfPaths] = useState([]);
+
+const PDF_COURSE_CODE = "NAC-AIF-001";
+
+const PDF_FILE_PATHS = [
+  "NAC-AIF/lesson-01-understanding-ai.pdf",
+  "NAC-AIF/lesson-02-history-and-evolution-of-ai.pdf",
+  "NAC-AIF/lesson-03-ai-vs-traditional-software.pdf",
+];
 useEffect(() => {
   let active = true;
 
