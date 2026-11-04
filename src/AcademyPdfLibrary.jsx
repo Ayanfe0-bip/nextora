@@ -77,7 +77,15 @@ export default function AcademyPdfLibrary({
 
     try {
       const results = await listPdfFiles(departmentCode);
-      setFiles(results);
+
+const allowedPaths =
+  COURSE_PDF_PATHS[courseCode] || [];
+
+const courseFiles = results.filter((file) =>
+  allowedPaths.includes(file.path)
+);
+
+setFiles(courseFiles);
 
       if (!results.length) {
         setNotice(
