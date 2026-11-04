@@ -1859,42 +1859,72 @@ return courseDone > 0 && courseDone < courseTotal;
 };
 
   const resetCourseProgress = async () => {
-  if (!selectedCourse) return;
+if (!selectedCourse) return;
 
-  if (
-    !window.confirm(
-      "Are you sure you want to reset this course progress?"
-    )
-  ) {
-    return;
+if (
+  !window.confirm(
+    "Are you sure you want to reset this course progress, including PDF assessments?"
+  )
+) {
+  return;
+}
+
+const courseCode = selectedCourse.code;
+
+const next = { ...progress };
+delete next[courseCode];
+
+setProgress(next);
+saveStorage(STORAGE_KEY, next);
+
+setSelectedLesson(0);
+setAnswers({});
+setShowAnswers(false);
+
+if (studentId) {
+  const { error } = await supabase
+    .from("academy_student_progress")
+    .delete()
+    .eq("user_id", studentId)
+    .eq("course_code", courseCode);
+
+  if (error) {
+    console.error(
+      "Could not reset lesson progress:",
+      error.message
+    );
   }
 
-  const courseCode = selectedCourse.code;
-
-  const next = { ...progress };
-  delete next[courseCode];
-
-  setProgress(next);
-  saveStorage(STORAGE_KEY, next);
-
-  setSelectedLesson(0);
-  setAnswers({});
-  setShowAnswers(false);
-
-  if (studentId) {
-    const { error } = await supabase
-      .from("academy_student_progress")
+  if (courseCode === PDF_COURSE_CODE) {
+    const { error: pdfError } = await supabase
+      .from("academy_pdf_student_progress")
       .delete()
       .eq("user_id", studentId)
-      .eq("course_code", courseCode);
+      .in("file_path", PDF_FILE_PATHS);
 
-    if (error) {
+    if (pdfError) {
       console.error(
-        "Could not reset online progress:",
-        error.message
+        "Could not reset PDF progress:",
+        pdfError.message
+      );
+    } else {
+      setCompletedPdfPaths((previous) =>
+        previous.filter(
+          (path) => !PDF_FILE_PATHS.includes(path)
+        )
       );
     }
   }
+} else if (courseCode === PDF_COURSE_CODE) {
+  setCompletedPdfPaths((previous) =>
+    previous.filter(
+      (path) => !PDF_FILE_PATHS.includes(path)
+    )
+  );
+}
+
+window.alert("Course progress has been reset.");
+
 };
 
   const pageStyle = {
