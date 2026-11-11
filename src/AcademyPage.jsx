@@ -3199,13 +3199,6 @@ const percent = Math.min(
   )
 );
 
-                const total =
-                  getCourseLessons(course).length;
-
-                const percent = Math.round(
-                  (done.length / Math.max(1, total)) * 100
-                );
-
                 const isSaved =
                   savedCourses.includes(course.code);
 
