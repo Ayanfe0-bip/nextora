@@ -2332,7 +2332,7 @@ window.alert("Course progress has been reset.");
                   style={{
                     ...mutedStyle,
                     marginBottom: 14,
-                  }}1
+                  }}
                 >
                   Select a lesson to begin learning.
                 </div>
